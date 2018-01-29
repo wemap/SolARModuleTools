@@ -1,0 +1,64 @@
+/**
+ * @copyright Copyright (c) 2017 B-com http://www.b-com.com/
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "SolARSBPatternReIndexer.h"
+
+
+#include "ComponentFactory.h"
+
+namespace xpcf = org::bcom::xpcf;
+
+XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer);
+
+namespace SolAR {
+namespace MODULES {
+namespace TOOLS {
+
+    SolARSBPatternReIndexer::SolARSBPatternReIndexer()
+    {
+        setUUID(SolARSBPatternReIndexer::UUID);
+        addInterface<api::features::ISBPatternReIndexer>(this,api::features::ISBPatternReIndexer::UUID, "interface api::features::ISBPatternReIndexer");
+        m_sbPatternSize = 1;
+    }
+
+    void SolARSBPatternReIndexer::setParameters (const int sbPatternSize)
+    {
+        m_sbPatternSize = sbPatternSize;
+    }
+
+    FrameworkReturnCode SolARSBPatternReIndexer::reindex(const std::vector<SRef<Contour2Df>>& candidateContours, const std::vector<DescriptorMatch> & matches, std::vector<SRef<Point2Df>>& patternPoints, std::vector<SRef<Point2Df>>& imagePoints)
+    {
+        patternPoints.clear();
+        imagePoints.clear();
+        for (std::vector<DescriptorMatch>::const_iterator itr = matches.begin(); itr != matches.end(); ++itr)
+        {
+            patternPoints.push_back(xpcf::utils::make_shared<Point2Df>(0.0f, 0.0f));
+            patternPoints.push_back(xpcf::utils::make_shared<Point2Df>(m_sbPatternSize, 0.0f));
+            patternPoints.push_back(xpcf::utils::make_shared<Point2Df>(m_sbPatternSize, m_sbPatternSize));
+            patternPoints.push_back(xpcf::utils::make_shared<Point2Df>(0.0f,m_sbPatternSize));
+
+            SRef<Contour2Df> recognizedContour = candidateContours[itr->getIndexInDescriptorB()];
+            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[0][0], (*recognizedContour)[0][1]));
+            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[1][0], (*recognizedContour)[1][1]));
+            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[2][0], (*recognizedContour)[2][1]));
+            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[3][0], (*recognizedContour)[3][1]));
+        }
+        return FrameworkReturnCode::_SUCCESS;
+    }
+
+}
+}
+}  // end of namespace Solar

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<xpcf-registry>
+    <container uuid="28b89d39-41bd-451d-b19e-d25a3d7c5797" filepath="D:/BCOMDEVROOT/bcomBuild/SolARModuleTools/1.0.0/lib/x86_64/shared/release/SolARModuleTools.dll">
+        <component uuid="edcedc0a-9841-4377-aea1-9fa9fdb46fde" description="SolAR2DTransform">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
+                <interface uuid="dbf5a8a1-cbcb-4a95-8dfd-4d9d5877e56f" description="I2DTransform"/>
+        </component>
+        <component uuid="f05dd955-33bd-4d52-8717-93ad298ed3e3" description="SolAR3DTransform">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
+                <interface uuid="9c1052b2-46c0-467b-8363-36f19b6b445f" description="I3DTransform"/>
+        </component>
+        <component uuid="112f9f03-79c1-4393-b8f3-e02227bebfed" description="SolARHomographyValidation">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
+                <interface uuid="e95e8f70-dd32-11e7-9296-cec278b6b50a" description="IHomographyValidation"/>
+        </component>
+        <component uuid="6fed0169-4f01-4545-842a-3e2425bee248" description="SolARImage2WorldMapper">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
+                <interface uuid="67bcd080-258d-4b16-b693-cd30c013eb05" description="IImage2WorldMapper"/>
+        </component>
+        <component uuid="c2836cc0-0344-4956-8959-84936fb4bcf2" description="SolARKeypointsReIndexer">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
+                <interface uuid="920e64a2-df17-11e7-80c1-9a214cf093ae" description="IKeypointsReIndexer"/>
+        </component>
+        <component uuid="a2ef5542-029e-4fce-9974-0aea14b29d6f" description="SolARSBPatternReIndexer">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
+                <interface uuid="79c5b810-d557-11e7-9296-cec278b6b50a" description="ISBPatternReIndexer"/>
+        </component>
+    </container>
+</xpcf-registry>
+
