@@ -22,6 +22,7 @@
 
 #include "api/features/ISBPatternReIndexer.h"
 #include "api/features/IKeypointsReIndexer.h"
+#include "api/features/IMatchesFilter.h"
 
 #include "api/geom/I2DTransform.h"
 #include "api/geom/I3DTransform.h"
