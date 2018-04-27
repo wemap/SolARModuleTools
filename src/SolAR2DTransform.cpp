@@ -27,10 +27,9 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-SolAR2DTransform::SolAR2DTransform()
+SolAR2DTransform::SolAR2DTransform():ComponentBase(xpcf::toUUID<SolAR2DTransform>())
 {
-    setUUID(SolAR2DTransform::UUID);
-    addInterface<api::geom::I2DTransform>(this,api::geom::I2DTransform::UUID, "interface 2DTransform");
+   addInterface<api::geom::I2DTransform>(this);
 }
 
 

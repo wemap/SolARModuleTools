@@ -27,10 +27,9 @@ namespace SolAR {
 namespace MODULES {
 namespace TOOLS {
 
-    SolARSBPatternReIndexer::SolARSBPatternReIndexer()
+    SolARSBPatternReIndexer::SolARSBPatternReIndexer():ComponentBase(xpcf::toUUID<SolARSBPatternReIndexer>())
     {
-        setUUID(SolARSBPatternReIndexer::UUID);
-        addInterface<api::features::ISBPatternReIndexer>(this,api::features::ISBPatternReIndexer::UUID, "interface api::features::ISBPatternReIndexer");
+        addInterface<api::features::ISBPatternReIndexer>(this);
         m_sbPatternSize = 1;
     }
 

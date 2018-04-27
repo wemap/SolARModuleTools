@@ -2,19 +2,19 @@
 #include "ComponentFactory.h"
 #include <set>
 
-
+namespace xpcf = org::bcom::xpcf;
 using namespace org::bcom::xpcf;
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARBasicMatchesFilter);
+
 
 namespace SolAR {
 using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-SolARBasicMatchesFilter::SolARBasicMatchesFilter()
+SolARBasicMatchesFilter::SolARBasicMatchesFilter():ComponentBase(xpcf::toUUID<SolARBasicMatchesFilter>())
 {
-    setUUID(SolARBasicMatchesFilter::UUID);
-    addInterface<api::features::IMatchesFilter>(this,api::features::IMatchesFilter::UUID, "interface BasicMatchesFilter");
+    addInterface<api::features::IMatchesFilter>(this);
 }
 
 

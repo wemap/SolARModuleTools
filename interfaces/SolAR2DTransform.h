@@ -39,7 +39,6 @@ public:
 
     void unloadComponent () override final;
 
-    XPCF_DECLARE_UUID("edcedc0a-9841-4377-aea1-9fa9fdb46fde");
 
  private:
 
