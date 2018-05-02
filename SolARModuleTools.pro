@@ -44,7 +44,7 @@ interfaces/SolARSBPatternReIndexer.h \
 interfaces/SolARKeypointsReIndexer.h \
 interfaces/SolARModuleManagerTools.h \
 interfaces/SolARToolsAPI.h \
-interfaces/SolARTools_traits.h \
+interfaces/SolARModuleTools_traits.h \
 interfaces/SolARBasicMatchesFilter.h
 
 SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
