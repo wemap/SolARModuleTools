@@ -54,8 +54,7 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARSBPatternReIndexer.cpp \
     src/SolARKeypointsReIndexer.cpp \
     src/SolARBasicMatchesFilter.cpp \
-    src/SolARModuleTools.cpp \
-    src/SolARModuleManagerTools.cpp
+    src/SolARModuleTools.cpp
 
 unix {
 }
