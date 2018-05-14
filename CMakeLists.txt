@@ -10,9 +10,22 @@ set (SOURCES
 		src/SolARHomographyValidation.cpp
 		src/SolARSBPatternReIndexer.cpp
 		src/SolARKeypointsReIndexer.cpp
+		src/SolARBasicMatchesFilter.cpp
 		src/SolARModuleTools.cpp
 		src/SolARModuleManagerTools.cpp
-	)
+)
+
+set (HEADERS
+		interfaces/SolARImage2WorldMapper4Marker2D.h
+		interfaces/SolAR2DTransform.h
+		interfaces/SolAR3DTransform.h
+		interfaces/SolARHomographyValidation.h
+		interfaces/SolARSBPatternReIndexer.h
+		interfaces/SolARKeypointsReIndexer.h
+		interfaces/SolARModuleManagerTools.h
+		interfaces/SolARToolsAPI.h
+		interfaces/SolARBasicMatchesFilter.h
+)
 ##################################################
 
 # various macros
