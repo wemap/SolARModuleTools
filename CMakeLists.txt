@@ -25,6 +25,9 @@ set (HEADERS
 		interfaces/SolARToolsAPI.h
 		interfaces/SolARBasicMatchesFilter.h
 )
+
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/xpcf_SolARModuleTools_registry.xml" DESTINATION $ENV{BCOMDEVROOT}/.xpcf/SolAR/	)
+
 ##################################################
 
 # various macros
