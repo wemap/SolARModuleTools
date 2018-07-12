@@ -2,7 +2,7 @@
 #define SolARBasicMatchesFilter_H
 
 #include "api/features/IMatchesFilter.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
 #include <vector>
@@ -35,7 +35,6 @@ namespace SolAR {
 
                 void unloadComponent () override final;
 
-                    XPCF_DECLARE_UUID("cbb620c3-a7fc-42d7-bcbf-f59b475b23b0");
 
              private:
 

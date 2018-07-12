@@ -15,7 +15,7 @@
  */
 
 #include "SolARImage2WorldMapper4Marker2D.h"
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 namespace xpcf  = org::bcom::xpcf;
 
 
@@ -27,10 +27,9 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-SolARImage2WorldMapper4Marker2D::SolARImage2WorldMapper4Marker2D()
+SolARImage2WorldMapper4Marker2D::SolARImage2WorldMapper4Marker2D():ComponentBase(xpcf::toUUID<SolARImage2WorldMapper4Marker2D>())
 {
-    setUUID(SolARImage2WorldMapper4Marker2D::UUID);
-    addInterface<api::geom::IImage2WorldMapper>(this,api::geom::IImage2WorldMapper::UUID, "interface api::geom::IImage2WorldMapper");
+    addInterface<api::geom::IImage2WorldMapper>(this);
 }
 
 

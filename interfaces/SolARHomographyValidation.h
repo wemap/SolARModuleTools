@@ -18,7 +18,7 @@
 #define SOLARHOMOGRAPHYVALIDATION_H
 
 #include "api/solver/pose/IHomographyValidation.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
 namespace SolAR {
@@ -34,7 +34,6 @@ public:
 
     bool isValid(const std::vector<SRef<Point2Df>>& ref2DSquaredMarkerCorners, const std::vector<SRef<Point2Df>>& projected2DSquaredMarkerCorners) override;
     void unloadComponent () override final;
-        XPCF_DECLARE_UUID("112f9f03-79c1-4393-b8f3-e02227bebfed");
 
 };
 

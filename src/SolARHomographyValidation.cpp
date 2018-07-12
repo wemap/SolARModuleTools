@@ -15,7 +15,7 @@
  */
 
 #include "SolARHomographyValidation.h"
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 
 namespace xpcf = org::bcom::xpcf;
 
@@ -26,10 +26,9 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-    SolARHomographyValidation::SolARHomographyValidation()
+    SolARHomographyValidation::SolARHomographyValidation():ComponentBase(xpcf::toUUID<SolARHomographyValidation>())
     {
-        setUUID(SolARHomographyValidation::UUID);
-        addInterface<api::solver::pose::IHomographyValidation>(this,api::solver::pose::IHomographyValidation::UUID, "interface api::solver::pose::IHomographyValidation");
+        addInterface<api::solver::pose::IHomographyValidation>(this);
     }
 
     float computeSurface(std::vector<SRef<Point2Df>> points){

@@ -26,5 +26,5 @@
 #else //_WIN32
 #define SOLAR_TOOLS_EXPORT_API
 #endif //_WIN32
-
+#include "SolARModuleTools_traits.h"
 #endif // SOLARTOOLSAPI_H
