@@ -1,5 +1,5 @@
 #include "SolARBasicMatchesFilter.h"
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 #include <set>
 
 namespace xpcf = org::bcom::xpcf;

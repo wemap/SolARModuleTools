@@ -11,7 +11,7 @@
  *
  */
 
-#include "ModuleFactory.h"
+#include "xpcf/module/ModuleFactory.h"
 
 #include "SolARHomographyValidation.h"
 #include "SolARImage2WorldMapper4Marker2D.h"

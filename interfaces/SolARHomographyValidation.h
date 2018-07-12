@@ -18,7 +18,7 @@
 #define SOLARHOMOGRAPHYVALIDATION_H
 
 #include "api/solver/pose/IHomographyValidation.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
 namespace SolAR {

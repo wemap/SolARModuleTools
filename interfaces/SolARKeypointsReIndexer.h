@@ -18,7 +18,7 @@
 #define SOLARKEYPOINTSREINDEXER_H
 
 #include "api/features/IKeypointsReIndexer.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
 namespace SolAR {

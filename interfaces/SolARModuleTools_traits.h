@@ -17,7 +17,7 @@
 #ifndef SOLARMODULETOOLS_TRAITS_H
 #define SOLARMODULETOOLS_TRAITS_H
 
-#include "ComponentTraits.h"
+#include "xpcf/component/ComponentTraits.h"
 
 namespace SolAR {
 namespace MODULES {

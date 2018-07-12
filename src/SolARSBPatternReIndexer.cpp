@@ -17,7 +17,7 @@
 #include "SolARSBPatternReIndexer.h"
 
 
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 
 namespace xpcf = org::bcom::xpcf;
 

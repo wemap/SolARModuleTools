@@ -18,7 +18,7 @@
 #define SOLAR3DTRANSFORM_H
 
 #include "api/geom/I3DTransform.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
 #include <vector>

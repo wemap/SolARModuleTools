@@ -2,7 +2,7 @@
 #define SolARBasicMatchesFilter_H
 
 #include "api/features/IMatchesFilter.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
 #include <vector>

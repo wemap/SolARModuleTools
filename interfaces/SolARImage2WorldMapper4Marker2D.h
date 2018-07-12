@@ -18,7 +18,7 @@
 #define SOLARIMAGE2WORLDMAPPER4MARKER2D_H
 
 #include "api/geom/IImage2WorldMapper.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
 #include <vector>
