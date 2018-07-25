@@ -29,6 +29,7 @@ class SolARKeypointsReIndexer;
 class SolAR2DTransform;
 class SolAR3DTransform;
 class SolARBasicMatchesFilter;
+class ThirdPartyConnector;
 }
 }
 }
@@ -61,8 +62,9 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBasicMatchesFilter,
                              "cbb620c3-a7fc-42d7-bcbf-f59b475b23b0",
                              "SolAR::MODULES::TOOLS::SolARBasicMatchesFilter component")
 
-
-
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::ThirdPartyConnector,
+                             "bb292de7-8f87-4a23-8b23-c4d9e8a64f8d",
+                             "SolAR::MODULES::TOOLS::ThirdPartyConnector component")
 
 #endif // SOLARMODULETOOLS_TRAITS_H
 

@@ -20,6 +20,7 @@
 #include "SolAR2DTransform.h"
 #include "SolAR3DTransform.h"
 #include "SolARBasicMatchesFilter.h"
+#include "ThirdPartyConnector.h"
 
 #include <iostream>
 
@@ -55,7 +56,10 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR3DTransform>(componentUUID,interfaceRef);
     }
-
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::ThirdPartyConnector>(componentUUID,interfaceRef);
+    }
       return errCode;
 }
 
@@ -68,5 +72,6 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeypointsReIndexer)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR2DTransform)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransform)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::ThirdPartyConnector)
 XPCF_END_COMPONENTS_DECLARATION
 
