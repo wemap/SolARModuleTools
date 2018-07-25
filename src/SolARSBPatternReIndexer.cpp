@@ -21,22 +21,20 @@
 
 namespace xpcf = org::bcom::xpcf;
 
-XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer);
+XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer)
 
 namespace SolAR {
 namespace MODULES {
 namespace TOOLS {
 
-    SolARSBPatternReIndexer::SolARSBPatternReIndexer():ComponentBase(xpcf::toUUID<SolARSBPatternReIndexer>())
+    SolARSBPatternReIndexer::SolARSBPatternReIndexer():ConfigurableBase(xpcf::toUUID<SolARSBPatternReIndexer>())
     {
         addInterface<api::features::ISBPatternReIndexer>(this);
+        SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
+        params->wrapInteger("sbPatternSize", m_sbPatternSize);
         m_sbPatternSize = 1;
     }
 
-    void SolARSBPatternReIndexer::setParameters (const int sbPatternSize)
-    {
-        m_sbPatternSize = sbPatternSize;
-    }
 
     FrameworkReturnCode SolARSBPatternReIndexer::reindex(const std::vector<SRef<Contour2Df>>& candidateContours, const std::vector<DescriptorMatch> & matches, std::vector<SRef<Point2Df>>& patternPoints, std::vector<SRef<Point2Df>>& imagePoints)
     {
