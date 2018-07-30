@@ -11,6 +11,7 @@ set (SOURCES
 		src/SolARSBPatternReIndexer.cpp
 		src/SolARKeypointsReIndexer.cpp
 		src/SolARBasicMatchesFilter.cpp
+		src/ThirdPartyConnector.cpp
 		src/SolARModuleTools.cpp
 )
 
@@ -21,6 +22,7 @@ set (HEADERS
 		interfaces/SolARHomographyValidation.h
 		interfaces/SolARSBPatternReIndexer.h
 		interfaces/SolARKeypointsReIndexer.h
+		interfaces/ThirdPartyConnector.h
 		interfaces/SolARModuleManagerTools.h
 		interfaces/SolARToolsAPI.h
 		interfaces/SolARBasicMatchesFilter.h

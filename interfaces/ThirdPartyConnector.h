@@ -19,7 +19,7 @@ using namespace datastructure;
 namespace MODULES {
     namespace TOOLS {
 
-class SOLARFRAMEWORK_API ThirdPartyConnector : public org::bcom::xpcf::ComponentBase,
+class SOLAR_TOOLS_EXPORT_API ThirdPartyConnector : public org::bcom::xpcf::ComponentBase,
         public SolAR::api::sink::IThirdPartyConnector {
 public:
     ThirdPartyConnector();

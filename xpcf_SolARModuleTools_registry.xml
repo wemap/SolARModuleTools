@@ -29,6 +29,10 @@
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
                 <interface uuid="79c5b810-d557-11e7-9296-cec278b6b50a" description="ISBPatternReIndexer"/>
         </component>
+        <component uuid="bb292de7-8f87-4a23-8b23-c4d9e8a64f8d" description="ThirdPartyConnector">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
+                <interface uuid="c0d9fee4-d7d7-4866-a6cd-3bacac23316a" description="IThirdPartyConnector"/>
+        </component>
     </module>
 </xpcf-registry>
 
