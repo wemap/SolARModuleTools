@@ -13,7 +13,7 @@ namespace SolAR {
         namespace TOOLS {
         /**
          * @class SolARBasicMatchesFilter
-         * @brief Filters matches based on basic strategies (redundancy, match score..).
+         * @brief This filter just retains the best match for each keypoint.
          */
             class SOLAR_TOOLS_EXPORT_API SolARBasicMatchesFilter : public org::bcom::xpcf::ComponentBase,
                     public api::features::IMatchesFilter {
