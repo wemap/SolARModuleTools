@@ -25,19 +25,19 @@ ThirdPartyConnector::~ThirdPartyConnector()
 {
 }
 
-void ThirdPartyConnector::set( const SRef<Pose>& pose, const SRef<Image>& image )
+void ThirdPartyConnector::set( const SRef<Transform3Df>& pose, const SRef<Image>& image )
 {
     m_buffer.push( std::make_pair(pose, image ) );
 }
 
-void ThirdPartyConnector::get( SRef<Pose>& pose, SRef<Image>& image )
+void ThirdPartyConnector::get( SRef<Transform3Df>& pose, SRef<Image>& image )
 {
     connectorDataType output = m_buffer.pop();
     pose = output.first;
     image = output.second;
 }
 
-bool ThirdPartyConnector::tryGet( SRef<Pose>& pose, SRef<Image>& image )
+bool ThirdPartyConnector::tryGet( SRef<Transform3Df>& pose, SRef<Image>& image )
 {
     connectorDataType output;
     bool popSuccessful = false;
