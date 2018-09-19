@@ -18,7 +18,7 @@
 #define SOLARIMAGE2WORLDMAPPER4MARKER2D_H
 
 #include "api/geom/IImage2WorldMapper.h"
-#include "xpcf/component/ComponentBase.h"
+#include "xpcf/component/ConfigurableBase.h"
 #include "SolARToolsAPI.h"
 
 #include <vector>
@@ -28,22 +28,31 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-class SOLAR_TOOLS_EXPORT_API SolARImage2WorldMapper4Marker2D : public org::bcom::xpcf::ComponentBase,
+class SOLAR_TOOLS_EXPORT_API SolARImage2WorldMapper4Marker2D : public org::bcom::xpcf::ConfigurableBase,
         public api::geom::IImage2WorldMapper {
 public:
 
     SolARImage2WorldMapper4Marker2D();
    ~SolARImage2WorldMapper4Marker2D();
 
-    void setParameters(const Sizei digitalSize, const Sizef worldSize);
     FrameworkReturnCode map(const std::vector<SRef<Point2Df>> & digitalPoints, std::vector<SRef<Point3Df>> & worldPoints);
 
     void unloadComponent () override final;
 
 
 private:
-   Sizei m_digitalSize;
-   Sizef m_worldSize;
+   /// @brief the width of the 2D marker in pixels for a natural image marker, or in cells for a squared binary marker.
+   int m_digitalWidth;
+
+   /// @brief the height of the 2D marker in pixels for a natural image marker, or in cells for a squared binary marker.
+   int m_digitalHeight;
+
+   /// @brief the width of the marker in a user-defined world coordinate system (meters, cenimeters, etc.)
+   float m_worldWidth;
+
+   /// @brief the height of the marker in a user-defined world coordinate system (meters, cenimeters, etc.)
+   float m_worldHeight;
+
 
 };
 

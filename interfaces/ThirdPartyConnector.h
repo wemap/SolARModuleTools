@@ -27,12 +27,12 @@ public:
     void unloadComponent () override final;
 
 
-    void set( const SRef<Pose>& pose, const SRef<Image>& image ) override;
-    void get( SRef<Pose>& pose, SRef<Image>& image ) override;
-    bool tryGet( SRef<Pose>& pose, SRef<Image>& image ) override;
+    void set( const SRef<Transform3Df>& pose, const SRef<Image>& image ) override;
+    void get( SRef<Transform3Df>& pose, SRef<Image>& image ) override;
+    bool tryGet( SRef<Transform3Df>& pose, SRef<Image>& image ) override;
 
 protected:
-    typedef std::pair<SRef<Pose>, SRef<Image>> connectorDataType;
+    typedef std::pair<SRef<Transform3Df>, SRef<Image>> connectorDataType;
 
     SharedCircularBuffer<connectorDataType> m_buffer;
 };
