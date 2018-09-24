@@ -30,6 +30,8 @@ class SolARKeyframeSelector;
 class SolAR2DTransform;
 class SolAR3DTransform;
 class SolARBasicMatchesFilter;
+class SolARMapFilter;
+class SolARMapper;
 class ThirdPartyConnector;
 }
 }
@@ -62,6 +64,14 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR2DTransform,
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3DTransform,
                              "f05dd955-33bd-4d52-8717-93ad298ed3e3",
                              "SolAR::MODULES::TOOLS::SolAR3DTransform component")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapper,
+                             "8e3c926a-0861-46f7-80b2-8abb5576692c",
+                             "SolAR::MODULES::TOOLS::SolARMapper component")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapFilter,
+                             "09205b96-7cba-4415-bc61-64744bc26222",
+                             "SolAR::MODULES::TOOLS::SolARMapFilter component")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBasicMatchesFilter,
                              "cbb620c3-a7fc-42d7-bcbf-f59b475b23b0",
