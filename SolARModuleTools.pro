@@ -46,7 +46,8 @@ interfaces/ThirdPartyConnector.h \
 interfaces/SolARModuleManagerTools.h \
 interfaces/SolARToolsAPI.h \
 interfaces/SolARModuleTools_traits.h \
-interfaces/SolARBasicMatchesFilter.h
+interfaces/SolARBasicMatchesFilter.h \
+    interfaces/SolARKeyframeSelector.h
 
 
 SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
@@ -57,7 +58,8 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARKeypointsReIndexer.cpp \
     src/SolARBasicMatchesFilter.cpp \
     src/ThirdPartyConnector.cpp \
-    src/SolARModuleTools.cpp
+    src/SolARModuleTools.cpp \
+    src/SolARKeyframeSelector.cpp
 
 unix {
 }

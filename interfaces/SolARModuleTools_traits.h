@@ -26,6 +26,7 @@ class SolARHomographyValidation;
 class SolARImage2WorldMapper4Marker2D;
 class SolARSBPatternReIndexer;
 class SolARKeypointsReIndexer;
+class SolARKeyframeSelector;
 class SolAR2DTransform;
 class SolAR3DTransform;
 class SolARBasicMatchesFilter;
@@ -45,6 +46,10 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARImage2WorldMapper4Marke
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer,
                              "a2ef5542-029e-4fce-9974-0aea14b29d6f",
                              "SolAR::MODULES::TOOLS::SolARSBPatternReIndexer component")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARKeyframeSelector,
+                             "ad59a5ba-beb8-11e8-a355-529269fb1459",
+                             "SolAR::MODULES::TOOLS::SolARKeyframeSelector component")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARKeypointsReIndexer,
                              "c2836cc0-0344-4956-8959-84936fb4bcf2",

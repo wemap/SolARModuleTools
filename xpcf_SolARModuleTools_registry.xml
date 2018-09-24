@@ -25,6 +25,10 @@
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
                 <interface uuid="920e64a2-df17-11e7-80c1-9a214cf093ae" description="IKeypointsReIndexer"/>
         </component>
+		<component uuid="ad59a5ba-beb8-11e8-a355-529269fb1459" description="SolARKeyframeSelector">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
+                <interface uuid="4d5f2abe-beb7-11e8-a355-529269fb1459" description="IKeyframeSelector"/>
+        </component>
         <component uuid="a2ef5542-029e-4fce-9974-0aea14b29d6f" description="SolARSBPatternReIndexer">
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" description="IComponentIntrospect"/>
                 <interface uuid="79c5b810-d557-11e7-9296-cec278b6b50a" description="ISBPatternReIndexer"/>

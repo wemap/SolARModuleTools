@@ -16,6 +16,7 @@
 #include "SolARHomographyValidation.h"
 #include "SolARImage2WorldMapper4Marker2D.h"
 #include "SolARSBPatternReIndexer.h"
+#include "SolARKeyframeSelector.h"
 #include "SolARKeypointsReIndexer.h"
 #include "SolAR2DTransform.h"
 #include "SolAR3DTransform.h"
@@ -34,6 +35,14 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARHomographyValidation>(componentUUID,interfaceRef);
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR2DTransform>(componentUUID,interfaceRef);
+    }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR3DTransform>(componentUUID,interfaceRef);
+    }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARBasicMatchesFilter>(componentUUID,interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
@@ -42,7 +51,7 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARSBPatternReIndexer>(componentUUID,interfaceRef);
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARKeyframeSelector>(componentUUID,interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
@@ -50,11 +59,7 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR2DTransform>(componentUUID,interfaceRef);
-    }
-    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
-    {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR3DTransform>(componentUUID,interfaceRef);
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARSBPatternReIndexer>(componentUUID,interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
@@ -69,6 +74,7 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARHomographyValidation)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicMatchesFilter)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARImage2WorldMapper4Marker2D)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeypointsReIndexer)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframeSelector)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR2DTransform)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransform)
