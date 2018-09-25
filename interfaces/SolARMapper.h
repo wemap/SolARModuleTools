@@ -24,9 +24,7 @@ public:
 
     ~SolARMapper() = default;
 
-    SRef<Map> getMap() ;
-
-    virtual FrameworkReturnCode update (SRef<Map> map,
+    virtual FrameworkReturnCode update (SRef<Map>& map,
                                         SRef<Keyframe> newKeyframe,
                                         const std::vector<SRef<CloudPoint>>& newCloud = {},
                                         const std::vector<DescriptorMatch>& newPointsMatches = {},

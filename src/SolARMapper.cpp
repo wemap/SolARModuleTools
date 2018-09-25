@@ -32,12 +32,7 @@ namespace TOOLS {
         m_map = xpcf::utils::make_shared<Map>() ;
     }
 
-    SRef<Map> SolARMapper::getMap()
-    {
-        return m_map ;
-    }
-
-    FrameworkReturnCode SolARMapper::update (SRef<Map> map,
+    FrameworkReturnCode SolARMapper::update (SRef<Map>& map,
                                              SRef<Keyframe> newKeyframe,
                                              const std::vector<SRef<CloudPoint>>& newCloud,
                                              const std::vector<DescriptorMatch>& newPointsMatches,
@@ -53,40 +48,63 @@ namespace TOOLS {
             map = m_map;
             return FrameworkReturnCode::_SUCCESS;
         }
+
+        // A point cloud exist and we need to check if matches have already a corresponding 3D points
+        SRef<Keyframe> referenceKeyframe = newKeyframe->getReferenceKeyframe();
+        if (referenceKeyframe == nullptr)
+        {
+            LOG_ERROR("When updating the map, if the keyframe is not the first one, it should have a reference keyframe");
+            map = m_map;
+            return FrameworkReturnCode::_ERROR_;
+        }
+
+        std::map<unsigned int, SRef<CloudPoint>> keyframeVisibility, newRefKeyframeVisibility, refKeyframeVisibility = referenceKeyframe->getVisibleMapPoints();
+        std::map<unsigned int, unsigned int>::iterator visIt;
+
+        for (int i = 0; i < newCloud.size(); i++)
+        {
+            std::map<unsigned int, unsigned int> cloudPointVisibility = newCloud[i]->getVisibility();
+            // update the visibility of the current keyframe with the new 3D points
+            visIt = cloudPointVisibility.find(newKeyframe->m_idx);
+            if (visIt != cloudPointVisibility.end())
+            {
+                keyframeVisibility[visIt->second] = newCloud[i];
+            }
+            // update the visibility of the reference keyframe with the new 3D points
+            visIt = cloudPointVisibility.find(referenceKeyframe->m_idx);
+            if (visIt != cloudPointVisibility.end())
+            {
+                newRefKeyframeVisibility[visIt->second] = newCloud[i];
+            }
+        }
+
         if (m_kframes.size() == 1)
         {
             if (existingPointsMatches.size() != 0)
-                LOG_WARNING("For the second update of the Mapper, not need of existing");
-
-            newKeyframe->getReferenceKeyframe()->addVisibleMapPoints(newCloud);
-            newKeyframe->addVisibleMapPoints(newCloud);
-            m_gmatches[std::make_pair(newKeyframe->getReferenceKeyframe()->m_idx, newKeyframe->m_idx)] = newPointsMatches;
-            m_map->addCloudPoints(newCloud) ;
-            return FrameworkReturnCode::_SUCCESS;
-        }
-
-        // A point cloud exist and we need to check if matches have already a corresponding 3D points
-        std::vector<SRef<CloudPoint>> previous_cloud;
-        SRef<std::vector<SRef<CloudPoint>>> pointCloud = m_map->getPointCloud();
-        m_gmatches[std::make_pair(newKeyframe->getReferenceKeyframe()->m_idx, newKeyframe->m_idx)] = newPointsMatches;
-        for (int i = 0; i < existingPointsMatches.size(); i++)
-        {
-            for (int j = 0; j < pointCloud->size(); j++)
             {
-                if ((*pointCloud)[j]->m_visibility[newKeyframe->getReferenceKeyframe()->m_idx] == existingPointsMatches[i].getIndexInDescriptorA())
+                LOG_WARNING("For the second update of the Mapper, not need of existing points");
+            }
+        }
+        else
+        {
+            for (int i = 0; i < existingPointsMatches.size(); i++)
+            {
+                // update the existing 3D points already in the map visible by the current keyframe and reciprocally
+                std::map<unsigned int, SRef<CloudPoint>>::iterator refKFVisIt = refKeyframeVisibility.find(existingPointsMatches[i].getIndexInDescriptorA());
+                if ( refKFVisIt != refKeyframeVisibility.end() )
                 {
-                    // Update the visibility of the existing 3D point with the new keyframe
-                    (*pointCloud)[j]->m_visibility[newKeyframe->m_idx] = existingPointsMatches[i].getIndexInDescriptorB();
-                    // Add the 3D point to the point cloud which will be attach to the new keyframe
-                    previous_cloud.push_back((*pointCloud)[j]);
-                    break;
+                    keyframeVisibility[existingPointsMatches[i].getIndexInDescriptorB()] = refKFVisIt->second;
+                    refKFVisIt->second->visibilityAddKeypoint(newKeyframe->m_idx, existingPointsMatches[i].getIndexInDescriptorB());
                 }
             }
         }
-        newKeyframe->addVisibleMapPoints(previous_cloud);
-
+        m_gmatches[std::make_pair(referenceKeyframe->m_idx, newKeyframe->m_idx)] = newPointsMatches;
+        newKeyframe->addVisibleMapPoints(keyframeVisibility);
+        referenceKeyframe->addVisibleMapPoints(newRefKeyframeVisibility);
+        m_kframes.push_back(newKeyframe);
         // Add the 3D points that have just been triangulated
         m_map->addCloudPoints(newCloud);
+        map = m_map;
         return FrameworkReturnCode::_SUCCESS;
     }
 }
