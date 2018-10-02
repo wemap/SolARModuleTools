@@ -47,7 +47,7 @@ void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2,
     {
         // Check for cheirality (if the point is in front of the camera)
 
-        // To correct, Vector4f are not accepted with windows !
+        // BUG patch To correct, Vector4f should but is not accepted with windows !
 #if (_WIN64) || (_WIN32)
         Vector3f point(input[i]->getX(), input[i]->getY(), input[i]->getZ());
         Vector3f pointInCam1Ref, pointInCam2Ref;
