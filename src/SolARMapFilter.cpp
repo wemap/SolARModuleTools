@@ -52,7 +52,7 @@ void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2,
         Vector3f point(input[i]->getX(), input[i]->getY(), input[i]->getZ());
         Vector3f pointInCam1Ref, pointInCam2Ref;
 #else
-        Vector4f point(cp.getX(), cp.getY(), cp.getZ(), 1);
+        Vector4f point(input[i]->getX(), input[i]->getY(), input[i]->getZ(), 1);
         Vector4f pointInCam1Ref, pointInCam2Ref;
 #endif
         pointInCam1Ref = pose1*point;
