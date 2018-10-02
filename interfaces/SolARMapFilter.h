@@ -7,8 +7,6 @@
 #include <vector>
 #include "SolARToolsAPI.h"
 
-#include <string>
-
 namespace SolAR {
 using namespace datastructure;
 namespace MODULES {

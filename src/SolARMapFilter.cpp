@@ -47,10 +47,16 @@ void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2,
     {
         // Check for cheirality (if the point is in front of the camera)
 
-        Vector4f point(input[i]->getX(), input[i]->getY(), input[i]->getZ(), 1.0f);
-
-        Vector4f pointInCam1Ref = pose1*point;
-        Vector4f pointInCam2Ref = pose2*point;
+        // To correct, Vector4f are not accepted with windows !
+#if (_WIN64) || (_WIN32)
+        Vector3f point(input[i]->getX(), input[i]->getY(), input[i]->getZ());
+        Vector3f pointInCam1Ref, pointInCam2Ref;
+#else
+        Vector4f point(cp.getX(), cp.getY(), cp.getZ(), 1);
+        Vector4f pointInCam1Ref, pointInCam2Ref;
+#endif
+        pointInCam1Ref = pose1*point;
+        pointInCam2Ref = pose2*point;
 
         if ((!m_cheiralityCheck) || ((pointInCam1Ref(2) >= 0) && pointInCam2Ref(2) >=0))
         {
@@ -59,6 +65,7 @@ void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2,
                 output.push_back(input[i]);
         }
     }
+
 }
 
 }
