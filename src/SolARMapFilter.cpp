@@ -19,7 +19,7 @@
 
 namespace xpcf  = org::bcom::xpcf;
 
-XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARMapFilter)
+XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARMapFilter);
 
 namespace SolAR {
 using namespace datastructure;
@@ -46,9 +46,11 @@ void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2,
     for (int i = 0; i < input.size(); i++)
     {
         // Check for cheirality (if the point is in front of the camera)
-        Vector3f point = (*(input[i]));
-        Vector3f pointInCam1Ref = pose1 * point;
-        Vector3f pointInCam2Ref = pose2 * point;
+
+        Vector4f point(input[i]->getX(), input[i]->getY(), input[i]->getZ(), 1.0f);
+
+        Vector4f pointInCam1Ref = pose1*point;
+        Vector4f pointInCam2Ref = pose2*point;
 
         if ((!m_cheiralityCheck) || ((pointInCam1Ref(2) >= 0) && pointInCam2Ref(2) >=0))
         {
