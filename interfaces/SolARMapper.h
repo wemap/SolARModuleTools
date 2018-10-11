@@ -30,6 +30,8 @@ public:
                                         const std::vector<DescriptorMatch>& newPointsMatches = {},
                                         const std::vector<DescriptorMatch>& existingPointsMatches = {}) override;
 
+    std::vector<SRef<Keyframe>> getKeyframes() override;
+    SRef<Map> getMap() override;
     void unloadComponent () override final;
 
 private:
