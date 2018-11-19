@@ -107,6 +107,14 @@ namespace TOOLS {
         map = m_map;
         return FrameworkReturnCode::_SUCCESS;
     }
+
+    std::vector<SRef<Keyframe>> SolARMapper::getKeyframes(){
+        return m_kframes;
+    }
+    SRef<Map> SolARMapper::getMap(){
+        return m_map;
+    }
+
 }
 }
 }
