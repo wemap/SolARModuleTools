@@ -15,11 +15,9 @@
  */
 
 #include "SolAR2DTransform.h"
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 namespace xpcf  = org::bcom::xpcf;
 
-
-using namespace org::bcom::xpcf;
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAR2DTransform);
 
 namespace SolAR {
@@ -27,10 +25,9 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-SolAR2DTransform::SolAR2DTransform()
+SolAR2DTransform::SolAR2DTransform():ComponentBase(xpcf::toUUID<SolAR2DTransform>())
 {
-    setUUID(SolAR2DTransform::UUID);
-    addInterface<api::geom::I2DTransform>(this,api::geom::I2DTransform::UUID, "interface 2DTransform");
+   addInterface<api::geom::I2DTransform>(this);
 }
 
 

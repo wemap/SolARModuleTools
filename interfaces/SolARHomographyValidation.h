@@ -18,7 +18,7 @@
 #define SOLARHOMOGRAPHYVALIDATION_H
 
 #include "api/solver/pose/IHomographyValidation.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ConfigurableBase.h"
 #include "SolARToolsAPI.h"
 
 namespace SolAR {
@@ -26,7 +26,13 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-class SOLAR_TOOLS_EXPORT_API SolARHomographyValidation : public org::bcom::xpcf::ComponentBase,
+/**
+ * @class SolARHomographyValidation
+ * @brief Check if an homography is valid based on 4 corners of a squared marker and their projection through a given homography
+ *
+ */
+
+class SOLAR_TOOLS_EXPORT_API SolARHomographyValidation : public org::bcom::xpcf::ConfigurableBase,
         public api::solver::pose::IHomographyValidation {
 public:
     SolARHomographyValidation();
@@ -34,8 +40,17 @@ public:
 
     bool isValid(const std::vector<SRef<Point2Df>>& ref2DSquaredMarkerCorners, const std::vector<SRef<Point2Df>>& projected2DSquaredMarkerCorners) override;
     void unloadComponent () override final;
-        XPCF_DECLARE_UUID("112f9f03-79c1-4393-b8f3-e02227bebfed");
 
+private:
+    /// @brief minimum length ratio of the opposite reprojected sides of the squared marker
+    float m_oppositeSideRatio = 0.5f;
+
+    /// @brief minimum surface ratio between the squared marker and its reprojection through the homography
+    float m_surfaceRatio = 0.15f;
+
+    /// @brief the maximum of the dot product of the two opposite and normalized sides of the reprojected squared marker
+    /// Here, we check is the opposite reprojected sides of the squared marker are not to perpendicular. If the dot product is close to 1, it means that the opposite side are perpendicular and so that the homography is not good.
+    float m_maxOppositeDotProduct = 0.9;
 };
 
 }

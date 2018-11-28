@@ -52,7 +52,7 @@ SolARModuleManagerTools::SolARModuleManagerTools(const char *iniFile)
     // read ini file
     boost::property_tree::ptree pt;
     boost::property_tree::ini_parser::read_ini(iniFile, pt);
-    #ifdef _DEBUG
+    #ifndef NDEBUG
     xpcf_xmlPath=pt.get<std::string>("Tools.xmlDebugPath");
     xpcf_libPath=pt.get<std::string>("Tools.libDebugPath");
     #else

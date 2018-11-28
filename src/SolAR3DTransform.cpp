@@ -15,11 +15,9 @@
  */
 
 #include "SolAR3DTransform.h"
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 namespace xpcf  = org::bcom::xpcf;
 
-
-using namespace org::bcom::xpcf;
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAR3DTransform);
 
 namespace SolAR {
@@ -27,10 +25,9 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-SolAR3DTransform::SolAR3DTransform()
+SolAR3DTransform::SolAR3DTransform():ComponentBase(xpcf::toUUID<SolAR3DTransform>())
 {
-    setUUID(SolAR3DTransform::UUID);
-    addInterface<api::geom::I3DTransform>(this,api::geom::I3DTransform::UUID, "interface 3DTransform");
+    addInterface<api::geom::I3DTransform>(this);
 }
 
 

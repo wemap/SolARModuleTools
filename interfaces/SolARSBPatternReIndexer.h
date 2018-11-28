@@ -18,7 +18,7 @@
 #define SOLARSBPATTERNREINDEXER_H
 
 #include "api/features/ISBPatternReIndexer.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ConfigurableBase.h"
 #include "SolARToolsAPI.h"
 
 namespace SolAR {
@@ -26,19 +26,18 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-class SOLAR_TOOLS_EXPORT_API SolARSBPatternReIndexer : public org::bcom::xpcf::ComponentBase,
+class SOLAR_TOOLS_EXPORT_API SolARSBPatternReIndexer : public org::bcom::xpcf::ConfigurableBase,
         public api::features::ISBPatternReIndexer {
 public:
     SolARSBPatternReIndexer();
     ~SolARSBPatternReIndexer() = default;
 
-    void setParameters (const int sbPatternSize) override;
-
     FrameworkReturnCode reindex(const std::vector<SRef<Contour2Df>>& candidateContours, const std::vector<DescriptorMatch> & matches, std::vector<SRef<Point2Df>>& patternPoints, std::vector<SRef<Point2Df>>& imagePoints) override;
 
     void unloadComponent () override final;
-       
-        XPCF_DECLARE_UUID("a2ef5542-029e-4fce-9974-0aea14b29d6f");
+
+private:
+   int m_sbPatternSize;
 };
 
 }

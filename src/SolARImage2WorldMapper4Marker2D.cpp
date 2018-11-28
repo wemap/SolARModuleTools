@@ -15,11 +15,9 @@
  */
 
 #include "SolARImage2WorldMapper4Marker2D.h"
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 namespace xpcf  = org::bcom::xpcf;
 
-
-using namespace org::bcom::xpcf;
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARImage2WorldMapper4Marker2D);
 
 namespace SolAR {
@@ -27,10 +25,14 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-SolARImage2WorldMapper4Marker2D::SolARImage2WorldMapper4Marker2D()
+SolARImage2WorldMapper4Marker2D::SolARImage2WorldMapper4Marker2D():ConfigurableBase(xpcf::toUUID<SolARImage2WorldMapper4Marker2D>())
 {
-    setUUID(SolARImage2WorldMapper4Marker2D::UUID);
-    addInterface<api::geom::IImage2WorldMapper>(this,api::geom::IImage2WorldMapper::UUID, "interface api::geom::IImage2WorldMapper");
+    addInterface<api::geom::IImage2WorldMapper>(this);
+    SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
+    params->wrapInteger("digitalWidth",m_digitalWidth);
+    params->wrapInteger("digitalHeight",m_digitalHeight);
+    params->wrapFloat("worldWidth",m_worldWidth);
+    params->wrapFloat("worldHeight",m_worldHeight);
 }
 
 
@@ -38,25 +40,19 @@ SolARImage2WorldMapper4Marker2D::~SolARImage2WorldMapper4Marker2D(){
 
 }
 
-void SolARImage2WorldMapper4Marker2D::setParameters(const Sizei digitalSize, const Sizef worldSize)
-{
-    m_digitalSize = digitalSize;
-    m_worldSize = worldSize;
-}
-
 FrameworkReturnCode SolARImage2WorldMapper4Marker2D::map (const std::vector<SRef<Point2Df>> & digitalPoints, std::vector<SRef<Point3Df>> & worldPoints)
 {
     worldPoints.clear();
     Point3Df point_3D;
-    if (m_digitalSize.width <= 0 || m_digitalSize.height <= 0)
+    if (m_digitalWidth <= 0 || m_digitalHeight <= 0)
     {
         LOG_ERROR("SolARImage2WorldMapper::map: marker resolution width or height is equal to zero or negative")
         return FrameworkReturnCode::_ERROR_;
     }
-    float width_ratio =  m_worldSize.width / m_digitalSize.width;
-    float height_ratio = m_worldSize.height / m_digitalSize.height;
-    float half_img_width = (float) m_digitalSize.width / 2;
-    float half_img_height = (float) m_digitalSize.height / 2;
+    float width_ratio =  m_worldWidth / m_digitalWidth;
+    float height_ratio = m_worldHeight / m_digitalHeight;
+    float half_img_width = (float) m_digitalWidth / 2;
+    float half_img_height = (float) m_digitalHeight / 2;
 
 
     for (int i = 0; i<digitalPoints.size();++i)

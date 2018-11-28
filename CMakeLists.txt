@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7.2)
 
 ##################################################
-set (VERSION_NUMBER "0.4.0")
+set (VERSION_NUMBER "0.5.0")
 project("SolARModuleTools")
 set (SOURCES 
 		src/SolARImage2WorldMapper4Marker2D.cpp
@@ -10,9 +10,33 @@ set (SOURCES
 		src/SolARHomographyValidation.cpp
 		src/SolARSBPatternReIndexer.cpp
 		src/SolARKeypointsReIndexer.cpp
+		src/SolARBasicMatchesFilter.cpp
+		src/SolARMapper.cpp
+		src/SolARMapFilter.cpp
+		src/ThirdPartyConnector.cpp
 		src/SolARModuleTools.cpp
-		src/SolARModuleManagerTools.cpp
-	)
+		src/SolARKeyframeSelector.cpp
+)
+
+set (HEADERS
+		interfaces/SolARImage2WorldMapper4Marker2D.h
+		interfaces/SolAR2DTransform.h
+		interfaces/SolAR3DTransform.h
+		interfaces/SolARHomographyValidation.h
+		interfaces/SolARSBPatternReIndexer.h
+		interfaces/SolARKeypointsReIndexer.h
+		interfaces/SolARMapper.h
+		interfaces/SolARMapFilter.h
+		interfaces/ThirdPartyConnector.h
+		interfaces/SolARModuleManagerTools.h
+		interfaces/SolARToolsAPI.h
+		interfaces/SolARModuleTools_traits.h
+		interfaces/SolARBasicMatchesFilter.h
+		interfaces/SolARKeyframeSelector.h
+)
+
+install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/xpcf_SolARModuleTools_registry.xml" DESTINATION $ENV{BCOMDEVROOT}/.xpcf/SolAR/	)
+
 ##################################################
 
 # various macros

@@ -15,7 +15,7 @@
  */
 
 #include "SolARKeypointsReIndexer.h"
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 
 namespace xpcf = org::bcom::xpcf;
 
@@ -26,10 +26,9 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-    SolARKeypointsReIndexer::SolARKeypointsReIndexer()
+    SolARKeypointsReIndexer::SolARKeypointsReIndexer():ComponentBase(xpcf::toUUID<SolARKeypointsReIndexer>())
     {
-        setUUID(SolARKeypointsReIndexer::UUID);
-        addInterface<api::features::IKeypointsReIndexer>(this,api::features::IKeypointsReIndexer::UUID, "interface api::features::IKeypointsReIndexer");
+        addInterface<api::features::IKeypointsReIndexer>(this);
     }
 
   FrameworkReturnCode SolARKeypointsReIndexer::reindex(const std::vector<SRef<Keypoint>>& refKeypoints, const std::vector<SRef<Keypoint>>& imgKeypoints, std::vector<DescriptorMatch>& matches, std::vector<SRef<Point2Df>>& matchedRefKeypoints, std::vector<SRef<Point2Df>>& matchedImgKeypoints)

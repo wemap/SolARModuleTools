@@ -15,7 +15,7 @@
  */
 
 #include "SolARHomographyValidation.h"
-#include "ComponentFactory.h"
+#include "xpcf/component/ComponentFactory.h"
 
 namespace xpcf = org::bcom::xpcf;
 
@@ -26,10 +26,13 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-    SolARHomographyValidation::SolARHomographyValidation()
+    SolARHomographyValidation::SolARHomographyValidation():ConfigurableBase(xpcf::toUUID<SolARHomographyValidation>())
     {
-        setUUID(SolARHomographyValidation::UUID);
-        addInterface<api::solver::pose::IHomographyValidation>(this,api::solver::pose::IHomographyValidation::UUID, "interface api::solver::pose::IHomographyValidation");
+        addInterface<api::solver::pose::IHomographyValidation>(this);
+        SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
+        params->wrapFloat("oppositeSideRatio",m_oppositeSideRatio);
+        params->wrapFloat("surfaceRatio",m_surfaceRatio);
+        params->wrapFloat("maxOppositeDotProduct",m_maxOppositeDotProduct);
     }
 
     float computeSurface(std::vector<SRef<Point2Df>> points){
@@ -68,7 +71,7 @@ namespace TOOLS {
 
         r=(d1<d2)?d1/d2:d2/d1;
 
-        if(r<0.5f)
+        if(r<m_oppositeSideRatio)
             return false;
 
         d1=computeDistance(projected2DSquaredMarkerCorners[1],projected2DSquaredMarkerCorners[2]);
@@ -76,7 +79,7 @@ namespace TOOLS {
 
         r=(d1<d2)?d1/d2:d2/d1;
 
-        if(r<0.5f)
+        if(r<m_oppositeSideRatio)
             return false;
 
         // check surfaces
@@ -85,7 +88,7 @@ namespace TOOLS {
         if(s1<=0)
             return false;
 
-        if((s1/s2)<0.15){
+        if((s1/s2)<m_surfaceRatio){
             return false;
         }
 
@@ -104,7 +107,7 @@ namespace TOOLS {
         dir_3.normalize();
 
         // test the aspect shape of the homography
-        if (!( fabs( dir_0.dot(dir_2) )  > 0.9 && fabs( dir_1.dot(dir_3) )  >0.9)){
+        if (!( fabs( dir_0.dot(dir_2) )  > m_maxOppositeDotProduct && fabs( dir_1.dot(dir_3) )  >m_maxOppositeDotProduct)){
             return false;
 
         }

@@ -18,7 +18,7 @@
 #define SOLAR2DTRANSFORM_H
 
 #include "api/geom/I2DTransform.h"
-#include "ComponentBase.h"
+#include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
 #include <vector>
@@ -39,7 +39,6 @@ public:
 
     void unloadComponent () override final;
 
-    XPCF_DECLARE_UUID("edcedc0a-9841-4377-aea1-9fa9fdb46fde");
 
  private:
 
