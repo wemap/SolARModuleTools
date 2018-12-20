@@ -30,11 +30,6 @@ SolAR2DTransform::SolAR2DTransform():ComponentBase(xpcf::toUUID<SolAR2DTransform
    addInterface<api::geom::I2DTransform>(this);
 }
 
-
-SolAR2DTransform::~SolAR2DTransform(){
-
-}
-
 FrameworkReturnCode SolAR2DTransform::transform(const std::vector<SRef<Point2Df>> & inputPoints, const Transform2Df transformation, std::vector<SRef<Point2Df>> & outputPoints)
 {
     Point2Df outputPoint2D;

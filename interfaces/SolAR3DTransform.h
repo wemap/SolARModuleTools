@@ -33,7 +33,7 @@ class SOLAR_TOOLS_EXPORT_API SolAR3DTransform : public org::bcom::xpcf::Componen
 public:
 
     SolAR3DTransform();
-   ~SolAR3DTransform();
+   ~SolAR3DTransform() = default;
 
     /// @brief This method applies a transformation (4x4 float matrix) to a set of 3D points
     /// @param[in] inputPoints the set of 3D points to transform

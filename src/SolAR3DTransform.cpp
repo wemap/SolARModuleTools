@@ -30,11 +30,6 @@ SolAR3DTransform::SolAR3DTransform():ComponentBase(xpcf::toUUID<SolAR3DTransform
     addInterface<api::geom::I3DTransform>(this);
 }
 
-
-SolAR3DTransform::~SolAR3DTransform(){
-
-}
-
 FrameworkReturnCode SolAR3DTransform::transform(const std::vector<SRef<Point3Df>> & inputPoints, const Transform3Df transformation, std::vector<SRef<Point3Df>> & outputPoints) const
 {
     Point3Df outputPoint3D;

@@ -33,7 +33,7 @@ class SOLAR_TOOLS_EXPORT_API SolAR2DTransform : public org::bcom::xpcf::Componen
 public:
 
     SolAR2DTransform();
-   ~SolAR2DTransform();
+   ~SolAR2DTransform() = default;
 
     FrameworkReturnCode transform(const std::vector<SRef<Point2Df>> & inputPoints, const Transform2Df transformation, std::vector<SRef<Point2Df>> & outputPoints);
 
