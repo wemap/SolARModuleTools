@@ -87,11 +87,6 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBasicMatchesFilter,
                              "SolARBasicMatchesFilter",
                              "SolAR::MODULES::TOOLS::SolARBasicMatchesFilter component")
 
-XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::ThirdPartyConnector,
-                             "bb292de7-8f87-4a23-8b23-c4d9e8a64f8d",
-                             "ThirdPartyConnector",
-                             "SolAR::MODULES::TOOLS::ThirdPartyConnector component")
-
 #endif // SOLARMODULETOOLS_TRAITS_H
 
 
