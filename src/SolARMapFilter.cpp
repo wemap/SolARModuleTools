@@ -16,6 +16,7 @@
 
 #include "SolARMapFilter.h"
 #include "datastructure/Keyframe.h"
+#include "core/Log.h"
 
 namespace xpcf  = org::bcom::xpcf;
 

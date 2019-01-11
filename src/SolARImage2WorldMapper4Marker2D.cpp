@@ -16,6 +16,8 @@
 
 #include "SolARImage2WorldMapper4Marker2D.h"
 #include "xpcf/component/ComponentFactory.h"
+#include "core/Log.h"
+
 namespace xpcf  = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARImage2WorldMapper4Marker2D);
