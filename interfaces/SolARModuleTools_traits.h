@@ -32,6 +32,7 @@ class SolAR3DTransform;
 class SolARBasicMatchesFilter;
 class SolARMapFilter;
 class SolARMapper;
+class SolARBasicSink;
 class ThirdPartyConnector;
 }
 }
@@ -86,6 +87,11 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBasicMatchesFilter,
                              "cbb620c3-a7fc-42d7-bcbf-f59b475b23b0",
                              "SolARBasicMatchesFilter",
                              "SolAR::MODULES::TOOLS::SolARBasicMatchesFilter component")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBasicSink,
+                             "85db2f25-4f1c-4e06-9011-e020284bfc4f",
+                             "SolARBasicSink",
+                             "SolAR::MODULES::TOOLS::SolARBasicSink component")
 
 #endif // SOLARMODULETOOLS_TRAITS_H
 

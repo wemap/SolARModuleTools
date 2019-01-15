@@ -23,6 +23,7 @@
 #include "SolARBasicMatchesFilter.h"
 #include "SolARMapFilter.h"
 #include "SolARMapper.h"
+#include "SolARBasicSink.h"
 
 #include <iostream>
 
@@ -70,6 +71,10 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARMapFilter>(componentUUID,interfaceRef);
     }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARBasicSink>(componentUUID,interfaceRef);
+    }
       return errCode;
 }
 
@@ -85,5 +90,6 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR2DTransform)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransform)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapper)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapFilter)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSink)
 XPCF_END_COMPONENTS_DECLARATION
 
