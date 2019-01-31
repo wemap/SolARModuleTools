@@ -49,7 +49,8 @@ interfaces/SolARToolsAPI.h \
 interfaces/SolARModuleTools_traits.h \
 interfaces/SolARBasicMatchesFilter.h \
 interfaces/SolARKeyframeSelector.h \
-    interfaces/SolARBasicSink.h
+interfaces/SolARBasicSink.h \
+    interfaces/SolARBasicSource.h
 
 
 
@@ -64,7 +65,8 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARMapFilter.cpp \
     src/SolARModuleTools.cpp \
     src/SolARKeyframeSelector.cpp \
-    src/SolARBasicSink.cpp
+    src/SolARBasicSink.cpp \
+    src/SolARBasicSource.cpp
 
 unix {
 }
