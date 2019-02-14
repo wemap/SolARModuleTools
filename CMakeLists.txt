@@ -13,9 +13,10 @@ set (SOURCES
 		src/SolARBasicMatchesFilter.cpp
 		src/SolARMapper.cpp
 		src/SolARMapFilter.cpp
-		src/ThirdPartyConnector.cpp
 		src/SolARModuleTools.cpp
 		src/SolARKeyframeSelector.cpp
+		src/SolARBasicSink.cpp
+		src/SolARBasicSource.cpp
 )
 
 set (HEADERS
@@ -27,12 +28,13 @@ set (HEADERS
 		interfaces/SolARKeypointsReIndexer.h
 		interfaces/SolARMapper.h
 		interfaces/SolARMapFilter.h
-		interfaces/ThirdPartyConnector.h
 		interfaces/SolARModuleManagerTools.h
 		interfaces/SolARToolsAPI.h
 		interfaces/SolARModuleTools_traits.h
 		interfaces/SolARBasicMatchesFilter.h
 		interfaces/SolARKeyframeSelector.h
+		interfaces/SolARBasicSink.h
+		interfaces/SolARBasicSource.h
 )
 
 install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/xpcf_SolARModuleTools_registry.xml" DESTINATION $ENV{BCOMDEVROOT}/.xpcf/SolAR/	)
