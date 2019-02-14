@@ -88,14 +88,14 @@ namespace TOOLS {
         }
         else
         {
-            // update the existing 3D points already in the map visible by the current keyframe and reciprocally
-            for (int i = 0; i < newPointsMatches.size(); i++)
+            for (int i = 0; i < existingPointsMatches.size(); i++)
             {
-                std::map<unsigned int, SRef<CloudPoint>>::iterator refKFVisIt = refKeyframeVisibility.find(newPointsMatches[i].getIndexInDescriptorA());
+                // update the existing 3D points already in the map visible by the current keyframe and reciprocally
+                std::map<unsigned int, SRef<CloudPoint>>::iterator refKFVisIt = refKeyframeVisibility.find(existingPointsMatches[i].getIndexInDescriptorA());
                 if ( refKFVisIt != refKeyframeVisibility.end() )
                 {
-                    keyframeVisibility[newPointsMatches[i].getIndexInDescriptorB()] = refKFVisIt->second;
-                    refKFVisIt->second->visibilityAddKeypoint(newKeyframe->m_idx, newPointsMatches[i].getIndexInDescriptorB());
+                    keyframeVisibility[existingPointsMatches[i].getIndexInDescriptorB()] = refKFVisIt->second;
+                    refKFVisIt->second->visibilityAddKeypoint(newKeyframe->m_idx, existingPointsMatches[i].getIndexInDescriptorB());
                 }
             }
         }
