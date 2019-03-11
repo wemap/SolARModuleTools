@@ -23,7 +23,8 @@
 #include "SolARBasicMatchesFilter.h"
 #include "SolARMapFilter.h"
 #include "SolARMapper.h"
-#include "ThirdPartyConnector.h"
+#include "SolARBasicSink.h"
+#include "SolARBasicSource.h"
 
 #include <iostream>
 
@@ -65,15 +66,19 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::ThirdPartyConnector>(componentUUID,interfaceRef);
-    }
-    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
-    {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARMapper>(componentUUID,interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARMapFilter>(componentUUID,interfaceRef);
+    }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARBasicSink>(componentUUID,interfaceRef);
+    }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARBasicSource>(componentUUID,interfaceRef);
     }
       return errCode;
 }
@@ -90,6 +95,7 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR2DTransform)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransform)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapper)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapFilter)
-XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::ThirdPartyConnector)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSink)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSource)
 XPCF_END_COMPONENTS_DECLARATION
 

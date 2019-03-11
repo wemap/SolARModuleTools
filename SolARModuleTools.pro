@@ -6,7 +6,7 @@ CONFIG -= qt
 TARGET = SolARModuleTools
 INSTALLSUBDIR = bcomBuild
 FRAMEWORK = $$TARGET
-VERSION=0.5.0
+VERSION=0.5.1
 
 DEFINES += MYVERSION=$${VERSION}
 DEFINES += TEMPLATE_LIBRARY
@@ -44,12 +44,14 @@ interfaces/SolARSBPatternReIndexer.h \
 interfaces/SolARKeypointsReIndexer.h \
 interfaces/SolARMapper.h \
 interfaces/SolARMapFilter.h \
-interfaces/ThirdPartyConnector.h \
 interfaces/SolARModuleManagerTools.h \
 interfaces/SolARToolsAPI.h \
 interfaces/SolARModuleTools_traits.h \
 interfaces/SolARBasicMatchesFilter.h \
-interfaces/SolARKeyframeSelector.h
+interfaces/SolARKeyframeSelector.h \
+interfaces/SolARBasicSink.h \
+    interfaces/SolARBasicSource.h
+
 
 
 SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
@@ -61,9 +63,10 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARBasicMatchesFilter.cpp \
     src/SolARMapper.cpp \
     src/SolARMapFilter.cpp \
-    src/ThirdPartyConnector.cpp \
     src/SolARModuleTools.cpp \
-    src/SolARKeyframeSelector.cpp
+    src/SolARKeyframeSelector.cpp \
+    src/SolARBasicSink.cpp \
+    src/SolARBasicSource.cpp
 
 unix {
 }

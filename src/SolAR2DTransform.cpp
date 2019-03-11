@@ -16,6 +16,7 @@
 
 #include "SolAR2DTransform.h"
 #include "xpcf/component/ComponentFactory.h"
+
 namespace xpcf  = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAR2DTransform);
