@@ -36,6 +36,7 @@ class SolARBasicSink;
 class SolARBasicSource;
 class SolARKeyframesStorageSet;
 class SolARPointCloudStorageSet;
+class SolARVisibilityStorageBiMap;
 }
 }
 }
@@ -109,6 +110,11 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARPointCloudStorageSet,
                              "958165e9-c4ea-4146-be50-b527a9a851f0",
                              "SolARPointCloudStorageSet",
                              "A component to store a persistent set of 3D points")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARVisibilityStorageBiMap,
+                             "17c7087f-3394-4b4b-8e6d-3f8639bb00ea",
+                             "SolARVisibilityStorageBiMap",
+                             "A component to store the visibility between keypoints and 3D points")
 
 #endif // SOLARMODULETOOLS_TRAITS_H
 

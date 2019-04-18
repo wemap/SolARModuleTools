@@ -15,6 +15,7 @@ set (SOURCES
 		src/SolARMapFilter.cpp
 		src/SolARKeyframesStorageSet.cpp
 		src/SolARPointCloudStorageSet.cpp
+		src/SolARVisibilityStorageBiMap.cpp
 		src/SolARModuleTools.cpp
 		src/SolARKeyframeSelector.cpp
 		src/SolARBasicSink.cpp
@@ -32,6 +33,7 @@ set (HEADERS
 		interfaces/SolARMapFilter.h
 		interfaces/SolARKeyframesStorageSet.h
 		interfaces/SolARPointCloudStorageSet.h
+		interfaces/SolARVisibilityStorageBiMap.h 
 		interfaces/SolARModuleManagerTools.h
 		interfaces/SolARToolsAPI.h
 		interfaces/SolARModuleTools_traits.h

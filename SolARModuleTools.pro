@@ -44,7 +44,6 @@ interfaces/SolARSBPatternReIndexer.h \
 interfaces/SolARKeypointsReIndexer.h \
 interfaces/SolARMapper.h \
 interfaces/SolARMapFilter.h \
-interfaces/SolARPointCloudStorageSet.h \
 interfaces/SolARModuleManagerTools.h \
 interfaces/SolARToolsAPI.h \
 interfaces/SolARModuleTools_traits.h \
@@ -52,7 +51,9 @@ interfaces/SolARBasicMatchesFilter.h \
 interfaces/SolARKeyframeSelector.h \
 interfaces/SolARBasicSink.h \
 interfaces/SolARBasicSource.h \
-    interfaces/SolARKeyframesStorageSet.h
+interfaces/SolARPointCloudStorageSet.h \
+interfaces/SolARKeyframesStorageSet.h \
+interfaces/SolARVisibilityStorageBiMap.h 
 
 
 
@@ -65,12 +66,13 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARBasicMatchesFilter.cpp \
     src/SolARMapper.cpp \
     src/SolARMapFilter.cpp \
-	src/SolARPointCloudStorageSet.cpp \
     src/SolARModuleTools.cpp \
     src/SolARKeyframeSelector.cpp \
     src/SolARBasicSink.cpp \
     src/SolARBasicSource.cpp \
-    src/SolARKeyframesStorageSet.cpp
+    src/SolARKeyframesStorageSet.cpp \
+	src/SolARPointCloudStorageSet.cpp \
+	src/SolARVisibilityStorageBiMap.cpp
 
 unix {
 }

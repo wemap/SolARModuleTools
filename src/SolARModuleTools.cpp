@@ -27,6 +27,7 @@
 #include "SolARBasicSource.h"
 #include "SolARKeyframesStorageSet.h"
 #include "SolARPointCloudStorageSet.h"
+#include "SolARVisibilityStorageBiMap.h"
 
 #include <iostream>
 
@@ -90,6 +91,10 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARPointCloudStorageSet>(componentUUID,interfaceRef);
     }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARVisibilityStorageBiMap>(componentUUID,interfaceRef);
+    }
       return errCode;
 }
 
@@ -109,5 +114,6 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSink)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSource)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframesStorageSet)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARPointCloudStorageSet)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARVisibilityStorageBiMap)
 XPCF_END_COMPONENTS_DECLARATION
 

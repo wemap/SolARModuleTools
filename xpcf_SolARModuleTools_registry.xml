@@ -53,6 +53,10 @@
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
                 <interface uuid="264d4406-b726-4ce9-a430-35d8b5e70331" name="IPointCloudStorage" description="A component interface for storing a set of persistent 3D points accesisble by processing components."/>
         </component>
+		<component uuid="17c7087f-3394-4b4b-8e6d-3f8639bb00ea" name="SolARVisibilityStorageBiMap" description="A component to store the visibility between keypoints and 3D points">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+                <interface uuid="2c147595-6c74-4f69-b63d-91e162c311ed" name="IVisibilityStorage" description="A component interface for storing a persistent visibility between keypoints and 3D points (and resp.)."/>
+        </component>
     </module>
 </xpcf-registry>
 

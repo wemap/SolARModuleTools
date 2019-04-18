@@ -27,7 +27,10 @@ namespace SolAR {
 using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
-
+/**
+ * @class SolARKeyframesStorageSet
+ * @brief A storage component to store a persistent set of keyframes, based on a std::set.
+ */
 class SOLAR_TOOLS_EXPORT_API SolARKeyframesStorageSet : public org::bcom::xpcf::ComponentBase,
         public api::storage::IKeyframesStorage {
 public:
