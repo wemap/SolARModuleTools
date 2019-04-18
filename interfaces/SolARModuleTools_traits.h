@@ -34,7 +34,8 @@ class SolARMapFilter;
 class SolARMapper;
 class SolARBasicSink;
 class SolARBasicSource;
-class ThirdPartyConnector;
+class SolARKeyframesStorageSet;
+class SolARPointCloudStorageSet;
 }
 }
 }
@@ -98,6 +99,16 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBasicSource,
                              "1e43cda9-7850-4a8a-a32b-f3f31ea94902",
                              "SolARBasicSource",
                              "SolAR::MODULES::TOOLS::SolARBasicSource component")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARKeyframesStorageSet,
+                             "f94b4b51-b8f2-433d-b535-ebf1f54b4bf6",
+                             "SolARKeyframesStorageSet",
+                             "A component to store persistent keyframes")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARPointCloudStorageSet,
+                             "958165e9-c4ea-4146-be50-b527a9a851f0",
+                             "SolARPointCloudStorageSet",
+                             "A component to store a persistent set of 3D points")
 
 #endif // SOLARMODULETOOLS_TRAITS_H
 

@@ -13,6 +13,8 @@ set (SOURCES
 		src/SolARBasicMatchesFilter.cpp
 		src/SolARMapper.cpp
 		src/SolARMapFilter.cpp
+		src/SolARKeyframesStorageSet.cpp
+		src/SolARPointCloudStorageSet.cpp
 		src/SolARModuleTools.cpp
 		src/SolARKeyframeSelector.cpp
 		src/SolARBasicSink.cpp
@@ -28,6 +30,8 @@ set (HEADERS
 		interfaces/SolARKeypointsReIndexer.h
 		interfaces/SolARMapper.h
 		interfaces/SolARMapFilter.h
+		interfaces/SolARKeyframesStorageSet.h
+		interfaces/SolARPointCloudStorageSet.h
 		interfaces/SolARModuleManagerTools.h
 		interfaces/SolARToolsAPI.h
 		interfaces/SolARModuleTools_traits.h

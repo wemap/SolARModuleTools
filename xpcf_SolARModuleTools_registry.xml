@@ -45,6 +45,14 @@
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
                 <interface uuid="c0d9fee4-d7d7-4866-a6cd-3bacac23316a" name="IThirdPartyConnector" description="IThirdPartyConnector"/>
         </component>
+		<component uuid="f94b4b51-b8f2-433d-b535-ebf1f54b4bf6" name="SolARKeyframesStorageSet" description="A component to store persistent keyframes">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+                <interface uuid="2c147595-6c74-4f69-b63d-91e162c311ed" name="IKeyframesStorage" description="A component interface for storing a set of persistent keyframes accesisble by processing components."/>
+        </component>
+		<component uuid="958165e9-c4ea-4146-be50-b527a9a851f0" name="SolARPointCloudStorageSet" description="A component to store a persistent set of 3D points">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+                <interface uuid="264d4406-b726-4ce9-a430-35d8b5e70331" name="IPointCloudStorage" description="A component interface for storing a set of persistent 3D points accesisble by processing components."/>
+        </component>
     </module>
 </xpcf-registry>
 
