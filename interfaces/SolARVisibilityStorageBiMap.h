@@ -22,6 +22,8 @@
 #include "SolARToolsAPI.h"
 
 #include <boost/bimap.hpp>
+#include <boost/bimap/set_of.hpp>
+#include <boost/bimap/multiset_of.hpp>
 
 namespace SolAR {
 using namespace datastructure;
@@ -75,38 +77,47 @@ public:
     /// @brief This method allow to suppress all visibilities related to a set of keypoints
     /// @param[in] keypoints the set of keypoints for which we want to suppress all the related visibilities
     /// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-     FrameworkReturnCode SuppressKeypoints(const std::vector<SRef<Keypoint>>& keypoints) override;
+    FrameworkReturnCode SuppressKeypoints(const std::vector<SRef<Keypoint>>& keypoints) override;
 
     /// @brief This method allows to get all the 3D points visible from a frame
     /// @param[in] frame the frame for which you want to get the visible 3D points
+    /// @param[out] matching_keypoints the keypoints for which a 3D point is visible
     /// @param[out] visiblePoints the set of 3D points visible from the frame
     /// @return FrameworkReturnCode::_SUCCESS_ if the access to visible 3D points succeed, else FrameworkReturnCode::_ERROR.
-     FrameworkReturnCode GetVisible3DPoints(const SRef<Frame> frame, std::vector<SRef<Point3Df>>& visiblePoints) override;
+    FrameworkReturnCode GetVisible3DPoints(const SRef<Frame> frame, std::vector<SRef<Keypoint>> matching_keypoints, std::vector<SRef<Point3Df>>& visiblePoints) override;
 
     /// @brief This method allows to get all the 3D points visible from a keypoint
     /// @param[in] frame the frame to which the keypoint belongs
-    /// @param[in] keypoint the keypoint for wich we want to obtain the visible 3D point
+    /// @param[in] keypoints a set of keypoints in the frame for which we want to obtain the visible 3D points
+    /// @param[out] matching_keypoints the keypoints for which a 3D point is visible
+    /// @param[out] visiblePoints the 3D points visible from the keypoints
+    /// @return FrameworkReturnCode::_SUCCESS_ if the access to visible 3D points succeed, else FrameworkReturnCode::_ERROR.
+    FrameworkReturnCode GetVisible3DPoints(const SRef<Frame> frame, const std::vector<SRef<Keypoint>> keypoints, std::vector<SRef<Keypoint>> matching_keypoints, std::vector<SRef<Point3Df>>& visiblePoint, std::vector<unsigned int>& mapping) override;
+
+    /// @brief This method allows to get all the 3D points visible from a keypoint
+    /// @param[in] frame the frame to which the keypoint belongs
+    /// @param[in] keypoint the keypoint for which we want to obtain the visible 3D point
     /// @param[out] visiblePoint the 3D points visible from the keypoint
     /// @return FrameworkReturnCode::_SUCCESS_ if the access to visible 3D points succeed, else FrameworkReturnCode::_ERROR.
-     FrameworkReturnCode GetVisible3DPoint(const SRef<Frame> frame, const SRef<Keypoint> keypoint, SRef<Point3Df> visiblePoint) override;
+    FrameworkReturnCode GetVisible3DPoint(const SRef<Frame> frame, const SRef<Keypoint> keypoint, SRef<Point3Df> visiblePoint) override;
 
     /// @brief This method allows to get all the keypoints and corresponding keyframes seeing a given 3D point
     /// @param[in] frame the frame for which you want to get the visible 3D points
     /// @param[out] visiblePoints the set of 3D points visible from the frame
     /// @return FrameworkReturnCode::_SUCCESS_ if the access to visible 3D points succeed, else FrameworkReturnCode::_ERROR.
-     FrameworkReturnCode GetVisible3DPoints(const SRef<Point3Df> point, std::vector<SRef<Frame>>& frames, std::vector<SRef<Keypoint>>& keypoints) override;
+    FrameworkReturnCode GetVisibleKeypoints(const SRef<Point3Df> point, std::vector<SRef<Frame>>& frames, std::vector<SRef<Keypoint>>& keypoints) override;
 
     /// @brief This method allows to get all the keypoints and corresponding keyframes seeing a given 3D point
     /// @param[in] frame the frame for which you want to get the visible 3D points
     /// @param[out] visiblePoints the set of 3D points visible from the frame
     /// @return FrameworkReturnCode::_SUCCESS_ if the access to visible 3D points succeed, else FrameworkReturnCode::_ERROR.
-     FrameworkReturnCode GetVisible3DPoints(const std::vector<SRef<Point3Df>>& points, std::vector<SRef<Frame>>& frames, std::vector<SRef<Keypoint>>& keypoints) override;
+    FrameworkReturnCode GetVisibleKeypoints(const std::vector<SRef<Point3Df>>& points, std::vector<std::vector<SRef<Frame>>>& frames, std::vector<std::vector<SRef<Keypoint>>>& keypoints) override;
 
     void unloadComponent () override final;
 
 
  private:
-    boost::bimap<SRef<Keypoint>, SRef<Point3Df>> m_visibility; // Todo, include keyframes
+    boost::bimap<boost::bimaps::multiset_of<SRef<Point3Df>>, boost::bimaps::set_of<unsigned long long>> m_visibility;
 
 };
 

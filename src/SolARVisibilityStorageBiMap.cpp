@@ -67,7 +67,12 @@ FrameworkReturnCode SolARVisibilityStorageBiMap::SuppressKeypoints(const std::ve
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARVisibilityStorageBiMap::GetVisible3DPoints(const SRef<Frame> frame, std::vector<SRef<Point3Df>>& visiblePoints)
+FrameworkReturnCode SolARVisibilityStorageBiMap::GetVisible3DPoints(const SRef<Frame> frame, std::vector<SRef<Keypoint>> matching_keypoints, std::vector<SRef<Point3Df>>& visiblePoints)
+{
+    return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolARVisibilityStorageBiMap::GetVisible3DPoints(const SRef<Frame> frame, const std::vector<SRef<Keypoint>> keypoints, std::vector<SRef<Keypoint>> matching_keypoints, std::vector<SRef<Point3Df>>& visiblePoint, std::vector<unsigned int>& mapping)
 {
     return FrameworkReturnCode::_SUCCESS;
 }
@@ -77,12 +82,12 @@ FrameworkReturnCode SolARVisibilityStorageBiMap::GetVisible3DPoint(const SRef<Fr
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARVisibilityStorageBiMap::GetVisible3DPoints(const SRef<Point3Df> point, std::vector<SRef<Frame>>& frames, std::vector<SRef<Keypoint>>& keypoints)
+FrameworkReturnCode SolARVisibilityStorageBiMap::GetVisibleKeypoints(const SRef<Point3Df> point, std::vector<SRef<Frame>>& frames, std::vector<SRef<Keypoint>>& keypoints)
 {
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARVisibilityStorageBiMap::GetVisible3DPoints(const std::vector<SRef<Point3Df>>& points, std::vector<SRef<Frame>>& frames, std::vector<SRef<Keypoint>>& keypoints)
+FrameworkReturnCode SolARVisibilityStorageBiMap::GetVisibleKeypoints(const std::vector<SRef<Point3Df>>& points, std::vector<std::vector<SRef<Frame>>>& frames, std::vector<std::vector<SRef<Keypoint>>>& keypoints)
 {
     return FrameworkReturnCode::_SUCCESS;
 }
