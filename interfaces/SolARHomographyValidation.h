@@ -28,7 +28,8 @@ namespace TOOLS {
 
 /**
  * @class SolARHomographyValidation
- * @brief Check if an homography is valid based on 4 corners of a squared marker and their projection through a given homography
+ * @brief <B>Checks if an homography is valid based on 4 corners of a squared marker and their projection through a given homography.</B>
+ * <TT>UUID: 112f9f03-79c1-4393-b8f3-e02227bebfed</TT>
  *
  */
 
@@ -38,7 +39,12 @@ public:
     SolARHomographyValidation();
     ~SolARHomographyValidation() = default;
 
+    /// @brief Checks if an homography is valid based on 4 corners of a squared marker and their projection through a given homography.
+    /// @param[in] ref2DSquaredMarkerCorners The 4 corners of a marker in pixels.
+    /// @param[in] projected2DSquaredMarkerCorners The 4 corners of a marker in the current image captured by a camera in pixels.
+    /// @return true if the homography is valid, otherwise false
     bool isValid(const std::vector<SRef<Point2Df>>& ref2DSquaredMarkerCorners, const std::vector<SRef<Point2Df>>& projected2DSquaredMarkerCorners) override;
+
     void unloadComponent () override final;
 
 private:

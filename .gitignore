@@ -54,4 +54,6 @@
 .vs*
 x64*
 
-tests/SolARHomographyEstimation/xpcf_custom\.xml
+# documentation
+doc/
+doxygen/
