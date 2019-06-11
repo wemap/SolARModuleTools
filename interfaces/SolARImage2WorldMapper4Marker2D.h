@@ -28,6 +28,13 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
+/**
+ * @class SolARImage2WorldMapper4Marker2D
+ * @brief <B>Retrieves the 3D correspondences of pixels of a 2D marker.</B>
+ * <TT>UUID: 6fed0169-4f01-4545-842a-3e2425bee248</TT>
+ *
+ */
+
 class SOLAR_TOOLS_EXPORT_API SolARImage2WorldMapper4Marker2D : public org::bcom::xpcf::ConfigurableBase,
         public api::geom::IImage2WorldMapper {
 public:
@@ -35,6 +42,10 @@ public:
     SolARImage2WorldMapper4Marker2D();
    ~SolARImage2WorldMapper4Marker2D();
 
+    /// @brief Retrieves the 3D correspondences of pixel of a 2D marker.
+    /// @param[in] digitalPoints The 2D points defined in pixels in the 2D coordinate system of the marker .
+    /// @param[in] worldPoints The 3D correspondences of the 2D points defined in the  world coordinate system.
+    /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
     FrameworkReturnCode map(const std::vector<SRef<Point2Df>> & digitalPoints, std::vector<SRef<Point3Df>> & worldPoints);
 
     void unloadComponent () override final;

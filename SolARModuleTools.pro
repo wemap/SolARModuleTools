@@ -44,7 +44,6 @@ interfaces/SolARSBPatternReIndexer.h \
 interfaces/SolARKeypointsReIndexer.h \
 interfaces/SolARMapper.h \
 interfaces/SolARMapFilter.h \
-interfaces/SolARModuleManagerTools.h \
 interfaces/SolARToolsAPI.h \
 interfaces/SolARModuleTools_traits.h \
 interfaces/SolARBasicMatchesFilter.h \
