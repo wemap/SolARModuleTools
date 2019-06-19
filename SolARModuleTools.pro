@@ -4,14 +4,12 @@ CONFIG -= qt
 
 ## global defintions : target lib name, version
 TARGET = SolARModuleTools
-INSTALLSUBDIR = bcomBuild
 FRAMEWORK = $$TARGET
 VERSION=0.5.2
 
 DEFINES += MYVERSION=$${VERSION}
 DEFINES += TEMPLATE_LIBRARY
-CONFIG += Cpp11
-CONFIG += c++11
+CONFIG += c++1z
 
 
 CONFIG(debug,debug|release) {
@@ -24,10 +22,9 @@ CONFIG(release,debug|release) {
     DEFINES += NDEBUG=1
 }
 
-PROJECTDEPLOYDIR = $$(BCOMDEVROOT)/$${INSTALLSUBDIR}/$${FRAMEWORK}/$${VERSION}
-DEPENDENCIESCONFIG = shared
+DEPENDENCIESCONFIG = shared recurse
 
-include ($$(BCOMDEVROOT)/builddefs/qmake/templatelibconfig.pri)
+include (../builddefs/qmake/templatelibconfig.pri)
 
 ## DEFINES FOR MSVC/INTEL C++ compilers
 msvc {
