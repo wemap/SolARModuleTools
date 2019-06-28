@@ -40,36 +40,33 @@ SolARBasicSink::SolARBasicSink():ConfigurableBase(xpcf::toUUID<ISinkPoseImage>()
 
 void SolARBasicSink::set( const SRef<Image>& image )
 {
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_image = image->copy();
     m_newImage = true;
     m_newPose = false;
-    m_mutex.unlock();
 }
 
 
 FrameworkReturnCode SolARBasicSink::setImageBuffer( unsigned char* imageBufferPointer){
-   m_mutex.lock();
+   std::lock_guard<std::mutex> lock(m_mutex);
    m_imageBufferPointer=imageBufferPointer;
-   m_mutex.unlock();
    return FrameworkReturnCode::_SUCCESS;
 }
 
 void SolARBasicSink::set(const Transform3Df& pose, const SRef<Image>& image )
 {
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_pose = Transform3Df(pose);
     m_image = image->copy();
     m_newPose = true;
     m_newImage = true;
-    m_mutex.unlock();
 }
 
 
 SinkReturnCode SolARBasicSink::get( Transform3Df& pose)
 {
     SinkReturnCode returnCode = SinkReturnCode::_NOTHING;
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lock(m_mutex);
     if (m_newPose)
     {
         pose = Transform3Df(m_pose);
@@ -85,9 +82,6 @@ SinkReturnCode SolARBasicSink::get( Transform3Df& pose)
 
         returnCode |= SinkReturnCode::_NEW_IMAGE;
     }
-
-    m_mutex.unlock();
-
     return returnCode;
 }
 
