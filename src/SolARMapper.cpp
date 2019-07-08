@@ -29,7 +29,7 @@ namespace TOOLS {
 
     SolARMapper::SolARMapper():ComponentBase(xpcf::toUUID<SolARMapper>())
     {
-        addInterface<IMapper>(this);
+        declareInterface<IMapper>(this);
         m_map = xpcf::utils::make_shared<Map>() ;
     }
 

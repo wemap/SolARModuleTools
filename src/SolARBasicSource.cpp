@@ -30,7 +30,7 @@ namespace TOOLS {
 
 SolARBasicSource::SolARBasicSource():ConfigurableBase(xpcf::toUUID<ISourceImage>())
 {
-   addInterface<api::source::ISourceImage>(this);
+   declareInterface<api::source::ISourceImage>(this);
    m_image = nullptr;
    m_newImage = false;
 }

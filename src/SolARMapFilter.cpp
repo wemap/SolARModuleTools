@@ -29,7 +29,7 @@ namespace TOOLS {
 
 SolARMapFilter::SolARMapFilter():ConfigurableBase(xpcf::toUUID<SolARMapFilter>())
 {
-    addInterface<IMapFilter>(this);
+    declareInterface<IMapFilter>(this);
     SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
     params->wrapFloat("reprojErrorThreshold", m_reprojErrorThreshold);
     params->wrapInteger("cheiralityCheck", m_cheiralityCheck);

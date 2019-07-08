@@ -28,7 +28,7 @@ namespace TOOLS {
 
     SolARHomographyValidation::SolARHomographyValidation():ConfigurableBase(xpcf::toUUID<SolARHomographyValidation>())
     {
-        addInterface<api::solver::pose::IHomographyValidation>(this);
+        declareInterface<api::solver::pose::IHomographyValidation>(this);
         SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
         params->wrapFloat("oppositeSideRatio",m_oppositeSideRatio);
         params->wrapFloat("surfaceRatio",m_surfaceRatio);

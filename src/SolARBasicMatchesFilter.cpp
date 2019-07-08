@@ -29,7 +29,7 @@ namespace TOOLS {
 
 SolARBasicMatchesFilter::SolARBasicMatchesFilter():ComponentBase(xpcf::toUUID<SolARBasicMatchesFilter>())
 {
-    addInterface<api::features::IMatchesFilter>(this);
+    declareInterface<api::features::IMatchesFilter>(this);
 }
 
 

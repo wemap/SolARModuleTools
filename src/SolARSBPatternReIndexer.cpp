@@ -29,7 +29,7 @@ namespace TOOLS {
 
     SolARSBPatternReIndexer::SolARSBPatternReIndexer():ConfigurableBase(xpcf::toUUID<SolARSBPatternReIndexer>())
     {
-        addInterface<api::features::ISBPatternReIndexer>(this);
+        declareInterface<api::features::ISBPatternReIndexer>(this);
         SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
         params->wrapInteger("sbPatternSize", m_sbPatternSize);
         m_sbPatternSize = 1;
