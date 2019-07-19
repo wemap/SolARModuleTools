@@ -32,7 +32,10 @@ public:
     SolARSBPatternReIndexer();
     ~SolARSBPatternReIndexer() = default;
 
-    FrameworkReturnCode reindex(const std::vector<SRef<Contour2Df>>& candidateContours, const std::vector<DescriptorMatch> & matches, std::vector<SRef<Point2Df>>& patternPoints, std::vector<SRef<Point2Df>>& imagePoints) override;
+    FrameworkReturnCode reindex(const std::vector<Contour2Df> & candidateContours,
+                                const std::vector<DescriptorMatch> & matches,
+                                std::vector<Point2Df> & patternPoints,
+                                std::vector<Point2Df> & imagePoints) override;
 
     void unloadComponent () override final;
 

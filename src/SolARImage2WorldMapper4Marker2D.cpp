@@ -42,7 +42,7 @@ SolARImage2WorldMapper4Marker2D::~SolARImage2WorldMapper4Marker2D(){
 
 }
 
-FrameworkReturnCode SolARImage2WorldMapper4Marker2D::map (const std::vector<SRef<Point2Df>> & digitalPoints, std::vector<SRef<Point3Df>> & worldPoints)
+FrameworkReturnCode SolARImage2WorldMapper4Marker2D::map(const std::vector<Point2Df> & digitalPoints, std::vector<Point3Df> & worldPoints)
 {
     worldPoints.clear();
     Point3Df point_3D;
@@ -59,11 +59,11 @@ FrameworkReturnCode SolARImage2WorldMapper4Marker2D::map (const std::vector<SRef
 
     for (int i = 0; i<digitalPoints.size();++i)
     {
-        Point2Df point_2D = *(digitalPoints.at(i));
+        auto const & point_2D = digitalPoints.at(i);
         point_3D.setX((point_2D.getX()-half_img_width)*width_ratio);
         point_3D.setY((point_2D.getY()-half_img_height)*height_ratio);
         point_3D.setZ(0);
-        worldPoints.push_back(xpcf::utils::make_shared<Point3Df>(point_3D));
+        worldPoints.push_back(Point3Df(point_3D));
     }
     return FrameworkReturnCode::_SUCCESS;
 }

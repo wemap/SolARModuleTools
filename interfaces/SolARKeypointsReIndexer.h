@@ -32,7 +32,11 @@ public:
     SolARKeypointsReIndexer();
     ~SolARKeypointsReIndexer() = default;
 
-    FrameworkReturnCode reindex(const std::vector<SRef<Keypoint>>& refKeypoints, const std::vector<SRef<Keypoint>>& imgKeypoints, std::vector<DescriptorMatch>& matches, std::vector<SRef<Point2Df>>& matchedRefKeypoints, std::vector<SRef<Point2Df>>& matchedImgKeypoints) override;
+    FrameworkReturnCode reindex(const std::vector<Keypoint>& refKeypoints,
+                                const std::vector<Keypoint> & imgKeypoints,
+                                const std::vector<DescriptorMatch> & matches,
+                                std::vector<Point2Df> & matchedRefKeypoints,
+                                std::vector<Point2Df> & matchedImgKeypoints) override;
 
     void unloadComponent () override final;
 
