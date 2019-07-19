@@ -40,7 +40,7 @@ class SOLAR_TOOLS_EXPORT_API SolARBasicSource : public org::bcom::xpcf::Configur
 {
 public:
     SolARBasicSource();
-    ~SolARBasicSource() = default;
+    ~SolARBasicSource() override = default;
 
     /// @brief Set a new image coming from a third party.
     /// @param[in,out] image

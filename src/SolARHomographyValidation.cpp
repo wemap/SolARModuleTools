@@ -35,14 +35,14 @@ namespace TOOLS {
         params->wrapFloat("maxOppositeDotProduct",m_maxOppositeDotProduct);
     }
 
-    float computeSurface(std::vector<SRef<Point2Df>> points){
+    float computeSurface(std::vector<Point2Df> points){
         size_t size=points.size();
         int i,j;
-        float s=0;
-        for(i=0;i<size;++i)
+        float s = 0;
+        for(i=0 ; i<size ; ++i)
         {
-            j=(i+1)%size;
-            s+=(*points[i])[0]*(*points[j])[1]-(*points[j])[0]*(*points[i])[1];
+            j = (i+1) % size;
+            s += points[i][0] * points[j][1]-points[j][0] * points[i][1];
 
         }
         if(s<0){
@@ -52,16 +52,17 @@ namespace TOOLS {
         return sqrt(s);
     }
 
-    float computeDistance(SRef<Point2Df> a, SRef<Point2Df> b){
+    float computeDistance(const Point2Df & a, const Point2Df & b){
         float x2,y2,d=0;
-        x2=((*a)[0]-(*b)[0]);
-        x2=x2*x2;
-        y2=((*a)[1]-(*b)[1]);y2=y2*y2;
-        d=sqrt(x2+y2);
+        x2 = (a[0]-b[0]);
+        x2 = x2*x2;
+        y2 = (a[1]-b[1]);
+        y2 = y2*y2;
+        d = sqrt(x2+y2);
         return d;
     }
 
-    bool SolARHomographyValidation::isValid(const std::vector<SRef<Point2Df>>& ref2DSquaredMarkerCorners, const std::vector<SRef<Point2Df>>& projected2DSquaredMarkerCorners)
+    bool SolARHomographyValidation::isValid(const std::vector<Point2Df> & ref2DSquaredMarkerCorners, const std::vector<Point2Df>& projected2DSquaredMarkerCorners)
     {
         // check sides proportions: should be almost equal
         float d1,d2,r;
@@ -94,16 +95,16 @@ namespace TOOLS {
 
         //study the direction of each line
         Point2Df dir_0, dir_1, dir_2, dir_3;
-        dir_0 = (*projected2DSquaredMarkerCorners[1])-(*projected2DSquaredMarkerCorners[0]);
+        dir_0 = projected2DSquaredMarkerCorners[1]-projected2DSquaredMarkerCorners[0];
         dir_0.normalize();
 
-        dir_1 = (*projected2DSquaredMarkerCorners[2])-(*projected2DSquaredMarkerCorners[1]);
+        dir_1 = projected2DSquaredMarkerCorners[2]-projected2DSquaredMarkerCorners[1];
         dir_1.normalize();
 
-        dir_2 = (*projected2DSquaredMarkerCorners[3])-(*projected2DSquaredMarkerCorners[2]);
+        dir_2 = projected2DSquaredMarkerCorners[3]-projected2DSquaredMarkerCorners[2];
         dir_2.normalize();
 
-        dir_3 = (*projected2DSquaredMarkerCorners[0])-(*projected2DSquaredMarkerCorners[3]);
+        dir_3 = projected2DSquaredMarkerCorners[0]-projected2DSquaredMarkerCorners[3];
         dir_3.normalize();
 
         // test the aspect shape of the homography

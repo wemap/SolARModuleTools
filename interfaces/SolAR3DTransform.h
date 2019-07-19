@@ -33,9 +33,9 @@ class SOLAR_TOOLS_EXPORT_API SolAR3DTransform : public org::bcom::xpcf::Componen
 public:
 
     SolAR3DTransform();
-   ~SolAR3DTransform();
+   ~SolAR3DTransform() override;
 
-    FrameworkReturnCode transform(const std::vector<SRef<Point3Df>> & inputPoints, const Transform3Df transformation, std::vector<SRef<Point3Df>> & outputPoints);
+    FrameworkReturnCode transform(const std::vector<Point3Df> & inputPoints, const Transform3Df & transformation, std::vector<Point3Df> & outputPoints) override;
 
     void unloadComponent () override final;
 

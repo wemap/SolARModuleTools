@@ -43,7 +43,7 @@ class SOLAR_TOOLS_EXPORT_API SolARBasicSink : public org::bcom::xpcf::Configurab
 {
 public:
     SolARBasicSink();
-    ~SolARBasicSink() = default;
+    ~SolARBasicSink() override = default;
 
     /// @brief Set a new image and pose coming from the pipeline.
     /// @param[in] pose The new pose to be made available to a third party application.

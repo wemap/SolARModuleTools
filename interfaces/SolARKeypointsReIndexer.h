@@ -30,7 +30,7 @@ class SOLAR_TOOLS_EXPORT_API SolARKeypointsReIndexer : public org::bcom::xpcf::C
         public api::features::IKeypointsReIndexer {
 public:
     SolARKeypointsReIndexer();
-    ~SolARKeypointsReIndexer() = default;
+    ~SolARKeypointsReIndexer() override = default;
 
     FrameworkReturnCode reindex(const std::vector<Keypoint>& refKeypoints,
                                 const std::vector<Keypoint> & imgKeypoints,

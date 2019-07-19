@@ -22,11 +22,11 @@ class SOLAR_TOOLS_EXPORT_API SolARMapper : public org::bcom::xpcf::ComponentBase
 public:
     SolARMapper();
 
-    ~SolARMapper() = default;
+    ~SolARMapper() override = default;
 
     virtual FrameworkReturnCode update (SRef<Map>& map,
                                         SRef<Keyframe> newKeyframe,
-                                        const std::vector<SRef<CloudPoint>>& newCloud = {},
+                                        const std::vector<CloudPoint>& newCloud = {},
                                         const std::vector<DescriptorMatch>& newPointsMatches = {},
                                         const std::vector<DescriptorMatch>& existingPointsMatches = {}) override;
 

@@ -36,7 +36,7 @@ public:
     ///
     ///@brief ~SolARKeyframeSelector
     ///
-    virtual ~SolARKeyframeSelector() {}
+    virtual ~SolARKeyframeSelector() override {}
 
     /// @brief  Select if a frame can be considered as a keyframe
     /// @param[in] frame: the frame tested to know if it could be a Keyframe

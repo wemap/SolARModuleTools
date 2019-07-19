@@ -36,9 +36,9 @@ class SOLAR_TOOLS_EXPORT_API SolARHomographyValidation : public org::bcom::xpcf:
         public api::solver::pose::IHomographyValidation {
 public:
     SolARHomographyValidation();
-    ~SolARHomographyValidation() = default;
+    ~SolARHomographyValidation() override = default;
 
-    bool isValid(const std::vector<SRef<Point2Df>>& ref2DSquaredMarkerCorners, const std::vector<SRef<Point2Df>>& projected2DSquaredMarkerCorners) override;
+    bool isValid(const std::vector<Point2Df>& ref2DSquaredMarkerCorners, const std::vector<Point2Df> & projected2DSquaredMarkerCorners) override;
     void unloadComponent () override final;
 
 private:

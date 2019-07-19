@@ -30,7 +30,7 @@ class SOLAR_TOOLS_EXPORT_API SolARSBPatternReIndexer : public org::bcom::xpcf::C
         public api::features::ISBPatternReIndexer {
 public:
     SolARSBPatternReIndexer();
-    ~SolARSBPatternReIndexer() = default;
+    ~SolARSBPatternReIndexer() override = default;
 
     FrameworkReturnCode reindex(const std::vector<Contour2Df> & candidateContours,
                                 const std::vector<DescriptorMatch> & matches,

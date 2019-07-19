@@ -30,12 +30,12 @@ namespace TOOLS {
     SolARMapper::SolARMapper():ComponentBase(xpcf::toUUID<SolARMapper>())
     {
         declareInterface<IMapper>(this);
-        m_map = xpcf::utils::make_shared<Map>() ;
+        m_map = xpcf::utils::make_shared<Map>();
     }
 
     FrameworkReturnCode SolARMapper::update (SRef<Map>& map,
                                              SRef<Keyframe> newKeyframe,
-                                             const std::vector<SRef<CloudPoint>>& newCloud,
+                                             const std::vector<CloudPoint>& newCloud,
                                              const std::vector<DescriptorMatch>& newPointsMatches,
                                              const std::vector<DescriptorMatch>& existingPointsMatches)
     {
@@ -59,12 +59,12 @@ namespace TOOLS {
             return FrameworkReturnCode::_ERROR_;
         }
 
-        std::map<unsigned int, SRef<CloudPoint>> keyframeVisibility, newRefKeyframeVisibility, refKeyframeVisibility = referenceKeyframe->getVisibleMapPoints();
+        std::map<unsigned int, CloudPoint> keyframeVisibility, newRefKeyframeVisibility, refKeyframeVisibility = referenceKeyframe->getVisibleMapPoints();
         std::map<unsigned int, unsigned int>::iterator visIt;
 
         for (int i = 0; i < newCloud.size(); i++)
         {
-            std::map<unsigned int, unsigned int> cloudPointVisibility = newCloud[i]->getVisibility();
+            std::map<unsigned int, unsigned int> cloudPointVisibility = newCloud[i].getVisibility();
             // update the visibility of the current keyframe with the new 3D points
             visIt = cloudPointVisibility.find(newKeyframe->m_idx);
             if (visIt != cloudPointVisibility.end())
@@ -91,11 +91,11 @@ namespace TOOLS {
             for (int i = 0; i < existingPointsMatches.size(); i++)
             {
                 // update the existing 3D points already in the map visible by the current keyframe and reciprocally
-                std::map<unsigned int, SRef<CloudPoint>>::iterator refKFVisIt = refKeyframeVisibility.find(existingPointsMatches[i].getIndexInDescriptorA());
+                std::map<unsigned int, CloudPoint>::iterator refKFVisIt = refKeyframeVisibility.find(existingPointsMatches[i].getIndexInDescriptorA());
                 if ( refKFVisIt != refKeyframeVisibility.end() )
                 {
                     keyframeVisibility[existingPointsMatches[i].getIndexInDescriptorB()] = refKFVisIt->second;
-                    refKFVisIt->second->visibilityAddKeypoint(newKeyframe->m_idx, existingPointsMatches[i].getIndexInDescriptorB());
+                    refKFVisIt->second.visibilityAddKeypoint(newKeyframe->m_idx, existingPointsMatches[i].getIndexInDescriptorB());
                 }
             }
         }
