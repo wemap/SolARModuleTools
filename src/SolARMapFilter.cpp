@@ -35,7 +35,7 @@ SolARMapFilter::SolARMapFilter():ConfigurableBase(xpcf::toUUID<SolARMapFilter>()
     params->wrapInteger("cheiralityCheck", m_cheiralityCheck);
 }
 
-void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2, const std::vector<CloudPoint>& input,  std::vector<CloudPoint>& output)
+void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<CloudPoint>& input,  std::vector<CloudPoint>& output)
 {
     if (input.size() == 0)
     {

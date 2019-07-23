@@ -35,7 +35,7 @@ SolARBasicSource::SolARBasicSource():ConfigurableBase(xpcf::toUUID<ISourceImage>
    m_newImage = false;
 }
 
-SourceReturnCode SolARBasicSource::setInputTexture( void* sourceTexturehandle, int width, int height)
+SourceReturnCode SolARBasicSource::setInputTexture(const void* sourceTexturehandle,const int width,const int height)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_image = xpcf::utils::make_shared<Image>((unsigned char*)sourceTexturehandle, width, height, SolAR::Image::LAYOUT_RGB, SolAR::Image::INTERLEAVED, SolAR::Image::TYPE_8U);

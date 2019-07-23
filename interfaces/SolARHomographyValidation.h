@@ -36,9 +36,14 @@ class SOLAR_TOOLS_EXPORT_API SolARHomographyValidation : public org::bcom::xpcf:
         public api::solver::pose::IHomographyValidation {
 public:
     SolARHomographyValidation();
+
     ~SolARHomographyValidation() override = default;
 
-    bool isValid(const std::vector<Point2Df>& ref2DSquaredMarkerCorners, const std::vector<Point2Df> & projected2DSquaredMarkerCorners) override;
+    /// @brief evaluate the homography according to the projection of the 4 corners of a 2D squared Marker
+    /// @param[in] Set of 2d_points of the corners in the template view.
+    /// @param[in] Set of 2d_points of the corners projected in the current view.
+    bool isValid(const std::vector<Point2Df> & ref2DSquaredMarkerCorners, const std::vector<Point2Df> & projected2DSquaredMarkerCorners) override;
+
     void unloadComponent () override final;
 
 private:

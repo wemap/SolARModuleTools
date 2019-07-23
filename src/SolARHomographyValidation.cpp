@@ -62,7 +62,7 @@ namespace TOOLS {
         return d;
     }
 
-    bool SolARHomographyValidation::isValid(const std::vector<Point2Df> & ref2DSquaredMarkerCorners, const std::vector<Point2Df>& projected2DSquaredMarkerCorners)
+    bool SolARHomographyValidation::isValid(const std::vector<Point2Df> & ref2DSquaredMarkerCorners, const std::vector<Point2Df> & projected2DSquaredMarkerCorners)
     {
         // check sides proportions: should be almost equal
         float d1,d2,r;

@@ -33,11 +33,11 @@ namespace TOOLS {
         m_map = xpcf::utils::make_shared<Map>();
     }
 
-    FrameworkReturnCode SolARMapper::update (SRef<Map>& map,
-                                             SRef<Keyframe> newKeyframe,
-                                             const std::vector<CloudPoint>& newCloud,
-                                             const std::vector<DescriptorMatch>& newPointsMatches,
-                                             const std::vector<DescriptorMatch>& existingPointsMatches)
+    FrameworkReturnCode SolARMapper::update (SRef<Map> & map,
+                                             SRef<Keyframe> & newKeyframe,
+                                             const std::vector<CloudPoint> & newCloud,
+                                             const std::vector<DescriptorMatch> & newPointsMatches,
+                                             const std::vector<DescriptorMatch> & existingPointsMatches)
     {
         if (m_kframes.size() == 0)
         {

@@ -34,7 +34,7 @@ SolARKeyframeSelector::SolARKeyframeSelector():ConfigurableBase(xpcf::toUUID<Sol
 }
 
 
-bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::vector<DescriptorMatch>& matches)
+bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::vector<DescriptorMatch>& matches)
 {
     if (matches.size() < m_minNbMatchesIsKeyframe)
         return false;

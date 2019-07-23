@@ -47,7 +47,7 @@ void SolARBasicSink::set( const SRef<Image>& image )
 }
 
 
-FrameworkReturnCode SolARBasicSink::setImageBuffer( unsigned char* imageBufferPointer){
+FrameworkReturnCode SolARBasicSink::setImageBuffer(unsigned char* imageBufferPointer){
    std::lock_guard<std::mutex> lock(m_mutex);
    m_imageBufferPointer=imageBufferPointer;
    return FrameworkReturnCode::_SUCCESS;
