@@ -28,9 +28,8 @@ namespace TOOLS {
 SolARKeyframeSelector::SolARKeyframeSelector():ConfigurableBase(xpcf::toUUID<SolARKeyframeSelector>())
 {
    declareInterface<api::solver::map::IKeyframeSelector>(this);
-   SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
-   params->wrapInteger("minNbMatchesIsKeyframe", m_minNbMatchesIsKeyframe);
-   params->wrapFloat("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);
+   declareProperty("minNbMatchesIsKeyframe", m_minNbMatchesIsKeyframe);
+   declareProperty("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);
 }
 
 

@@ -29,10 +29,9 @@ namespace TOOLS {
     SolARHomographyValidation::SolARHomographyValidation():ConfigurableBase(xpcf::toUUID<SolARHomographyValidation>())
     {
         declareInterface<api::solver::pose::IHomographyValidation>(this);
-        SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
-        params->wrapFloat("oppositeSideRatio",m_oppositeSideRatio);
-        params->wrapFloat("surfaceRatio",m_surfaceRatio);
-        params->wrapFloat("maxOppositeDotProduct",m_maxOppositeDotProduct);
+        declareProperty("oppositeSideRatio",m_oppositeSideRatio);
+        declareProperty("surfaceRatio",m_surfaceRatio);
+        declareProperty("maxOppositeDotProduct",m_maxOppositeDotProduct);
     }
 
     float computeSurface(std::vector<Point2Df> points){

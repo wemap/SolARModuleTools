@@ -30,9 +30,8 @@ namespace TOOLS {
 SolARMapFilter::SolARMapFilter():ConfigurableBase(xpcf::toUUID<SolARMapFilter>())
 {
     declareInterface<IMapFilter>(this);
-    SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
-    params->wrapFloat("reprojErrorThreshold", m_reprojErrorThreshold);
-    params->wrapInteger("cheiralityCheck", m_cheiralityCheck);
+    declareProperty("reprojErrorThreshold", m_reprojErrorThreshold);
+    declareProperty("cheiralityCheck", m_cheiralityCheck);
 }
 
 void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<CloudPoint>& input,  std::vector<CloudPoint>& output)
