@@ -29,7 +29,7 @@ namespace TOOLS {
 
 SolARImage2WorldMapper4Marker2D::SolARImage2WorldMapper4Marker2D():ConfigurableBase(xpcf::toUUID<SolARImage2WorldMapper4Marker2D>())
 {
-    addInterface<api::geom::IImage2WorldMapper>(this);
+    declareInterface<api::geom::IImage2WorldMapper>(this);
     SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
     params->wrapInteger("digitalWidth",m_digitalWidth);
     params->wrapInteger("digitalHeight",m_digitalHeight);

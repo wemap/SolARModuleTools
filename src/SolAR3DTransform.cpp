@@ -27,7 +27,7 @@ namespace TOOLS {
 
 SolAR3DTransform::SolAR3DTransform():ComponentBase(xpcf::toUUID<SolAR3DTransform>())
 {
-    addInterface<api::geom::I3DTransform>(this);
+    declareInterface<api::geom::I3DTransform>(this);
 }
 
 
