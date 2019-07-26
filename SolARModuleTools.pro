@@ -4,14 +4,12 @@ CONFIG -= qt
 
 ## global defintions : target lib name, version
 TARGET = SolARModuleTools
-INSTALLSUBDIR = bcomBuild
 FRAMEWORK = $$TARGET
-VERSION=0.5.0
+VERSION=0.6.0
 
 DEFINES += MYVERSION=$${VERSION}
 DEFINES += TEMPLATE_LIBRARY
-CONFIG += Cpp11
-CONFIG += c++11
+CONFIG += c++1z
 
 
 CONFIG(debug,debug|release) {
@@ -24,10 +22,9 @@ CONFIG(release,debug|release) {
     DEFINES += NDEBUG=1
 }
 
-PROJECTDEPLOYDIR = $$(BCOMDEVROOT)/$${INSTALLSUBDIR}/$${FRAMEWORK}/$${VERSION}
-DEPENDENCIESCONFIG = shared
+DEPENDENCIESCONFIG = shared recurse
 
-include ($$(BCOMDEVROOT)/builddefs/qmake/templatelibconfig.pri)
+include (../builddefs/qmake/templatelibconfig.pri)
 
 ## DEFINES FOR MSVC/INTEL C++ compilers
 msvc {
@@ -44,12 +41,13 @@ interfaces/SolARSBPatternReIndexer.h \
 interfaces/SolARKeypointsReIndexer.h \
 interfaces/SolARMapper.h \
 interfaces/SolARMapFilter.h \
-interfaces/ThirdPartyConnector.h \
-interfaces/SolARModuleManagerTools.h \
 interfaces/SolARToolsAPI.h \
 interfaces/SolARModuleTools_traits.h \
 interfaces/SolARBasicMatchesFilter.h \
-interfaces/SolARKeyframeSelector.h
+interfaces/SolARKeyframeSelector.h \
+interfaces/SolARBasicSink.h \
+    interfaces/SolARBasicSource.h
+
 
 
 SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
@@ -61,9 +59,10 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARBasicMatchesFilter.cpp \
     src/SolARMapper.cpp \
     src/SolARMapFilter.cpp \
-    src/ThirdPartyConnector.cpp \
     src/SolARModuleTools.cpp \
-    src/SolARKeyframeSelector.cpp
+    src/SolARKeyframeSelector.cpp \
+    src/SolARBasicSink.cpp \
+    src/SolARBasicSource.cpp
 
 unix {
 }

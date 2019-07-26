@@ -54,4 +54,10 @@
 .vs*
 x64*
 
+# documentation
+doc/
+doxygen/
+
 tests/SolARHomographyEstimation/xpcf_custom\.xml
+build/
+SolARModuleTools.pro.user.4.9-pre1

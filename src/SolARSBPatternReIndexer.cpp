@@ -29,7 +29,7 @@ namespace TOOLS {
 
     SolARSBPatternReIndexer::SolARSBPatternReIndexer():ConfigurableBase(xpcf::toUUID<SolARSBPatternReIndexer>())
     {
-        addInterface<api::features::ISBPatternReIndexer>(this);
+        declareInterface<api::features::ISBPatternReIndexer>(this);
         SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
         params->wrapInteger("sbPatternSize", m_sbPatternSize);
         m_sbPatternSize = 1;
@@ -48,10 +48,10 @@ namespace TOOLS {
             patternPoints.push_back(xpcf::utils::make_shared<Point2Df>(0.0f,m_sbPatternSize));
 
             SRef<Contour2Df> recognizedContour = candidateContours[itr->getIndexInDescriptorB()];
-            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[0][0], (*recognizedContour)[0][1]));
-            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[1][0], (*recognizedContour)[1][1]));
-            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[2][0], (*recognizedContour)[2][1]));
-            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[3][0], (*recognizedContour)[3][1]));
+            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[0]->getX(), (*recognizedContour)[0]->getY()));
+            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[1]->getX(), (*recognizedContour)[1]->getY()));
+            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[2]->getX(), (*recognizedContour)[2]->getY()));
+            imagePoints.push_back(xpcf::utils::make_shared<Point2Df>((*recognizedContour)[3]->getX(), (*recognizedContour)[3]->getY()));
         }
         return FrameworkReturnCode::_SUCCESS;
     }

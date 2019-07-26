@@ -16,6 +16,8 @@
 
 #include "SolARImage2WorldMapper4Marker2D.h"
 #include "xpcf/component/ComponentFactory.h"
+#include "core/Log.h"
+
 namespace xpcf  = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARImage2WorldMapper4Marker2D);
@@ -27,7 +29,7 @@ namespace TOOLS {
 
 SolARImage2WorldMapper4Marker2D::SolARImage2WorldMapper4Marker2D():ConfigurableBase(xpcf::toUUID<SolARImage2WorldMapper4Marker2D>())
 {
-    addInterface<api::geom::IImage2WorldMapper>(this);
+    declareInterface<api::geom::IImage2WorldMapper>(this);
     SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
     params->wrapInteger("digitalWidth",m_digitalWidth);
     params->wrapInteger("digitalHeight",m_digitalHeight);
