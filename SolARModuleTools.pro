@@ -5,7 +5,7 @@ CONFIG -= qt
 ## global defintions : target lib name, version
 TARGET = SolARModuleTools
 FRAMEWORK = $$TARGET
-VERSION=0.5.2
+VERSION=0.6.0
 
 DEFINES += MYVERSION=$${VERSION}
 DEFINES += TEMPLATE_LIBRARY
@@ -41,7 +41,6 @@ interfaces/SolARSBPatternReIndexer.h \
 interfaces/SolARKeypointsReIndexer.h \
 interfaces/SolARMapper.h \
 interfaces/SolARMapFilter.h \
-interfaces/SolARModuleManagerTools.h \
 interfaces/SolARToolsAPI.h \
 interfaces/SolARModuleTools_traits.h \
 interfaces/SolARBasicMatchesFilter.h \

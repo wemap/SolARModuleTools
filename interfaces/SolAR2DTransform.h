@@ -28,6 +28,13 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
+/**
+ * @class SolAR2DTransform
+ * @brief <B>Applies a 2D Transform to a set of 2D points.</B>
+ * <TT>UUID: edcedc0a-9841-4377-aea1-9fa9fdb46fde</TT>
+ *
+ */
+
 class SOLAR_TOOLS_EXPORT_API SolAR2DTransform : public org::bcom::xpcf::ComponentBase,
         public api::geom::I2DTransform {
 public:
@@ -35,8 +42,13 @@ public:
     SolAR2DTransform();
    ~SolAR2DTransform() override;
 
+    /// @brief This method applies a 2D transform to a set of 2D points
+    /// @param[in] inputPoints The 2D points on which the 2D transform will be applied.
+    /// @param[in] transformation The 2D transform to apply to the set of 2D points.
+    /// @param[out] outputPoints The resulting 2D points after application of the 2D transform.
+    /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
     FrameworkReturnCode transform(const std::vector<Point2Df> & inputPoints, const Transform2Df & transformation, std::vector<Point2Df> & outputPoints) override;
-
+    
     void unloadComponent () override final;
 
 

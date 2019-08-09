@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7.2)
 
 ##################################################
-set (VERSION_NUMBER "0.5.2")
+set (VERSION_NUMBER "0.6.0")
 project("SolARModuleTools")
 set (SOURCES 
 		src/SolARImage2WorldMapper4Marker2D.cpp
@@ -28,7 +28,6 @@ set (HEADERS
 		interfaces/SolARKeypointsReIndexer.h
 		interfaces/SolARMapper.h
 		interfaces/SolARMapFilter.h
-		interfaces/SolARModuleManagerTools.h
 		interfaces/SolARToolsAPI.h
 		interfaces/SolARModuleTools_traits.h
 		interfaces/SolARBasicMatchesFilter.h

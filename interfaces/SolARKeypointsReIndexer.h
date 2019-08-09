@@ -26,12 +26,26 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
+/**
+ * @class SolARKeypointsReIndexer
+ * @brief <B>Provides two ordered set of matching keypoints from two unordered set of keypoints and their corresponding matches.</B>
+ * <TT>UUID: c2836cc0-0344-4956-8959-84936fb4bcf2</TT>
+ *
+ */
+
 class SOLAR_TOOLS_EXPORT_API SolARKeypointsReIndexer : public org::bcom::xpcf::ComponentBase,
         public api::features::IKeypointsReIndexer {
 public:
     SolARKeypointsReIndexer();
     ~SolARKeypointsReIndexer() override = default;
-
+    
+    /// @brief Provides two ordered set of matching keypoints from two unordered set of keypoints and their corresponding matches.
+    /// @param[in] refKeypoints The first set of unordered keypoints.
+    /// @param[in] imgKeypoints The second set of unordered keypoints.
+    /// @param[in] matches The matches between the two sets of unordered keypoints.
+    /// @param[out] matchedRefKeypoints The ordered set of keypoints where the ith keypoint matches with the ith keypoint of the matchedImgKeypoints set.
+    /// @param[out] matchedImgKeypoints The ordered set of keypoints where the ith keypoint matches with the ith keypoint of the matchedRefKeypoints set.
+    /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
     FrameworkReturnCode reindex(const std::vector<Keypoint>& refKeypoints,
                                 const std::vector<Keypoint> & imgKeypoints,
                                 const std::vector<DescriptorMatch> & matches,

@@ -11,10 +11,12 @@ namespace SolAR {
     using namespace datastructure;
     namespace MODULES {
         namespace TOOLS {
-        /**
-         * @class SolARBasicMatchesFilter
-         * @brief This filter just retains the best match for each keypoint.
-         */
+       /**
+       * @class SolARBasicMatchesFilter
+       * @brief <B>Retains the best match for each keypoint.</B>
+       * <TT>UUID: cbb620c3-a7fc-42d7-bcbf-f59b475b23b0</TT>
+       *
+       */
             class SOLAR_TOOLS_EXPORT_API SolARBasicMatchesFilter : public org::bcom::xpcf::ComponentBase,
                     public api::features::IMatchesFilter {
             public:

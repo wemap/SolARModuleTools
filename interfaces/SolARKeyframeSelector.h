@@ -28,6 +28,13 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
+/**
+ * @class SolARKeyframeSelector
+ * @brief <B>Defines if a frame can be a candidate for a keyframe.</B>
+ * <TT>UUID: ad59a5ba-beb8-11e8-a355-529269fb1459</TT>
+ *
+ */
+
 class SOLAR_TOOLS_EXPORT_API SolARKeyframeSelector : public org::bcom::xpcf::ConfigurableBase,
         public api::solver::map::IKeyframeSelector {
 public:
@@ -38,7 +45,7 @@ public:
     ///
     virtual ~SolARKeyframeSelector() override {}
 
-    /// @brief  Select if a frame can be considered as a keyframe
+    /// @brief  Defines if a frame can be a candidate for a keyframe
     /// @param[in] frame: the frame tested to know if it could be a Keyframe
     /// @param[in] matches: the matches between the frame and its keyframe of reference.
     /// @return true if the frame can be considered as a new keyframe, false otherwise.

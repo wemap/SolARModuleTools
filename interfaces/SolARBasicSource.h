@@ -31,7 +31,8 @@ namespace TOOLS {
 
 /**
  * @class SolARBasicSource
- * @brief A Source to give Input images to pipelines.
+ * @brief <B>Feeds a pipeline with an external image.</B>
+ * <TT>UUID: 1e43cda9-7850-4a8a-a32b-f3f31ea94902</TT>
  *
  */
 

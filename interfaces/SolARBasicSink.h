@@ -32,10 +32,11 @@ namespace MODULES {
 namespace TOOLS {
 
 /**
- * @class SinkPoseTextureBuffer
- * @brief A Sink for a synchronized pose and texture buffer based on OpenGL texture buffer useful for AR video see-through pipelines.
+ * @class SolARBasicSink
+ * @brief <B>A Sink for a synchronized pose and texture buffer based on an image buffer useful for AR video see-through pipelines.</B>.
+ * <TT>UUID: 85db2f25-4f1c-4e06-9011-e020284bfc4f</TT>
  *
- * This interface allows to make available a pose to a third party application and to update a OpenGL texture buffer with a new image.
+ * This interface allows to make available a pose to a third party application and to update image buffer with a new image.
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARBasicSink : public org::bcom::xpcf::ConfigurableBase,
