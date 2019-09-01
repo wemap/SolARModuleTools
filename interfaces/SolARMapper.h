@@ -5,6 +5,7 @@
 #include "api/solver/map/IMapper.h"
 #include "xpcf/component/ComponentBase.h"
 #include <vector>
+#include <set>
 #include "SolARToolsAPI.h"
 
 #include <string>
@@ -48,11 +49,18 @@ public:
 
     /// @brief return all the keyframes of the map.
     /// @return the keyframes of the map.
-    std::vector<SRef<Keyframe>> getKeyframes() override;
+	virtual const std::vector<SRef<Keyframe>> &getKeyframes() override { return m_kframes; };
+
+	/// @brief return a keyframe
+	/// @param[in] Index of the keyframe
+	virtual SRef<Keyframe> &getKeyframe(int index) override { return m_kframes[index]; };
+
+	/// @brief get local map from reference keyframe and its neighbors
+	virtual void getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints) override;
 
     /// @brief return the current map.
     /// @return the current map.
-    SRef<Map> getMap() override;
+	inline SRef<Map> getMap() { return m_map; };
 
     void unloadComponent () override final;
 

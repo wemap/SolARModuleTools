@@ -59,7 +59,9 @@ namespace TOOLS {
             return FrameworkReturnCode::_ERROR_;
         }
 
-        std::map<unsigned int, CloudPoint> keyframeVisibility, newRefKeyframeVisibility, refKeyframeVisibility = referenceKeyframe->getVisibleMapPoints();
+		int idxLastCP = m_map->getPointCloud().size();
+
+        std::map<unsigned int, unsigned int> keyframeVisibility, newRefKeyframeVisibility, refKeyframeVisibility = referenceKeyframe->getVisibleMapPoints();
         std::map<unsigned int, unsigned int>::iterator visIt;
 
         for (int i = 0; i < newCloud.size(); i++)
@@ -69,13 +71,13 @@ namespace TOOLS {
             visIt = cloudPointVisibility.find(newKeyframe->m_idx);
             if (visIt != cloudPointVisibility.end())
             {
-                keyframeVisibility[visIt->second] = newCloud[i];
+                keyframeVisibility[visIt->second] = idxLastCP + i;
             }
             // update the visibility of the reference keyframe with the new 3D points
             visIt = cloudPointVisibility.find(referenceKeyframe->m_idx);
             if (visIt != cloudPointVisibility.end())
             {
-                newRefKeyframeVisibility[visIt->second] = newCloud[i];
+                newRefKeyframeVisibility[visIt->second] = idxLastCP + i;
             }
         }
 
@@ -91,11 +93,11 @@ namespace TOOLS {
             for (int i = 0; i < existingPointsMatches.size(); i++)
             {
                 // update the existing 3D points already in the map visible by the current keyframe and reciprocally
-                std::map<unsigned int, CloudPoint>::iterator refKFVisIt = refKeyframeVisibility.find(existingPointsMatches[i].getIndexInDescriptorA());
+                std::map<unsigned int, unsigned int>::iterator refKFVisIt = refKeyframeVisibility.find(existingPointsMatches[i].getIndexInDescriptorA());
                 if ( refKFVisIt != refKeyframeVisibility.end() )
                 {
                     keyframeVisibility[existingPointsMatches[i].getIndexInDescriptorB()] = refKFVisIt->second;
-                    refKFVisIt->second.visibilityAddKeypoint(newKeyframe->m_idx, existingPointsMatches[i].getIndexInDescriptorB());
+					m_map->getAPoint(refKFVisIt->second).visibilityAddKeypoint(newKeyframe->m_idx, existingPointsMatches[i].getIndexInDescriptorB());
                 }
             }
         }
@@ -109,12 +111,34 @@ namespace TOOLS {
         return FrameworkReturnCode::_SUCCESS;
     }
 
-    std::vector<SRef<Keyframe>> SolARMapper::getKeyframes(){
-        return m_kframes;
-    }
-    SRef<Map> SolARMapper::getMap(){
-        return m_map;
-    }
+	void SolARMapper::getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints)
+	{
+		// the initial localCloudPoints consists of 3D points seen from refKF
+		// if the initial localCloudPoints is empty, get all 3D cloud points seen from refKF and its neighbors 
+		// else add only 3D points of refKF's neighbors to localCloudPoints 				
+
+		std::set<unsigned int> idxPC;
+
+		if (localCloudPoints.empty()) {
+			std::map<unsigned int, unsigned int> cpRefKF = refKF->getVisibleMapPoints();			
+			for (auto it = cpRefKF.begin(); it != cpRefKF.end(); it++)
+				idxPC.insert(it->second);
+		}
+
+		std::map<unsigned int, unsigned int> neighbors = refKF->getNeighborKeyframes();
+
+		for (auto it_nb = neighbors.begin(); it_nb != neighbors.end(); it_nb++) {
+			std::map<unsigned int, unsigned int> neighborVisibility = m_kframes[it_nb->first]->getVisibleMapPoints();
+			for (auto it_vi = neighborVisibility.begin(); it_vi != neighborVisibility.end(); it_vi++) {
+				idxPC.insert(it_vi->second);
+			}
+		}
+
+		std::vector<CloudPoint> pointCloud = m_map->getPointCloud();
+
+		for (auto it = idxPC.begin(); it != idxPC.end(); it++)
+			localCloudPoints.push_back(pointCloud[*it]);
+	}
 
 }
 }
