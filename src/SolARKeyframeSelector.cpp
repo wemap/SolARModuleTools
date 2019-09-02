@@ -59,6 +59,18 @@ bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::vector<
     return (totalMatchesDist/matches.size()>m_minMeanDistanceIsKeyframe);
 }
 
+
+bool SolARKeyframeSelector::select(const SRef<Frame> & frame)
+{
+    // NOT IMPLEMENTED : NEEDS AVAILABLE STORAGE COMPONENTS
+    return false;
+}
+
+bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::function<bool(const SRef<Frame> &)> & func)
+{
+    return func(frame);
+}
+
 }
 }
 }
