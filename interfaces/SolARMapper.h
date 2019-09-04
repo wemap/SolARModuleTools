@@ -3,6 +3,7 @@
 
 
 #include "api/solver/map/IMapper.h"
+
 #include "xpcf/component/ComponentBase.h"
 #include <vector>
 #include <set>
@@ -47,6 +48,16 @@ public:
                                         const std::vector<DescriptorMatch> & newPointsMatches = {},
                                         const std::vector<DescriptorMatch> & existingPointsMatches = {}) override;
 
+
+
+	/// @brief update the current map/keyframes(poses)with corrected map/keyframes(poses).
+	/// i.e. the new triangulated map points at the insertion of a new keyframe.
+	/// minArg(pts3ds,intrinsics,extrinsics) = MIN_cam_i(MIN_3d_j(pts2d_j - reproje(pt3ds_j,intrinsics_i,extrinsics_i)),   
+	/// @param[in, out] map The 3D point map to update.
+	virtual FrameworkReturnCode update(const std::vector<CloudPoint> & correctedCloud,
+									   const std::vector<SRef<Keyframe>> & correctedKeyframes) override;
+
+
     /// @brief return all the keyframes of the map.
     /// @return the keyframes of the map.
 	virtual const std::vector<SRef<Keyframe>> &getKeyframes() override { return m_kframes; };
@@ -57,10 +68,13 @@ public:
 
 	/// @brief get local map from reference keyframe and its neighbors
 	virtual void getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints) override;
+	virtual SRef<Map> getGlobalMap() override;
 
     /// @brief return the current map.
     /// @return the current map.
-	inline SRef<Map> getMap() { return m_map; };
+	inline SRef<Map> getMap() { 
+		return m_map; 
+	};
 
     void unloadComponent () override final;
 
