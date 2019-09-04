@@ -111,6 +111,27 @@ namespace TOOLS {
         return FrameworkReturnCode::_SUCCESS;
     }
 
+
+	FrameworkReturnCode SolARMapper::update(const std::vector<CloudPoint> & correctedCloud,
+											const std::vector<SRef<Keyframe>> & correctedKeyframes) {
+		//if (m_kframes.size() =! correctedKeyframes.size())
+		//{
+		//	if (existingPointsMatches.size() != 0)
+		//	{
+		//		LOG_WARNING("For the second update of the Mapper, not need of existing points");
+		//	}
+		//}
+		// update keyframes:
+		//	# update poses and leave other members fixed (descriptors, keypoints..etc).
+		for (unsigned int j = 0; j < m_kframes.size(); ++j) {
+			m_kframes[j]->setPose(correctedKeyframes[j]->getPose());
+		}
+		// update map
+		//	# update cloud point and leave other members fixed (visibility..etc)
+		m_map->updateCloudPoints(correctedCloud);
+		return FrameworkReturnCode::_SUCCESS;
+	}
+
 	void SolARMapper::getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints)
 	{
 		// the initial localCloudPoints consists of 3D points seen from refKF
@@ -138,6 +159,10 @@ namespace TOOLS {
 
 		for (auto it = idxPC.begin(); it != idxPC.end(); it++)
 			localCloudPoints.push_back(pointCloud[*it]);
+	}
+
+    SRef<Map> SolARMapper::getGlobalMap(){
+		return m_map;
 	}
 
 }
