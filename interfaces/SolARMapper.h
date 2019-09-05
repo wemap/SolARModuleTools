@@ -70,6 +70,9 @@ public:
 	virtual void getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints) override;
 	virtual SRef<Map> getGlobalMap() override;
 
+	/// @brief get index of cloud point in local map from reference keyframe and its neighbors
+	virtual void getLocalMapIndex(SRef<Keyframe> refKF, std::vector<unsigned int> &idxLocalCloudPoints) override;
+
     /// @brief return the current map.
     /// @return the current map.
 	inline SRef<Map> getMap() { 

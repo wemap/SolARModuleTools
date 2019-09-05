@@ -134,17 +134,15 @@ namespace TOOLS {
 
 	void SolARMapper::getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints)
 	{
-		// the initial localCloudPoints consists of 3D points seen from refKF
-		// if the initial localCloudPoints is empty, get all 3D cloud points seen from refKF and its neighbors 
-		// else add only 3D points of refKF's neighbors to localCloudPoints 				
+		// Get all 3D cloud points seen from refKF and its neighbors 
 
 		std::set<unsigned int> idxPC;
 
-		if (localCloudPoints.empty()) {
-			std::map<unsigned int, unsigned int> cpRefKF = refKF->getVisibleMapPoints();			
-			for (auto it = cpRefKF.begin(); it != cpRefKF.end(); it++)
-				idxPC.insert(it->second);
-		}
+		localCloudPoints.clear();
+
+		std::map<unsigned int, unsigned int> cpRefKF = refKF->getVisibleMapPoints();			
+		for (auto it = cpRefKF.begin(); it != cpRefKF.end(); it++)
+			idxPC.insert(it->second);
 
 		std::map<unsigned int, unsigned int> neighbors = refKF->getNeighborKeyframes();
 
@@ -161,8 +159,32 @@ namespace TOOLS {
 			localCloudPoints.push_back(pointCloud[*it]);
 	}
 
-    SRef<Map> SolARMapper::getGlobalMap(){
+	SRef<Map> SolARMapper::getGlobalMap() {
 		return m_map;
+	}
+
+	void SolARMapper::getLocalMapIndex(SRef<Keyframe> refKF, std::vector<unsigned int>& idxLocalCloudPoints)
+	{
+		// Get all index of 3D cloud points seen from refKF and its neighbors 
+
+		idxLocalCloudPoints.clear();
+
+		std::set<unsigned int> idxPC;
+	
+		std::map<unsigned int, unsigned int> cpRefKF = refKF->getVisibleMapPoints();
+		for (auto it = cpRefKF.begin(); it != cpRefKF.end(); it++)
+			idxPC.insert(it->second);
+
+		std::map<unsigned int, unsigned int> neighbors = refKF->getNeighborKeyframes();
+
+		for (auto it_nb = neighbors.begin(); it_nb != neighbors.end(); it_nb++) {
+			std::map<unsigned int, unsigned int> neighborVisibility = m_kframes[it_nb->first]->getVisibleMapPoints();
+			for (auto it_vi = neighborVisibility.begin(); it_vi != neighborVisibility.end(); it_vi++) {
+				idxPC.insert(it_vi->second);
+			}
+		}
+
+		idxLocalCloudPoints.assign(idxPC.begin(), idxPC.end());
 	}
 
 }
