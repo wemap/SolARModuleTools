@@ -23,9 +23,9 @@ namespace xpcf  = org::bcom::xpcf;
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARMapper)
 
 namespace SolAR {
-using namespace datastructure;
-namespace MODULES {
-namespace TOOLS {
+    using namespace datastructure;
+    namespace MODULES {
+    namespace TOOLS {
 
     SolARMapper::SolARMapper():ComponentBase(xpcf::toUUID<SolARMapper>())
     {
@@ -59,14 +59,14 @@ namespace TOOLS {
             return FrameworkReturnCode::_ERROR_;
         }
 
-		int idxLastCP = m_map->getPointCloud().size();
+        int idxLastCP = m_map->getPointCloud().size();
 
         std::map<unsigned int, unsigned int> keyframeVisibility, newRefKeyframeVisibility, refKeyframeVisibility = referenceKeyframe->getVisibleMapPoints();
-        std::map<unsigned int, unsigned int>::iterator visIt;
+        std::map<unsigned int, unsigned int>::const_iterator visIt;
 
         for (int i = 0; i < newCloud.size(); i++)
         {
-            std::map<unsigned int, unsigned int> cloudPointVisibility = newCloud[i].getVisibility();
+            const std::map<unsigned int, unsigned int> & cloudPointVisibility = newCloud[i].getVisibility();
             // update the visibility of the current keyframe with the new 3D points
             visIt = cloudPointVisibility.find(newKeyframe->m_idx);
             if (visIt != cloudPointVisibility.end())
@@ -90,14 +90,12 @@ namespace TOOLS {
         }
         else
         {
-            for (int i = 0; i < existingPointsMatches.size(); i++)
-            {
+            for ( auto & currentExistingMatch : existingPointsMatches) {
                 // update the existing 3D points already in the map visible by the current keyframe and reciprocally
-                std::map<unsigned int, unsigned int>::iterator refKFVisIt = refKeyframeVisibility.find(existingPointsMatches[i].getIndexInDescriptorA());
-                if ( refKFVisIt != refKeyframeVisibility.end() )
-                {
-                    keyframeVisibility[existingPointsMatches[i].getIndexInDescriptorB()] = refKFVisIt->second;
-					m_map->getAPoint(refKFVisIt->second).visibilityAddKeypoint(newKeyframe->m_idx, existingPointsMatches[i].getIndexInDescriptorB());
+                std::map<unsigned int, unsigned int>::iterator refKFVisIt = refKeyframeVisibility.find(currentExistingMatch.getIndexInDescriptorA());
+                if ( refKFVisIt != refKeyframeVisibility.end() ) {
+                    keyframeVisibility[currentExistingMatch.getIndexInDescriptorB()] = refKFVisIt->second;
+                    m_map->getAPoint(refKFVisIt->second).visibilityAddKeypoint(newKeyframe->m_idx, currentExistingMatch.getIndexInDescriptorB());
                 }
             }
         }
@@ -111,82 +109,82 @@ namespace TOOLS {
         return FrameworkReturnCode::_SUCCESS;
     }
 
+    FrameworkReturnCode SolARMapper::update(const std::vector<CloudPoint> & correctedCloud,
+                                            const std::vector<SRef<Keyframe>> & correctedKeyframes) {
+        //if (m_kframes.size() =! correctedKeyframes.size())
+        //{
+        //	if (existingPointsMatches.size() != 0)
+        //	{
+        //		LOG_WARNING("For the second update of the Mapper, not need of existing points");
+        //	}
+        //}
+        // update keyframes:
+        //	# update poses and leave other members fixed (descriptors, keypoints..etc).
+        for (unsigned int j = 0; j < m_kframes.size(); ++j) {
+            m_kframes[j]->setPose(correctedKeyframes[j]->getPose());
+        }
+        // update map
+        //	# update cloud point and leave other members fixed (visibility..etc)
+        m_map->updateCloudPoints(correctedCloud);
+        return FrameworkReturnCode::_SUCCESS;
+    }
 
-	FrameworkReturnCode SolARMapper::update(const std::vector<CloudPoint> & correctedCloud,
-											const std::vector<SRef<Keyframe>> & correctedKeyframes) {
-		//if (m_kframes.size() =! correctedKeyframes.size())
-		//{
-		//	if (existingPointsMatches.size() != 0)
-		//	{
-		//		LOG_WARNING("For the second update of the Mapper, not need of existing points");
-		//	}
-		//}
-		// update keyframes:
-		//	# update poses and leave other members fixed (descriptors, keypoints..etc).
-		for (unsigned int j = 0; j < m_kframes.size(); ++j) {
-			m_kframes[j]->setPose(correctedKeyframes[j]->getPose());
-		}
-		// update map
-		//	# update cloud point and leave other members fixed (visibility..etc)
-		m_map->updateCloudPoints(correctedCloud);
-		return FrameworkReturnCode::_SUCCESS;
-	}
+    void SolARMapper::getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints)
+    {
+        // Get all 3D cloud points seen from refKF and its neighbors
 
-	void SolARMapper::getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints)
-	{
-		// Get all 3D cloud points seen from refKF and its neighbors 
+        std::set<unsigned int> idxPC;
+        localCloudPoints.clear();
+        const std::map<unsigned int, unsigned int> & cpRefKF = refKF->getVisibleMapPoints();
+        for (auto & kv : cpRefKF) {
+            idxPC.insert(kv.second);
+        }
 
-		std::set<unsigned int> idxPC;
+        const std::map<unsigned int, unsigned int> & neighbors = refKF->getNeighborKeyframes();
 
-		localCloudPoints.clear();
+        for (auto & kv  : neighbors) {
+            std::map<unsigned int, unsigned int> neighborVisibility = m_kframes[kv.first]->getVisibleMapPoints();
+            for (auto & kvNeighborVis : neighborVisibility) {
+                idxPC.insert(kvNeighborVis.second);
+            }
+        }
 
-		std::map<unsigned int, unsigned int> cpRefKF = refKF->getVisibleMapPoints();			
-		for (auto it = cpRefKF.begin(); it != cpRefKF.end(); it++)
-			idxPC.insert(it->second);
+        std::vector<CloudPoint> pointCloud = m_map->getPointCloud();
 
-		std::map<unsigned int, unsigned int> neighbors = refKF->getNeighborKeyframes();
+        for (auto index : idxPC) {
+            localCloudPoints.push_back(pointCloud[index]);
+        }
+    }
 
-		for (auto it_nb = neighbors.begin(); it_nb != neighbors.end(); it_nb++) {
-			std::map<unsigned int, unsigned int> neighborVisibility = m_kframes[it_nb->first]->getVisibleMapPoints();
-			for (auto it_vi = neighborVisibility.begin(); it_vi != neighborVisibility.end(); it_vi++) {
-				idxPC.insert(it_vi->second);
-			}
-		}
+    SRef<Map> SolARMapper::getGlobalMap() {
+        return m_map;
+    }
 
-		std::vector<CloudPoint> pointCloud = m_map->getPointCloud();
+    void SolARMapper::getLocalMapIndex(SRef<Keyframe> refKF, std::vector<unsigned int>& idxLocalCloudPoints)
+    {
+        // Get all index of 3D cloud points seen from refKF and its neighbors
 
-		for (auto it = idxPC.begin(); it != idxPC.end(); it++)
-			localCloudPoints.push_back(pointCloud[*it]);
-	}
+        idxLocalCloudPoints.clear();
 
-	SRef<Map> SolARMapper::getGlobalMap() {
-		return m_map;
-	}
+        std::set<unsigned int> idxPC;
 
-	void SolARMapper::getLocalMapIndex(SRef<Keyframe> refKF, std::vector<unsigned int>& idxLocalCloudPoints)
-	{
-		// Get all index of 3D cloud points seen from refKF and its neighbors 
+        const std::map<unsigned int, unsigned int> & cpRefKF = refKF->getVisibleMapPoints();
+        for (auto & kv : cpRefKF) {
+            idxPC.insert(kv.second);
+        }
 
-		idxLocalCloudPoints.clear();
+        const std::map<unsigned int, unsigned int> & neighbors = refKF->getNeighborKeyframes();
 
-		std::set<unsigned int> idxPC;
-	
-		std::map<unsigned int, unsigned int> cpRefKF = refKF->getVisibleMapPoints();
-		for (auto it = cpRefKF.begin(); it != cpRefKF.end(); it++)
-			idxPC.insert(it->second);
+        for (auto & kv : neighbors) {
+            const std::map<unsigned int, unsigned int> & neighborVisibility = m_kframes[kv.first]->getVisibleMapPoints();
+            for (auto & kvVisMap : neighborVisibility) {
+                idxPC.insert(kvVisMap.second);
+            }
+        }
 
-		std::map<unsigned int, unsigned int> neighbors = refKF->getNeighborKeyframes();
+        idxLocalCloudPoints.assign(idxPC.begin(), idxPC.end());
+    }
 
-		for (auto it_nb = neighbors.begin(); it_nb != neighbors.end(); it_nb++) {
-			std::map<unsigned int, unsigned int> neighborVisibility = m_kframes[it_nb->first]->getVisibleMapPoints();
-			for (auto it_vi = neighborVisibility.begin(); it_vi != neighborVisibility.end(); it_vi++) {
-				idxPC.insert(it_vi->second);
-			}
-		}
-
-		idxLocalCloudPoints.assign(idxPC.begin(), idxPC.end());
-	}
-
-}
-}
+    }
+    }
 }
