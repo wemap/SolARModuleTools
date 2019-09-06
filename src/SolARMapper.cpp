@@ -105,6 +105,8 @@ namespace SolAR {
         m_kframes.push_back(newKeyframe);
         // Add the 3D points that have just been triangulated
         m_map->addCloudPoints(newCloud);
+		// Update neighboring connections
+		updateNeighborConnections(newKeyframe, 20);
         map = m_map;
         return FrameworkReturnCode::_SUCCESS;
     }
@@ -185,6 +187,59 @@ namespace SolAR {
         idxLocalCloudPoints.assign(idxPC.begin(), idxPC.end());
     }
 
-    }
-    }
+	FrameworkReturnCode SolARMapper::update(SRef<Map>& map, SRef<Keyframe>& newKeyframe, 
+											const std::vector<CloudPoint>& newCloud, 
+											const std::vector<std::tuple<unsigned int, int, unsigned int>>& newPointMatches)
+	{
+		int idxLastCP = m_map->getPointCloud().size();
+
+		std::map<unsigned int, unsigned int> newKeyframeVisibility;
+
+		for (int i = 0; i < newCloud.size(); i++)
+		{
+			unsigned int idx_kpNewKf = std::get<0>(newPointMatches[i]);
+			int idx_tmpKf = std::get<1>(newPointMatches[i]);
+			unsigned int idx_kpTmpKf = std::get<2>(newPointMatches[i]);
+
+			// update the visibility of the current keyframe with the new 3D point
+			newKeyframe->addVisibleMapPoint(idx_kpNewKf, idxLastCP + i);
+
+			// update the visibility of the keyframe which triangulates the new 3D point with the current keyframe
+			m_kframes[idx_tmpKf]->addVisibleMapPoint(idx_kpTmpKf, idxLastCP + i);
+		}
+
+		// add new keyframe to mapper
+		m_kframes.push_back(newKeyframe);
+		// Add the 3D points that have just been triangulated
+		m_map->addCloudPoints(newCloud);
+		// Update neighboring connections
+		updateNeighborConnections(newKeyframe, 20);
+		// return map
+		map = m_map;
+		return FrameworkReturnCode::_SUCCESS;
+	}
+
+	void SolARMapper::updateNeighborConnections(SRef<Keyframe>& newKeyframe, int minDis)
+	{
+		const std::map<unsigned int, unsigned int> & kfMapVisibility = newKeyframe->getVisibleMapPoints();
+		const std::vector<CloudPoint> &cloudPoint = m_map->getPointCloud();
+		std::map<unsigned int, int> kfCounter;
+
+		// calculate the number of connections to other keyframes
+		for (auto it_cp = kfMapVisibility.begin(); it_cp != kfMapVisibility.end(); it_cp++) {
+			std::map<unsigned int, unsigned int> cpKfVisibility = cloudPoint[it_cp->second].getVisibility();
+			for (auto it_kf = cpKfVisibility.begin(); it_kf != cpKfVisibility.end(); it_kf++)
+				kfCounter[it_kf->first]++;
+		}
+
+		// update the connections
+		for (auto it = kfCounter.begin(); it != kfCounter.end(); it++)
+			if ((it->first != newKeyframe->m_idx) && (it->second > minDis)) {
+				newKeyframe->addNeighborKeyframe(it->first, it->second);
+				m_kframes[it->first]->addNeighborKeyframe(newKeyframe->m_idx, it->second);
+			}
+	}
+
+}
+}
 }
