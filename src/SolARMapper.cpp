@@ -106,7 +106,7 @@ namespace SolAR {
         // Add the 3D points that have just been triangulated
         m_map->addCloudPoints(newCloud);
 		// Update neighboring connections
-		updateNeighborConnections(newKeyframe, 20);
+		updateNeighborConnections(newKeyframe, 100);
         map = m_map;
         return FrameworkReturnCode::_SUCCESS;
     }
