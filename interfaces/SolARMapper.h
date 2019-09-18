@@ -44,9 +44,9 @@ public:
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
     virtual FrameworkReturnCode update (SRef<Map> & map,
                                         SRef<Keyframe> & newKeyframe,
-                                        const std::vector<CloudPoint> & newCloud = {},
-                                        const std::vector<DescriptorMatch> & newPointsMatches = {},
-                                        const std::vector<DescriptorMatch> & existingPointsMatches = {}) override;
+                                        const std::vector<CloudPoint> & newCloud,
+                                        const std::vector<DescriptorMatch> & newPointsMatches,
+                                        const std::vector<DescriptorMatch> & existingPointsMatches) override;
 
 	/// @brief update the current map with the new triangulated map points at the insertion of a new keyframe.
    /// minArg(pts3ds,intrinsics,extrinsics) = MIN_cam_i(MIN_3d_j(pts2d_j - reproje(pt3ds_j,intrinsics_i,extrinsics_i)),
@@ -59,8 +59,8 @@ public:
    /// @return FrameworkReturnCode::_SUCCESS if the map updating succeed, else FrameworkReturnCode::_ERROR_
 	virtual FrameworkReturnCode update(	SRef<Map> & map,
 										SRef<Keyframe> & newKeyframe,
-										const std::vector<CloudPoint> & newCloud = {},
-										const std::vector<std::tuple<unsigned int, int, unsigned int>> &newPointMatches = {}) override;
+										const std::vector<CloudPoint> & newCloud,
+										const std::vector<std::tuple<unsigned int, int, unsigned int>> &newPointMatches) override;
 
 
 
