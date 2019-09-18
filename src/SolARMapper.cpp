@@ -111,21 +111,13 @@ namespace SolAR {
         return FrameworkReturnCode::_SUCCESS;
     }
 
-    FrameworkReturnCode SolARMapper::update(const std::vector<CloudPoint> & correctedCloud,
-                                            const std::vector<SRef<Keyframe>> & correctedKeyframes) {
-        //if (m_kframes.size() =! correctedKeyframes.size())
-        //{
-        //	if (existingPointsMatches.size() != 0)
-        //	{
-        //		LOG_WARNING("For the second update of the Mapper, not need of existing points");
-        //	}
-        //}
+    FrameworkReturnCode SolARMapper::update(const std::vector<Transform3Df> & correctedPoses,
+							 const std::vector<CloudPoint> & correctedCloud) {
         // update keyframes:
         //	# update poses and leave other members fixed (descriptors, keypoints..etc).
         for (unsigned int j = 0; j < m_kframes.size(); ++j) {
-            m_kframes[j]->setPose(correctedKeyframes[j]->getPose());
+            m_kframes[j]->setPose(correctedPoses[j]);
         }
-        // update map
         //	# update cloud point and leave other members fixed (visibility..etc)
         m_map->updateCloudPoints(correctedCloud);
         return FrameworkReturnCode::_SUCCESS;

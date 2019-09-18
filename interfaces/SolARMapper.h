@@ -68,8 +68,8 @@ public:
 	/// i.e. the new triangulated map points at the insertion of a new keyframe.
 	/// minArg(pts3ds,intrinsics,extrinsics) = MIN_cam_i(MIN_3d_j(pts2d_j - reproje(pt3ds_j,intrinsics_i,extrinsics_i)),   
 	/// @param[in, out] map The 3D point map to update.
-	virtual FrameworkReturnCode update(const std::vector<CloudPoint> & correctedCloud,
-									   const std::vector<SRef<Keyframe>> & correctedKeyframes) override;
+	virtual FrameworkReturnCode update(const std::vector<Transform3Df> & correctedPoses,
+									   const std::vector<CloudPoint> & correctedCloud) override;
 
 
     /// @brief return all the keyframes of the map.
