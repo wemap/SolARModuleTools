@@ -23,7 +23,10 @@ CONFIG(release,debug|release) {
     DEFINES += NDEBUG=1
 }
 
-DEPENDENCIESCONFIG = shared recurse
+DEPENDENCIESCONFIG = shared recurse install
+
+## Configuration for Visual Studio to install binaries and dependencies. Work also for QT Creator by replacing QMAKE_INSTALL
+PROJECTCONFIG = QTVS
 
 include (../builddefs/qmake/templatelibconfig.pri)
 
@@ -92,3 +95,6 @@ xpcf_xml_files.files=$$files($${PWD}/xpcf*.xml)
 
 INSTALLS += header_files
 INSTALLS += xpcf_xml_files
+
+#NOTE : Must be placed at the end of the .pro
+include (../builddefs/qmake/remaken_install_lib.pri)
