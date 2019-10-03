@@ -28,7 +28,7 @@ DEPENDENCIESCONFIG = shared recurse install
 ## Configuration for Visual Studio to install binaries and dependencies. Work also for QT Creator by replacing QMAKE_INSTALL
 PROJECTCONFIG = QTVS
 
-include (../builddefs/qmake/templatelibconfig.pri)
+include ($(REMAKEN_RULES_ROOT)/qmake/templatelibconfig.pri)
 
 ## DEFINES FOR MSVC/INTEL C++ compilers
 msvc {
@@ -37,36 +37,7 @@ DEFINES += "_BCOM_SHARED=__declspec(dllexport)"
 
 INCLUDEPATH += interfaces/
 
-HEADERS += interfaces/SolARImage2WorldMapper4Marker2D.h \
-interfaces/SolAR2DTransform.h \
-interfaces/SolAR3DTransform.h \
-interfaces/SolARHomographyValidation.h \
-interfaces/SolARSBPatternReIndexer.h \
-interfaces/SolARKeypointsReIndexer.h \
-interfaces/SolARMapper.h \
-interfaces/SolARMapFilter.h \
-interfaces/SolARToolsAPI.h \
-interfaces/SolARModuleTools_traits.h \
-interfaces/SolARBasicMatchesFilter.h \
-interfaces/SolARKeyframeSelector.h \
-interfaces/SolARBasicSink.h \
-    interfaces/SolARBasicSource.h
-
-
-
-SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
-    src/SolAR2DTransform.cpp \
-    src/SolAR3DTransform.cpp \
-    src/SolARHomographyValidation.cpp \
-    src/SolARSBPatternReIndexer.cpp \
-    src/SolARKeypointsReIndexer.cpp \
-    src/SolARBasicMatchesFilter.cpp \
-    src/SolARMapper.cpp \
-    src/SolARMapFilter.cpp \
-    src/SolARModuleTools.cpp \
-    src/SolARKeyframeSelector.cpp \
-    src/SolARBasicSink.cpp \
-    src/SolARBasicSource.cpp
+include (SolARModuleTools.pri)
 
 unix {
 }
@@ -96,5 +67,8 @@ xpcf_xml_files.files=$$files($${PWD}/xpcf*.xml)
 INSTALLS += header_files
 INSTALLS += xpcf_xml_files
 
+OTHER_FILES += \
+    packagedependencies.txt
+
 #NOTE : Must be placed at the end of the .pro
-include (../builddefs/qmake/remaken_install_lib.pri)
+include ($(REMAKEN_RULES_ROOT)/qmake/remaken_install_target.pri)
