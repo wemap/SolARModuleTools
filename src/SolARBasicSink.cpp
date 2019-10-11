@@ -69,6 +69,7 @@ SinkReturnCode SolARBasicSink::get( Transform3Df& pose)
     std::lock_guard<std::mutex> lock(m_mutex);
     if (m_newPose)
     {
+		m_newPose = false;
         pose = Transform3Df(m_pose);
         returnCode |= SinkReturnCode::_NEW_POSE;
     }
