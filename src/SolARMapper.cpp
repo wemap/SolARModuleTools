@@ -39,6 +39,7 @@ namespace SolAR {
                                              const std::vector<DescriptorMatch> & newPointsMatches,
                                              const std::vector<DescriptorMatch> & existingPointsMatches)
     {
+		std::unique_lock<std::mutex> lock(m_mutex);
         if (m_kframes.size() == 0)
         {
             if (newCloud.size() != 0 || newPointsMatches.size() != 0 || existingPointsMatches.size() != 0)
@@ -113,6 +114,7 @@ namespace SolAR {
 
     FrameworkReturnCode SolARMapper::update(const std::vector<Transform3Df> & correctedPoses,
 							 const std::vector<CloudPoint> & correctedCloud) {
+		std::unique_lock<std::mutex> lock(m_mutex);
         // update keyframes:
         //	# update poses and leave other members fixed (descriptors, keypoints..etc).
         for (unsigned int j = 0; j < m_kframes.size(); ++j) {
@@ -125,6 +127,7 @@ namespace SolAR {
 
     void SolARMapper::getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints)
     {
+		std::unique_lock<std::mutex> lock(m_mutex);
         // Get all 3D cloud points seen from refKF and its neighbors
 
         std::set<unsigned int> idxPC;
@@ -151,11 +154,13 @@ namespace SolAR {
     }
 
     SRef<Map> SolARMapper::getGlobalMap() {
+		std::unique_lock<std::mutex> lock(m_mutex);
         return m_map;
     }
 
     void SolARMapper::getLocalMapIndex(SRef<Keyframe> refKF, std::vector<unsigned int>& idxLocalCloudPoints)
-    {
+    {		
+		std::unique_lock<std::mutex> lock(m_mutex);
         // Get all index of 3D cloud points seen from refKF and its neighbors
 
         idxLocalCloudPoints.clear();
@@ -175,14 +180,14 @@ namespace SolAR {
                 idxPC.insert(kvVisMap.second);
             }
         }
-
         idxLocalCloudPoints.assign(idxPC.begin(), idxPC.end());
     }
 
 	FrameworkReturnCode SolARMapper::update(SRef<Map>& map, SRef<Keyframe>& newKeyframe, 
 											const std::vector<CloudPoint>& newCloud, 
 											const std::vector<std::tuple<unsigned int, int, unsigned int>>& newPointMatches)
-	{
+	{		
+		std::unique_lock<std::mutex> lock(m_mutex);
 		int idxLastCP = m_map->getPointCloud().size();
 
 		std::map<unsigned int, unsigned int> newKeyframeVisibility;

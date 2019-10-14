@@ -104,7 +104,7 @@ private:
     std::vector<SRef<Keyframe>> m_kframes;
     std::map<std::pair<int, int>, std::vector<DescriptorMatch> > m_gmatches;
     SRef<Map> m_map;
-
+	std::mutex m_mutex;
 };
 }
 }
