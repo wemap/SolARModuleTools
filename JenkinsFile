@@ -31,7 +31,7 @@ pipeline {
         stage("Build") {
             steps {
                 withEnv(['REMAKEN_RULES_ROOT=/home/jenkins/.remaken/rules/']) {
-                    sh "qmake SolARModuleOpenCV.pro"
+                    sh "qmake SolARModuleTools.pro"
                     sh "make"
                 }
             }
