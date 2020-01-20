@@ -75,7 +75,7 @@ pipeline {
         stage("Release") {
             when {
                 expression { params.RELEASE == true }
-            }SolARFramework
+            }
             steps {
                 script {
                     version = sh (
