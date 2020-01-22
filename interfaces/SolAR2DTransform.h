@@ -40,15 +40,15 @@ class SOLAR_TOOLS_EXPORT_API SolAR2DTransform : public org::bcom::xpcf::Componen
 public:
 
     SolAR2DTransform();
-   ~SolAR2DTransform();
+   ~SolAR2DTransform() override;
 
     /// @brief This method applies a 2D transform to a set of 2D points
     /// @param[in] inputPoints The 2D points on which the 2D transform will be applied.
     /// @param[in] transformation The 2D transform to apply to the set of 2D points.
     /// @param[out] outputPoints The resulting 2D points after application of the 2D transform.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode transform(const std::vector<SRef<Point2Df>> & inputPoints, const Transform2Df transformation, std::vector<SRef<Point2Df>> & outputPoints);
-
+    FrameworkReturnCode transform(const std::vector<Point2Df> & inputPoints, const Transform2Df & transformation, std::vector<Point2Df> & outputPoints) override;
+    
     void unloadComponent () override final;
 
 

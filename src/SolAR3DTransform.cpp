@@ -35,14 +35,12 @@ SolAR3DTransform::~SolAR3DTransform(){
 
 }
 
-FrameworkReturnCode SolAR3DTransform::transform(const std::vector<SRef<Point3Df>> & inputPoints, const Transform3Df transformation, std::vector<SRef<Point3Df>> & outputPoints)
+FrameworkReturnCode SolAR3DTransform::transform(const std::vector<Point3Df> & inputPoints, const Transform3Df & transformation, std::vector<Point3Df> & outputPoints)
 {
     Point3Df outputPoint3D;
     Vector4f outputVector4f;
 
-    for (int i = 0;i<inputPoints.size();++i){
-
-        Point3Df inputPoint3D = *(inputPoints.at(i));
+    for (auto inputPoint3D : inputPoints){
         Vector4f inputVector4f(inputPoint3D.getX(),inputPoint3D.getY(), inputPoint3D.getZ(), 1);
         outputVector4f=transformation*inputVector4f;
         if (outputVector4f[3]!=0) {
@@ -54,9 +52,7 @@ FrameworkReturnCode SolAR3DTransform::transform(const std::vector<SRef<Point3Df>
             outputPoint3D.setY(0);
             outputPoint3D.setZ(0);
         }
-        outputPoints.push_back(xpcf::utils::make_shared<Point3Df>(outputPoint3D));
-
-
+        outputPoints.push_back(outputPoint3D);
     }
 
     return FrameworkReturnCode::_SUCCESS;

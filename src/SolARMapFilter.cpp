@@ -30,12 +30,11 @@ namespace TOOLS {
 SolARMapFilter::SolARMapFilter():ConfigurableBase(xpcf::toUUID<SolARMapFilter>())
 {
     declareInterface<IMapFilter>(this);
-    SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
-    params->wrapFloat("reprojErrorThreshold", m_reprojErrorThreshold);
-    params->wrapInteger("cheiralityCheck", m_cheiralityCheck);
+    declareProperty("reprojErrorThreshold", m_reprojErrorThreshold);
+    declareProperty("cheiralityCheck", m_cheiralityCheck);
 }
 
-void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2, const std::vector<SRef<CloudPoint>>& input,  std::vector<SRef<CloudPoint>>& output)
+void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<CloudPoint>& input,  std::vector<CloudPoint>& output)
 {
     if (input.size() == 0)
     {
@@ -54,10 +53,10 @@ void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2,
 
         // BUG patch To correct, Vector4f should but is not accepted with windows !
 #if (_WIN64) || (_WIN32)
-        Vector3f point(input[i]->getX(), input[i]->getY(), input[i]->getZ());
+        Vector3f point(input[i].getX(), input[i].getY(), input[i].getZ());
         Vector3f pointInCam1Ref, pointInCam2Ref;
 #else
-        Vector4f point(input[i]->getX(), input[i]->getY(), input[i]->getZ(), 1);
+        Vector4f point(input[i].getX(), input[i].getY(), input[i].getZ(), 1);
         Vector4f pointInCam1Ref, pointInCam2Ref;
 #endif
         pointInCam1Ref = invPose1*point;
@@ -66,10 +65,50 @@ void  SolARMapFilter::filter(const Transform3Df pose1, const Transform3Df pose2,
         if ((!m_cheiralityCheck) || ((pointInCam1Ref(2) >= 0) && pointInCam2Ref(2) >=0))
         {
             // if the reprojection error is less than the threshold
-            if (input[i]->getReprojError() < m_reprojErrorThreshold)
+            if (input[i].getReprojError() < m_reprojErrorThreshold)
                 output.push_back(input[i]);
         }
     }
+
+}
+
+void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<CloudPoint>& input, std::vector<CloudPoint>& output, std::vector<int> &index)
+{
+	if (input.size() == 0)
+	{
+		LOG_INFO("mapFilter opencv has an empty vector as input");
+	}
+
+	output.clear();
+
+	Transform3Df invPose1, invPose2;
+	invPose1 = pose1.inverse();
+	invPose2 = pose2.inverse();
+
+	for (int i = 0; i < input.size(); i++)
+	{
+		// Check for cheirality (if the point is in front of the camera)
+
+		// BUG patch To correct, Vector4f should but is not accepted with windows !
+#if (_WIN64) || (_WIN32)
+		Vector3f point(input[i].getX(), input[i].getY(), input[i].getZ());
+		Vector3f pointInCam1Ref, pointInCam2Ref;
+#else
+		Vector4f point(input[i].getX(), input[i].getY(), input[i].getZ(), 1);
+		Vector4f pointInCam1Ref, pointInCam2Ref;
+#endif
+		pointInCam1Ref = invPose1 * point;
+		pointInCam2Ref = invPose2 * point;
+
+		if ((!m_cheiralityCheck) || ((pointInCam1Ref(2) >= 0) && pointInCam2Ref(2) >= 0))
+		{
+			// if the reprojection error is less than the threshold
+			if (input[i].getReprojError() < m_reprojErrorThreshold) {
+				index.push_back(i);
+				output.push_back(input[i]);
+			}
+		}
+	}
 
 }
 
