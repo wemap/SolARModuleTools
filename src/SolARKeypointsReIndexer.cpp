@@ -31,15 +31,19 @@ namespace TOOLS {
         declareInterface<api::features::IKeypointsReIndexer>(this);
     }
 
-  FrameworkReturnCode SolARKeypointsReIndexer::reindex(const std::vector<SRef<Keypoint>>& refKeypoints, const std::vector<SRef<Keypoint>>& imgKeypoints, std::vector<DescriptorMatch>& matches, std::vector<SRef<Point2Df>>& matchedRefKeypoints, std::vector<SRef<Point2Df>>& matchedImgKeypoints)
+  FrameworkReturnCode SolARKeypointsReIndexer::reindex(const std::vector<Keypoint> & refKeypoints,
+                                                       const std::vector<Keypoint> & imgKeypoints,
+                                                       const std::vector<DescriptorMatch> & matches,
+                                                       std::vector<Point2Df>& matchedRefKeypoints,
+                                                       std::vector<Point2Df>& matchedImgKeypoints)
     {
         matchedRefKeypoints.clear();
         matchedImgKeypoints.clear();
 
        for( int i = 0; i < matches.size(); i++ )
        {
-            matchedRefKeypoints.push_back(xpcf::utils::make_shared<Point2Df>(refKeypoints[ matches[i].getIndexInDescriptorA()]->getX(),refKeypoints[ matches[i].getIndexInDescriptorA()]->getY()));
-            matchedImgKeypoints.push_back(xpcf::utils::make_shared<Point2Df>(imgKeypoints[ matches[i].getIndexInDescriptorB()]->getX(),imgKeypoints[ matches[i].getIndexInDescriptorB()]->getY()));
+            matchedRefKeypoints.push_back(Point2Df(refKeypoints[ matches[i].getIndexInDescriptorA()].getX(),refKeypoints[ matches[i].getIndexInDescriptorA()].getY()));
+            matchedImgKeypoints.push_back(Point2Df(imgKeypoints[ matches[i].getIndexInDescriptorB()].getX(),imgKeypoints[ matches[i].getIndexInDescriptorB()].getY()));
        }
        return FrameworkReturnCode::_SUCCESS;
     }

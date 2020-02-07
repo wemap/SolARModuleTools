@@ -3,9 +3,10 @@ QT       -= core gui
 CONFIG -= qt
 
 ## global defintions : target lib name, version
+INSTALLSUBDIR = SolARBuild
 TARGET = SolARModuleTools
 FRAMEWORK = $$TARGET
-VERSION=0.6.0
+VERSION=0.7.0
 
 DEFINES += MYVERSION=$${VERSION}
 DEFINES += TEMPLATE_LIBRARY
@@ -22,9 +23,13 @@ CONFIG(release,debug|release) {
     DEFINES += NDEBUG=1
 }
 
-DEPENDENCIESCONFIG = shared recurse
+DEPENDENCIESCONFIG = shared recurse install
 
-include (../builddefs/qmake/templatelibconfig.pri)
+## Configuration for Visual Studio to install binaries and dependencies. Work also for QT Creator by replacing QMAKE_INSTALL
+PROJECTCONFIG = QTVS
+
+#NOTE : CONFIG as staticlib or sharedlib, DEPENDENCIESCONFIG as staticlib or sharedlib, QMAKE_TARGET.arch and PROJECTDEPLOYDIR MUST BE DEFINED BEFORE templatelibconfig.pri inclusion
+include ($$shell_quote($$shell_path($$(REMAKEN_RULES_ROOT)/qmake/templatelibconfig.pri)))  # Shell_quote & shell_path required for visual on windows
 
 ## DEFINES FOR MSVC/INTEL C++ compilers
 msvc {
@@ -33,36 +38,7 @@ DEFINES += "_BCOM_SHARED=__declspec(dllexport)"
 
 INCLUDEPATH += interfaces/
 
-HEADERS += interfaces/SolARImage2WorldMapper4Marker2D.h \
-interfaces/SolAR2DTransform.h \
-interfaces/SolAR3DTransform.h \
-interfaces/SolARHomographyValidation.h \
-interfaces/SolARSBPatternReIndexer.h \
-interfaces/SolARKeypointsReIndexer.h \
-interfaces/SolARMapper.h \
-interfaces/SolARMapFilter.h \
-interfaces/SolARToolsAPI.h \
-interfaces/SolARModuleTools_traits.h \
-interfaces/SolARBasicMatchesFilter.h \
-interfaces/SolARKeyframeSelector.h \
-interfaces/SolARBasicSink.h \
-    interfaces/SolARBasicSource.h
-
-
-
-SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
-    src/SolAR2DTransform.cpp \
-    src/SolAR3DTransform.cpp \
-    src/SolARHomographyValidation.cpp \
-    src/SolARSBPatternReIndexer.cpp \
-    src/SolARKeypointsReIndexer.cpp \
-    src/SolARBasicMatchesFilter.cpp \
-    src/SolARMapper.cpp \
-    src/SolARMapFilter.cpp \
-    src/SolARModuleTools.cpp \
-    src/SolARKeyframeSelector.cpp \
-    src/SolARBasicSink.cpp \
-    src/SolARBasicSource.cpp
+include (SolARModuleTools.pri)
 
 unix {
 }
@@ -83,6 +59,10 @@ win32 {
     QMAKE_CXXFLAGS += -wd4250 -wd4251 -wd4244 -wd4275
 }
 
+android {
+    QMAKE_LFLAGS += -nostdlib++
+}
+
 header_files.path = $${PROJECTDEPLOYDIR}/interfaces
 header_files.files = $$files($${PWD}/interfaces/*.h*)
 
@@ -91,3 +71,9 @@ xpcf_xml_files.files=$$files($${PWD}/xpcf*.xml)
 
 INSTALLS += header_files
 INSTALLS += xpcf_xml_files
+
+OTHER_FILES += \
+    packagedependencies.txt
+
+#NOTE : Must be placed at the end of the .pro
+include ($$shell_quote($$shell_path($$(REMAKEN_RULES_ROOT)/qmake/remaken_install_target.pri)))) # Shell_quote & shell_path required for visual on windows

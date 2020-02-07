@@ -37,15 +37,18 @@ class SOLAR_TOOLS_EXPORT_API SolARSBPatternReIndexer : public org::bcom::xpcf::C
         public api::features::ISBPatternReIndexer {
 public:
     SolARSBPatternReIndexer();
-    ~SolARSBPatternReIndexer() = default;
-
+    ~SolARSBPatternReIndexer() override = default;
+    
     /// @brief Provides both the 4 corners of a pattern in its reference coordinate system (pixels, cells, etc.) and the 4 corners in pixels of this pattern in the current image.
     /// @param[in] candidateContours A set of contours of squared binary marker detected in the current image.
     /// @param[in] matches matches between the patterns of the dected contours of the pattern of teh reference squared binary marker.
     /// @param[out] patternPoints The 2D corners of the squared binary marker in the coordinate system of the marker.
     /// @param[out] imagePoints The 2D corners of the squared binary marker in the coordinate system of the current image.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode reindex(const std::vector<SRef<Contour2Df>>& candidateContours, const std::vector<DescriptorMatch> & matches, std::vector<SRef<Point2Df>>& patternPoints, std::vector<SRef<Point2Df>>& imagePoints) override;
+    FrameworkReturnCode reindex(const std::vector<Contour2Df> & candidateContours,
+                                const std::vector<DescriptorMatch> & matches,
+                                std::vector<Point2Df> & patternPoints,
+                                std::vector<Point2Df> & imagePoints) override;
 
     void unloadComponent () override final;
 

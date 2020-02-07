@@ -37,8 +37,8 @@ class SOLAR_TOOLS_EXPORT_API SolARKeypointsReIndexer : public org::bcom::xpcf::C
         public api::features::IKeypointsReIndexer {
 public:
     SolARKeypointsReIndexer();
-    ~SolARKeypointsReIndexer() = default;
-
+    ~SolARKeypointsReIndexer() override = default;
+    
     /// @brief Provides two ordered set of matching keypoints from two unordered set of keypoints and their corresponding matches.
     /// @param[in] refKeypoints The first set of unordered keypoints.
     /// @param[in] imgKeypoints The second set of unordered keypoints.
@@ -46,7 +46,11 @@ public:
     /// @param[out] matchedRefKeypoints The ordered set of keypoints where the ith keypoint matches with the ith keypoint of the matchedImgKeypoints set.
     /// @param[out] matchedImgKeypoints The ordered set of keypoints where the ith keypoint matches with the ith keypoint of the matchedRefKeypoints set.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode reindex(const std::vector<SRef<Keypoint>>& refKeypoints, const std::vector<SRef<Keypoint>>& imgKeypoints, std::vector<DescriptorMatch>& matches, std::vector<SRef<Point2Df>>& matchedRefKeypoints, std::vector<SRef<Point2Df>>& matchedImgKeypoints) override;
+    FrameworkReturnCode reindex(const std::vector<Keypoint>& refKeypoints,
+                                const std::vector<Keypoint> & imgKeypoints,
+                                const std::vector<DescriptorMatch> & matches,
+                                std::vector<Point2Df> & matchedRefKeypoints,
+                                std::vector<Point2Df> & matchedImgKeypoints) override;
 
     void unloadComponent () override final;
 
