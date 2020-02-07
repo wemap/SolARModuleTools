@@ -74,6 +74,7 @@ public:
 
     /// @brief return all the keyframes of the map.
     /// @return the keyframes of the map.
+<<<<<<< HEAD
 	virtual const std::vector<SRef<Keyframe>> &getKeyframes() override 
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
@@ -87,6 +88,13 @@ public:
 		std::unique_lock<std::mutex> lock(m_mutex);
 		return m_kframes[index]; 
 	};
+=======
+	virtual const std::vector<SRef<Keyframe>> &getKeyframes() override { return m_kframes; };
+
+	/// @brief return a keyframe
+	/// @param[in] Index of the keyframe
+	virtual SRef<Keyframe> &getKeyframe(int index) override { return m_kframes[index]; };
+>>>>>>> feature/ci
 
 	/// @brief get local map from reference keyframe and its neighbors
 	virtual void getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints) override;
@@ -103,7 +111,10 @@ public:
 	/// @brief return the current map.
 	/// @return the current map.
 	inline SRef<Map> getMap() {
+<<<<<<< HEAD
 		std::unique_lock<std::mutex> lock(m_mutex);
+=======
+>>>>>>> feature/ci
 		return m_map;
 	};
 
