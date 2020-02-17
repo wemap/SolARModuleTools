@@ -21,6 +21,12 @@
 
 namespace SolAR {
 namespace MODULES {
+/**
+ * @namespace SolAR::MODULES::TOOLS
+ * @brief <B>Provides a set of useful components</B>
+ * <TT>UUID: 28b89d39-41bd-451d-b19e-d25a3d7c5797</TT>
+ *
+ */
 namespace TOOLS {
 class SolARHomographyValidation;
 class SolARImage2WorldMapper4Marker2D;
