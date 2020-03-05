@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <xpcf-registry>
-    <module uuid="28b89d39-41bd-451d-b19e-d25a3d7c5797" name="SolARModuleTools"  description="SolARModuleTools"  path="$BCOMDEVROOT/bcomBuild/SolARModuleTools/0.5.0/lib/x86_64/shared">
+    <module uuid="28b89d39-41bd-451d-b19e-d25a3d7c5797" name="SolARModuleTools"  description="SolARModuleTools"  path="$REMAKENROOT/packages/SolARBuild/win-cl-14.1/SolARModuleOpenTools/0.7.0/lib/x86_64/shared">
         <component uuid="edcedc0a-9841-4377-aea1-9fa9fdb46fde" name="SolAR2DTransform" description="SolAR2DTransform">
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
                 <interface uuid="dbf5a8a1-cbcb-4a95-8dfd-4d9d5877e56f" name="I2DTransform" description="I2DTransform"/>
@@ -31,7 +31,7 @@
         </component>
 		<component uuid="09205b96-7cba-4415-bc61-64744bc26222" name="SolARMapFilter" description="SolARMapFilter">
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
-                <interface uuid="e0d6cc82-6af2-493d-901a-2384fca0b16f" name="IMapFilter" description="IMapFilter"/>
+                <interface uuid="68dc9152-5199-11ea-8d77-2e728ce88125" name="IMapFilter" description="IMapFilter"/>
         </component>
 		<component uuid="8e3c926a-0861-46f7-80b2-8abb5576692c" name="SolARMapper" description="SolARMapper">
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>

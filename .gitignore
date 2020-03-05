@@ -51,7 +51,37 @@
 *.pdb
 
 # Visual Studio files
-.vs*
-x64*
+*.ib_pdb_index
+*.idb
+*.ilk
+*.pdb
+*.sln
+*.suo
+*.vcproj
+*vcproj.*.*.user
+*.ncb
+*.sdf
+*.opensdf
+*.vcxproj
+*vcxproj.*
+x64/
+.vs/
+*.bat
+*remakeninfo.txt
+Debug/
+Release/
+*-packagedependencies.*
+*-packagedependencies-win.*
+*.pc
+
+# MinGW generated files
+*.Debug
+*.Release
+
+# documentation
+doc/
+doxygen/
 
 tests/SolARHomographyEstimation/xpcf_custom\.xml
+build/
+SolARModuleTools.pro.user.4.9-pre1

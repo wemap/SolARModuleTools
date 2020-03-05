@@ -27,19 +27,18 @@ namespace TOOLS {
 
 SolARKeyframeSelector::SolARKeyframeSelector():ConfigurableBase(xpcf::toUUID<SolARKeyframeSelector>())
 {
-   addInterface<api::solver::map::IKeyframeSelector>(this);
-   SRef<xpcf::IPropertyMap> params = getPropertyRootNode();
-   params->wrapInteger("minNbMatchesIsKeyframe", m_minNbMatchesIsKeyframe);
-   params->wrapFloat("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);
+   declareInterface<api::solver::map::IKeyframeSelector>(this);
+   declareProperty("minNbMatchesIsKeyframe", m_minNbMatchesIsKeyframe);
+   declareProperty("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);
 }
 
 
-bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::vector<DescriptorMatch>& matches)
+bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::vector<DescriptorMatch>& matches)
 {
     if (matches.size() < m_minNbMatchesIsKeyframe)
         return false;
 
-    std::vector<SRef<Keypoint>> keypointsCurrent, keypointsRef;
+    std::vector<Keypoint> keypointsCurrent, keypointsRef;
 
     if (frame->getReferenceKeyframe() == nullptr)
         return false;
@@ -52,12 +51,24 @@ bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::vector<De
     double totalMatchesDist = 0.0;
     for (int i = 0; i < matches.size(); i++)
     {
-        SRef<Keypoint> keypointRef = keypointsRef[matches[i].getIndexInDescriptorA()];
-        SRef<Keypoint> keypointCurrent = keypointsCurrent[matches[i].getIndexInDescriptorB()];
+        Keypoint keypointRef = keypointsRef[matches[i].getIndexInDescriptorA()];
+        Keypoint keypointCurrent = keypointsCurrent[matches[i].getIndexInDescriptorB()];
 
-        totalMatchesDist+=((*keypointRef)-(*keypointCurrent)).norm()/imageWidth;
+        totalMatchesDist += (keypointRef-keypointCurrent).norm()/imageWidth;
     }
     return (totalMatchesDist/matches.size()>m_minMeanDistanceIsKeyframe);
+}
+
+
+bool SolARKeyframeSelector::select(const SRef<Frame> & frame)
+{
+    // NOT IMPLEMENTED : NEEDS AVAILABLE STORAGE COMPONENTS
+    return false;
+}
+
+bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::function<bool(const SRef<Frame> &)> & func)
+{
+    return func(frame);
 }
 
 }

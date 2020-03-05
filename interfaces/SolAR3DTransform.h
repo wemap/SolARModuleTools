@@ -28,41 +28,34 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
+/**
+ * @class SolAR3DTransform
+ * @brief <B>Applies a 3D Transform to a set of 3D points.</B>
+ * <TT>UUID: f05dd955-33bd-4d52-8717-93ad298ed3e3</TT>
+ *
+ */
+
 class SOLAR_TOOLS_EXPORT_API SolAR3DTransform : public org::bcom::xpcf::ComponentBase,
         public api::geom::I3DTransform {
 public:
 
     SolAR3DTransform();
-   ~SolAR3DTransform() = default;
 
-    /// @brief This method applies a transformation (4x4 float matrix) to a set of 3D points
-    /// @param[in] inputPoints the set of 3D points to transform
-    /// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
-    /// @param[out] outputPoints the resulting set of 3D points after 3D transformation
-    /// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode transform(const std::vector<SRef<Point3Df>> & inputPoints, const Transform3Df transformation, std::vector<SRef<Point3Df>> & outputPoints) const override;
+   ~SolAR3DTransform() override;
 
-    /// @brief This method applies a transformation (4x4 float matrix) to a point cloud
-    /// @param[in] inputPointCloud the point cloud to transform
-    /// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
-    /// @param[out] outputPointCLoud the resulting point cloud after 3D transformation
-    /// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode transform(const SRef<PointCloud> inputPointCloud, const Transform3Df transformation, SRef<PointCloud>& outputPointCloud) const override;
+    /// @brief This method applies a 3D transform to a set of 3D points
+    /// @param[in] inputPoints The 3D points on which the 3D transform will be applied.
+    /// @param[in] transformation The 3D transform to apply to the set of 3D points.
+    /// @param[out] outputPoints The resulting 3D points after application of the 3D transform.
+    /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
+    FrameworkReturnCode transform(const std::vector<Point3Df> & inputPoints, const Transform3Df & transformation, std::vector<Point3Df> & outputPoints) override;
 
-    /// @brief This method applies a transformation (4x4 float matrix) to a set of 3D points
-    /// @param[in] inputPoints the set of 3D points to transform
-    /// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
-    /// @param[out] outputPoints the resulting set of 3D points after 3D transformation
-    /// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode transformInPlace(std::vector<SRef<Point3Df>> & inputPoints, const Transform3Df transformation) const override;
-
-    /// @brief This method applies a transformation (4x4 float matrix) to a point cloud
-    /// @param[in] inputPointCloud the point cloud to transform
-    /// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
-    /// @param[out] outputPointCLoud the resulting point cloud after 3D transformation
-    /// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode transformInPlace(SRef<PointCloud> inputPointCloud, const Transform3Df transformation) const override;
-
+	/// @brief This method applies a transformation (4x4 float matrix) to a point cloud
+	/// @param[in] inputPointCloud the point cloud to transform
+	/// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
+	/// @param[out] outputPointCLoud the resulting point cloud after 3D transformation
+	/// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode transformInPlace(SRef<PointCloud> inputPointCloud, const Transform3Df transformation) const override;
 
     void unloadComponent () override final;
 
