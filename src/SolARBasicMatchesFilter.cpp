@@ -29,7 +29,7 @@ namespace TOOLS {
 
 SolARBasicMatchesFilter::SolARBasicMatchesFilter():ComponentBase(xpcf::toUUID<SolARBasicMatchesFilter>())
 {
-    addInterface<api::features::IMatchesFilter>(this);
+    declareInterface<api::features::IMatchesFilter>(this);
 }
 
 
@@ -44,47 +44,41 @@ bool sortMatchByDistance(const std::pair<int,float> &lhs, const std::pair<int,fl
 }
 
 // filter matches : keep the best match in case of multiple matches per keypoint
-void SolARBasicMatchesFilter::filter(const std::vector<DescriptorMatch>&inputMatches,
-                                            std::vector<DescriptorMatch>&outputMatches,
-                                            const std::vector<SRef<Keypoint>>&inputKeyPointsA,
-                                            const std::vector<SRef<Keypoint>>&inputKeyPointsB){
-
-
-    std::vector<DescriptorMatch>matches;
+void SolARBasicMatchesFilter::filter(const std::vector<DescriptorMatch> & inputMatches,
+                                     std::vector<DescriptorMatch> & outputMatches,
+                                     const std::vector<Keypoint> & inputKeyPointsA,
+                                     const std::vector<Keypoint> & inputKeyPointsB)
+{
     std::map<int,std::vector<std::pair<int,float>>> matchesMap;
 
-    for(auto itr:inputMatches){
-        matchesMap[itr.getIndexInDescriptorA()].push_back(std::make_pair(itr.getIndexInDescriptorB(),itr.getMatchingScore()));
+    for(auto match : inputMatches){
+        matchesMap[match.getIndexInDescriptorA()].push_back(std::make_pair(match.getIndexInDescriptorB(),match.getMatchingScore()));
     }
 
-    matches.clear();
-    for (std::map<int,std::vector<std::pair<int,float>>>::iterator itr=matchesMap.begin();itr!=matchesMap.end();++itr){
-        std::vector<std::pair<int,float>> ptr=itr->second;
-        if(ptr.size()>1){
-            std::sort(ptr.begin(),ptr.end(),sortMatchByDistance);
+    std::vector<DescriptorMatch> matches;
+    for (auto & kv : matchesMap) {//std::map<int,std::vector<std::pair<int,float>>>::iterator itr=matchesMap.begin();itr!=matchesMap.end();++itr){
+        std::vector<std::pair<int,float>> &  vect = kv.second;
+        if(vect.size()>1){
+            std::sort(vect.begin(),vect.end(),sortMatchByDistance);
         }
-        matches.push_back(DescriptorMatch(itr->first, ptr.begin()->first,ptr.begin()->second));
+        matches.push_back(DescriptorMatch(kv.first, vect.begin()->first,vect.begin()->second));
     }
-
 
     matchesMap.clear();
-    for(auto itr:matches){
-        matchesMap[itr.getIndexInDescriptorB()].push_back(std::make_pair(itr.getIndexInDescriptorA(),itr.getMatchingScore()));
+    for(auto match : matches){
+        matchesMap[match.getIndexInDescriptorB()].push_back(std::make_pair(match.getIndexInDescriptorA(),match.getMatchingScore()));
     }
 
     matches.clear();
-    for (std::map<int,std::vector<std::pair<int,float>>>::iterator itr=matchesMap.begin();itr!=matchesMap.end();++itr){
-        std::vector<std::pair<int,float>> ptr=itr->second;
-        if(ptr.size()>1){
-            std::sort(ptr.begin(),ptr.end(),sortMatchByDistance);
+   for (auto & kv : matchesMap) {//for (std::map<int,std::vector<std::pair<int,float>>>::iterator itr=matchesMap.begin();itr!=matchesMap.end();++itr){
+        std::vector<std::pair<int,float>> & vect = kv.second;
+        if(vect.size()>1){
+            std::sort(vect.begin(),vect.end(),sortMatchByDistance);
         }
-        matches.push_back(DescriptorMatch(ptr.begin()->first,itr->first,ptr.begin()->second));
+        matches.push_back(DescriptorMatch(vect.begin()->first,kv.first,vect.begin()->second));
     }
 
-
-    outputMatches=matches;
-
-
+    outputMatches = matches;
  }
 
 }

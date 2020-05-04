@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <xpcf-registry>
-    <module uuid="28b89d39-41bd-451d-b19e-d25a3d7c5797" name="SolARModuleTools"  description="SolARModuleTools"  path="$BCOMDEVROOT/bcomBuild/SolARModuleTools/0.5.3/lib/x86_64/shared">
+    <module uuid="28b89d39-41bd-451d-b19e-d25a3d7c5797" name="SolARModuleTools"  description="SolARModuleTools"  path="$REMAKENROOT/packages/SolARBuild/win-cl-14.1/SolARModuleOpenTools/0.7.0/lib/x86_64/shared">
         <component uuid="edcedc0a-9841-4377-aea1-9fa9fdb46fde" name="SolAR2DTransform" description="SolAR2DTransform">
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
                 <interface uuid="dbf5a8a1-cbcb-4a95-8dfd-4d9d5877e56f" name="I2DTransform" description="I2DTransform"/>
@@ -31,7 +31,7 @@
         </component>
 		<component uuid="09205b96-7cba-4415-bc61-64744bc26222" name="SolARMapFilter" description="SolARMapFilter">
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
-                <interface uuid="e0d6cc82-6af2-493d-901a-2384fca0b16f" name="IMapFilter" description="IMapFilter"/>
+                <interface uuid="68dc9152-5199-11ea-8d77-2e728ce88125" name="IMapFilter" description="IMapFilter"/>
         </component>
 		<component uuid="8e3c926a-0861-46f7-80b2-8abb5576692c" name="SolARMapper" description="SolARMapper">
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
@@ -44,18 +44,6 @@
         <component uuid="bb292de7-8f87-4a23-8b23-c4d9e8a64f8d" name="ThirdPartyConnector" description="ThirdPartyConnector">
                 <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
                 <interface uuid="c0d9fee4-d7d7-4866-a6cd-3bacac23316a" name="IThirdPartyConnector" description="IThirdPartyConnector"/>
-        </component>
-		<component uuid="f94b4b51-b8f2-433d-b535-ebf1f54b4bf6" name="SolARKeyframesStorageSet" description="A component to store persistent keyframes">
-                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
-                <interface uuid="2c147595-6c74-4f69-b63d-91e162c311ed" name="IKeyframesStorage" description="A component interface for storing a set of persistent keyframes accesisble by processing components."/>
-        </component>
-		<component uuid="958165e9-c4ea-4146-be50-b527a9a851f0" name="SolARPointCloudStorageSet" description="A component to store a persistent set of 3D points">
-                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
-                <interface uuid="264d4406-b726-4ce9-a430-35d8b5e70331" name="IPointCloudStorage" description="A component interface for storing a set of persistent 3D points accesisble by processing components."/>
-        </component>
-		<component uuid="17c7087f-3394-4b4b-8e6d-3f8639bb00ea" name="SolARVisibilityStorageBiMap" description="A component to store the visibility between keypoints and 3D points">
-                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
-                <interface uuid="2c147595-6c74-4f69-b63d-91e162c311ed" name="IVisibilityStorage" description="A component interface for storing a persistent visibility between keypoints and 3D points (and resp.)."/>
         </component>
     </module>
 </xpcf-registry>

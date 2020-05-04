@@ -31,7 +31,8 @@ namespace TOOLS {
 
 /**
  * @class SolARBasicSource
- * @brief A Source to give Input images to pipelines.
+ * @brief <B>Feeds a pipeline with an external image.</B>
+ * <TT>UUID: 1e43cda9-7850-4a8a-a32b-f3f31ea94902</TT>
  *
  */
 
@@ -40,14 +41,18 @@ class SOLAR_TOOLS_EXPORT_API SolARBasicSource : public org::bcom::xpcf::Configur
 {
 public:
     SolARBasicSource();
-    ~SolARBasicSource() = default;
+    ~SolARBasicSource() override = default;
 
     /// @brief Set a new image coming from a third party.
-    /// @param[in,out] image
-    SourceReturnCode setInputTexture( void* sourceTexturehandle, int width, int height ) override;
+    /// @param [in] sourceTexturehandle. Texture buffer from third party like Unity
+    /// @param [in] width of the image coming from the third party like Unity
+    /// @param [in] height of the image coming from the third party like Unity
+    /// @return SourceReturnCode::_SUCCESS if a new pose and image have been updated, otherwise frameworkReturnCode::_ERROR_
+    SourceReturnCode setInputTexture(const void* sourceTexturehandle,const int width,const int height ) override;
 
     /// @brief Get a pointer to the texture buffer to update it with the new image when required.
     /// @param[in,out] image
+    /// @return SourceReturnCode::_SUCCESS if a new pose and image have been updated, otherwise frameworkReturnCode::_ERROR_
     SourceReturnCode getNextImage(SRef<Image> & image) override;
 
     void unloadComponent () override final;

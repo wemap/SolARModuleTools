@@ -28,6 +28,13 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
+/**
+ * @class SolARKeyframeSelector
+ * @brief <B>Defines if a frame can be a candidate for a keyframe.</B>
+ * <TT>UUID: ad59a5ba-beb8-11e8-a355-529269fb1459</TT>
+ *
+ */
+
 class SOLAR_TOOLS_EXPORT_API SolARKeyframeSelector : public org::bcom::xpcf::ConfigurableBase,
         public api::solver::map::IKeyframeSelector {
 public:
@@ -36,13 +43,27 @@ public:
     ///
     ///@brief ~SolARKeyframeSelector
     ///
-    virtual ~SolARKeyframeSelector() {}
+    virtual ~SolARKeyframeSelector() override {}
 
-    /// @brief  Select if a frame can be considered as a keyframe
+    /// @brief  Defines if a frame can be a candidate for a keyframe
     /// @param[in] frame: the frame tested to know if it could be a Keyframe
     /// @param[in] matches: the matches between the frame and its keyframe of reference.
     /// @return true if the frame can be considered as a new keyframe, false otherwise.
-    virtual bool select(const SRef<Frame> frame, const std::vector<DescriptorMatch>& matches) override;
+    virtual bool select(const SRef<Frame> & frame, const std::vector<DescriptorMatch> & matches) override;
+
+    /// @brief  Select if a frame can be considered as a keyframe
+    /// @param[in] frame: the frame tested to know if it could be a Keyframe
+    /// The underlying component can use data from SolAR data storage components, based on the frame properties.
+    /// @return true if the frame can be considered as a new keyframe, false otherwise.
+    virtual bool select(const SRef<Frame> & frame) override;
+
+    /// @brief  Select if a frame can be considered as a keyframe.
+    /// It is based on a selection predicate and provides the mean to use any datastructure in the pipeline context to the decision algorithm.
+    /// @param[in] frame: the frame tested to know if it could be a Keyframe
+    /// @param[in] func: the function predicate used to test the frame.
+    /// This predicate can be any lambda capturing its context (matches, point cloud, bow ...) to select the frame.
+    /// @return true if the frame can be considered as a new keyframe, false otherwise.
+    virtual bool select(const SRef<Frame> & frame, const std::function<bool(const SRef<Frame> &)> & func) override;
 
     void unloadComponent () override final;
 

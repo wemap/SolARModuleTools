@@ -28,7 +28,7 @@ namespace TOOLS {
 
 SolAR2DTransform::SolAR2DTransform():ComponentBase(xpcf::toUUID<SolAR2DTransform>())
 {
-   addInterface<api::geom::I2DTransform>(this);
+   declareInterface<api::geom::I2DTransform>(this);
 }
 
 
@@ -36,14 +36,12 @@ SolAR2DTransform::~SolAR2DTransform(){
 
 }
 
-FrameworkReturnCode SolAR2DTransform::transform(const std::vector<SRef<Point2Df>> & inputPoints, const Transform2Df transformation, std::vector<SRef<Point2Df>> & outputPoints)
+FrameworkReturnCode SolAR2DTransform::transform(const std::vector<Point2Df> & inputPoints, const Transform2Df & transformation, std::vector<Point2Df> & outputPoints)
 {
     Point2Df outputPoint2D;
     Vector3f outputVector3f;
 
-    for (int i = 0;i<inputPoints.size();++i){
-
-        Point2Df inputPoint2D = *(inputPoints.at(i));
+    for (auto inputPoint2D : inputPoints){
         Vector3f inputVector3f(inputPoint2D.getX(),inputPoint2D.getY(),1);
         outputVector3f=transformation*inputVector3f;
         if (outputVector3f[2]!=0) {
@@ -53,7 +51,7 @@ FrameworkReturnCode SolAR2DTransform::transform(const std::vector<SRef<Point2Df>
             outputPoint2D.setX(0);
             outputPoint2D.setY(0);
         }
-        outputPoints.push_back(xpcf::utils::make_shared<Point2Df>(outputPoint2D));
+        outputPoints.push_back(outputPoint2D);
     }
     return FrameworkReturnCode::_SUCCESS;
 }
