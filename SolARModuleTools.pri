@@ -11,7 +11,10 @@ interfaces/SolARModuleTools_traits.h \
 interfaces/SolARBasicMatchesFilter.h \
 interfaces/SolARKeyframeSelector.h \
 interfaces/SolARBasicSink.h \
-    interfaces/SolARBasicSource.h
+interfaces/SolARBasicSource.h \
+interfaces/SolARPointCloudStorageSet.h \
+interfaces/SolARKeyframesStorageSet.h \
+interfaces/SolARVisibilityStorageBiMap.h
 
 
 
@@ -27,4 +30,7 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARModuleTools.cpp \
     src/SolARKeyframeSelector.cpp \
     src/SolARBasicSink.cpp \
-    src/SolARBasicSource.cpp
+    src/SolARBasicSource.cpp \
+    src/SolARPointCloudStorageSet.cpp \
+    src/SolARKeyframesStorageSet.cpp \
+    src/SolARVisibilityStorageBiMap.cpp
