@@ -25,9 +25,9 @@
 #include "SolARMapper.h"
 #include "SolARBasicSink.h"
 #include "SolARBasicSource.h"
-#include "SolARKeyframesStorageSet.h"
-#include "SolARPointCloudStorageSet.h"
-#include "SolARVisibilityStorageBiMap.h"
+#include "SolARKeyframesManager.h"
+#include "SolARPointCloudManager.h"
+#include "SolARCovisibilityGraph.h"
 
 #include <iostream>
 
@@ -85,15 +85,15 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARKeyframesStorageSet>(componentUUID,interfaceRef);
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARKeyframesManager>(componentUUID,interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARPointCloudStorageSet>(componentUUID,interfaceRef);
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARPointCloudManager>(componentUUID,interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARVisibilityStorageBiMap>(componentUUID,interfaceRef);
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARCovisibilityGraph>(componentUUID,interfaceRef);
     }
       return errCode;
 }
@@ -112,8 +112,8 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapper)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapFilter)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSink)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSource)
-XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframesStorageSet)
-XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARPointCloudStorageSet)
-XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARVisibilityStorageBiMap)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframesManager)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARPointCloudManager)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARCovisibilityGraph)
 XPCF_END_COMPONENTS_DECLARATION
 
