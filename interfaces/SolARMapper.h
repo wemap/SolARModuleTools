@@ -20,14 +20,14 @@ namespace TOOLS {
 
 /**
  * @class SolARMapper
- * @brief <B>Updates a point map with new triangulated 3D points.</B>
+ * @brief <B>Allow to manage all components of a map.</B>
  * <TT>UUID: 8e3c926a-0861-46f7-80b2-8abb5576692c</TT>
  *
  */
 
 /**
 * @class SolARMapper
-* @brief Store the 3D Map and keyframes
+* @brief Store all components of a map
 */
 class SOLAR_TOOLS_EXPORT_API SolARMapper : public org::bcom::xpcf::ComponentBase,
     public api::solver::map::IMapper {

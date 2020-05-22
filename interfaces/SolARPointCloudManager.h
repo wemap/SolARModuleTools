@@ -39,22 +39,22 @@ public:
 	/// @brief This method allow to add a 3D point to the point cloud
 	/// @param[in] point the 3D point to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoint(SRef<CloudPoint> point) override;
+	FrameworkReturnCode addPoint(const SRef<CloudPoint>& point) override;
 
 	/// @brief This method allow to add a vector of 3D points to the point cloud
 	/// @param[in] a vector of the 3D points to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoints(std::vector<SRef<CloudPoint>> points) override;
+	FrameworkReturnCode addPoints(const std::vector<SRef<CloudPoint>>& points) override;
 
 	/// @brief This method allow to add a 3D point to the point cloud
 	/// @param[in] point the 3D point to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoint(CloudPoint &point) override;
+	FrameworkReturnCode addPoint(const CloudPoint &point) override;
 
 	/// @brief This method allow to add a vector of 3D points to the point cloud
 	/// @param[in] a vector of the 3D points to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoints(std::vector<CloudPoint> &points) override;
+	FrameworkReturnCode addPoints(const std::vector<CloudPoint> &points) override;
 
 	/// @brief This method allows to get a 3D point stored in the point cloud by its id
 	/// @param[in] id of the point to get

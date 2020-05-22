@@ -33,7 +33,7 @@ SolARPointCloudManager::SolARPointCloudManager():ComponentBase(xpcf::toUUID<SolA
 	m_id = 0;
 }
 
-FrameworkReturnCode SolARPointCloudManager::addPoint(SRef<CloudPoint> point)
+FrameworkReturnCode SolARPointCloudManager::addPoint(const SRef<CloudPoint>& point)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	point->setId(m_id);	
@@ -42,7 +42,7 @@ FrameworkReturnCode SolARPointCloudManager::addPoint(SRef<CloudPoint> point)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::addPoints(std::vector<SRef<CloudPoint>> points)
+FrameworkReturnCode SolARPointCloudManager::addPoints(const std::vector<SRef<CloudPoint>>& points)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : points)
@@ -50,7 +50,7 @@ FrameworkReturnCode SolARPointCloudManager::addPoints(std::vector<SRef<CloudPoin
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::addPoint(CloudPoint & point)
+FrameworkReturnCode SolARPointCloudManager::addPoint(const CloudPoint & point)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
     SRef<CloudPoint> point_ptr = xpcf::utils::make_shared<CloudPoint>(point);
@@ -58,7 +58,7 @@ FrameworkReturnCode SolARPointCloudManager::addPoint(CloudPoint & point)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::addPoints(std::vector<CloudPoint>& points)
+FrameworkReturnCode SolARPointCloudManager::addPoints(const std::vector<CloudPoint>& points)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : points) {

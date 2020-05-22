@@ -42,7 +42,7 @@ public:
 	/// @brief This method allow to add a frame to the keyframe manager component
 	/// @param[in] frame the frame to add to the set of persistent keyframes
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addKeyframe(SRef<Keyframe> keyframe) override;
+	FrameworkReturnCode addKeyframe(const SRef<Keyframe>& keyframe) override;
 
 	/// @brief This method allow to add a frame to the key frame manager component
 	/// @param[in] frame the frame to add to the set of persistent keyframes

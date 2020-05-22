@@ -33,7 +33,7 @@ SolARKeyframesManager::SolARKeyframesManager():ComponentBase(xpcf::toUUID<SolARK
 	m_id = 0;
 }
 
-FrameworkReturnCode SolARKeyframesManager::addKeyframe(SRef<Keyframe> keyframe)
+FrameworkReturnCode SolARKeyframesManager::addKeyframe(const SRef<Keyframe>& keyframe)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	keyframe->setId(m_id);
