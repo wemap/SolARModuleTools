@@ -77,7 +77,7 @@ public:
     /// @param[in] keyframe_id: id of keyframe to match
     /// @param[out] matches: a set of matches between frame and keyframe
     /// @return FrameworkReturnCode::_SUCCESS if the retrieve succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode match(const SRef<Frame>& frame, uint32_t keyframe_id, std::vector<DescriptorMatch> &matches) override;
+    FrameworkReturnCode match(const SRef<Frame>& frame, const SRef<Keyframe>& keyframe, std::vector<DescriptorMatch> &matches) override;
 
     /// @brief Match a set of descriptors with a keyframe
     /// @param[in] indexDescriptors: index of descriptors to match.
@@ -85,7 +85,7 @@ public:
     /// @param[in] keyframe_id: id of keyframe to match
     /// @param[out] matches: a set of matches between frame and keyframe
     /// @return FrameworkReturnCode::_SUCCESS if the retrieve succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode match(const std::vector<int> &indexDescriptors, const SRef<DescriptorBuffer> &descriptors, uint32_t keyframe_id, std::vector<DescriptorMatch> &matches) override;
+    FrameworkReturnCode match(const std::vector<int> &indexDescriptors, const SRef<DescriptorBuffer> &descriptors, const SRef<Keyframe> &keyframe, std::vector<DescriptorMatch> &matches) override;
 
 private:
 

@@ -83,12 +83,12 @@ FrameworkReturnCode KeyFrameRetrieverMock::loadFromFile(std::string file)
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode KeyFrameRetrieverMock::match(const SRef<Frame>& frame, uint32_t keyframe_id, std::vector<DescriptorMatch> &matches)
+FrameworkReturnCode KeyFrameRetrieverMock::match(const SRef<Frame>& frame, const SRef<Keyframe>& keyframe, std::vector<DescriptorMatch> &matches)
 {
 
     return FrameworkReturnCode::_SUCCESS;
 }
-FrameworkReturnCode KeyFrameRetrieverMock::match(const std::vector<int> &indexDescriptors, const SRef<DescriptorBuffer> &descriptors, uint32_t keyframe_id, std::vector<DescriptorMatch> &matches)
+FrameworkReturnCode KeyFrameRetrieverMock::match(const std::vector<int> &indexDescriptors, const SRef<DescriptorBuffer> &descriptors, const SRef<Keyframe> &keyframe, std::vector<DescriptorMatch> &matches)
 {
 
     return FrameworkReturnCode::_SUCCESS;
