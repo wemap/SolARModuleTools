@@ -30,6 +30,9 @@ namespace TOOLS {
 SolARMapper::SolARMapper():ComponentBase(xpcf::toUUID<SolARMapper>())
 {
     declareInterface<IMapper>(this);
+    declareInjectable<IPointCloudManager>(m_pointCloudManager);
+    declareInjectable<IKeyframesManager>(m_keyframesManager);
+    declareInjectable<IKeyframeRetriever>(m_keyframeRetriever);
 }
 
 FrameworkReturnCode SolARMapper::setIdentification(SRef<Identification>& identification)
