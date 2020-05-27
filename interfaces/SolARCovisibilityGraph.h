@@ -41,14 +41,14 @@ public:
 	/// @param[in] id of 2nd node
 	/// @param[in] weight to increase
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode increaseEdge(uint32_t node1_id, uint32_t node2_id, uint32_t weight) override;
+	FrameworkReturnCode increaseEdge(uint32_t node1_id, uint32_t node2_id, float weight) override;
 
 	/// @brief This method allow to decrease edge between 2 nodes
 	/// @param[in] id of 1st node
 	/// @param[in] id of 2nd node
 	/// @param[in] weight to decrease
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode decreaseEdge(uint32_t node1_id, uint32_t node2_id, uint32_t weight) override;
+	FrameworkReturnCode decreaseEdge(uint32_t node1_id, uint32_t node2_id, float weight) override;
 
 	/// @brief This method allow to remove an edge between 2 nodes
 	/// @param[in] id of 1st node
@@ -61,7 +61,7 @@ public:
 	/// @param[in] id of 2nd node
 	/// @param[out] weight of the edge
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getEdge(uint32_t node1_id, uint32_t node2_id, uint32_t &weight) override;
+	FrameworkReturnCode getEdge(uint32_t node1_id, uint32_t node2_id, float &weight) override;
 
 	/// @brief This method allow to verify that exist an edge between 2 nodes
 	/// @param[in] id of 1st node
@@ -72,7 +72,7 @@ public:
 	/// @brief This method allow to get all nodes of the graph
 	/// @param[out] ids of all nodes
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getAllNodes(std::vector<uint32_t> &nodes_id) override;
+	FrameworkReturnCode getAllNodes(std::set<uint32_t> &nodes_id) override;
 
 	/// @brief This method allow to suppress a node of the graph
 	/// @param[in] id of the node to suppress
@@ -82,27 +82,31 @@ public:
 	/// @brief This method allow to get neighbors of a node in the graph
 	/// @param[in] id of the node to get neighbors
 	/// @param[in] min value between this node and a neighbor to accept
-	/// @param[out] a vector of neighbors
+	/// @param[out] a vector of neighbors sorted to greater weighted edge.
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getNeighbors(uint32_t node, uint32_t minWeight, std::vector<uint32_t> &neighbors) override;
+	FrameworkReturnCode getNeighbors(uint32_t node_id, float minWeight, std::vector<uint32_t> &neighbors) override;
 
 	/// @brief This method allow to get minimal spanning tree of the graph
-	/// @param[out] the minimal spanning tree graph
+	/// @param[out] edges_weights: the minimal spanning tree graph including edges with weights
+	/// @param[out] minTotalWeights: cost of the minimal spanning tree graph
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode minimalSpanningTree(SRef<ICovisibilityGraph> graph) override;
+	FrameworkReturnCode minimalSpanningTree(std::vector<std::tuple<uint32_t, uint32_t, float>> &edges_weights, float &minTotalWeights) override;
 
 	/// @brief This method allow to get maximal spanning tree of the graph
-	/// @param[out] the maximal spanning tree graph
+	/// @param[out] edges_weights: the maximal spanning tree graph including edges with weights
+	/// @param[out] maxTotalWeights: cost of the maximal spanning tree graph
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode maximalSpanningTree(SRef<ICovisibilityGraph> graph) override;
+	FrameworkReturnCode maximalSpanningTree(std::vector<std::tuple<uint32_t, uint32_t, float>> &edges_weights, float &maxTotalWeights) override;
 
-	/// @brief This method allow to get the shortest path between 2 nodes
+	/// @brief This method allow to get the shortest (by number of vertices) path between 2 nodes
 	/// @param[in] id of 1st node
 	/// @param[in] id of 2nd node
 	/// @param[out] the shortest path
-	/// @param[out] the total cost of the shortest path
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getShortestPath(uint32_t node1_id, uint32_t node2_id, std::vector<uint32_t> &path, uint32_t &totalCost) override;
+	FrameworkReturnCode getShortestPath(uint32_t node1_id, uint32_t node2_id, std::vector<uint32_t> &path) override;
+
+	/// @brief This method allow to display all vertices and weighted edges of the covisibility graph
+	FrameworkReturnCode display() override;
 
 	/// @brief This method allows to save the graph to the external file
 	/// @param[out] the file name
@@ -116,9 +120,10 @@ public:
     
 	void unloadComponent () override final;
 
-
  private:
-    
+	 std::set<uint32_t>						m_nodes;
+	 std::map<uint32_t, std::set<uint32_t>> m_edges;
+	 std::map<uint64_t, float>				m_weights;
 };
 
 }
