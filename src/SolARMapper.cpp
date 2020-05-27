@@ -32,6 +32,7 @@ SolARMapper::SolARMapper():ComponentBase(xpcf::toUUID<SolARMapper>())
     declareInterface<IMapper>(this);
     declareInjectable<IPointCloudManager>(m_pointCloudManager);
     declareInjectable<IKeyframesManager>(m_keyframesManager);
+    declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
     declareInjectable<IKeyframeRetriever>(m_keyframeRetriever);
 }
 
