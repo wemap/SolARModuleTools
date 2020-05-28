@@ -46,7 +46,9 @@ FrameworkReturnCode SolARKeyframesManager::addKeyframe(const Keyframe & keyframe
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     SRef<Keyframe> keyframe_ptr = xpcf::utils::make_shared<Keyframe>(keyframe);
-    addKeyframe(keyframe_ptr);
+	keyframe_ptr->setId(m_id);
+	m_keyframes[m_id] = keyframe_ptr;
+	m_id++;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
