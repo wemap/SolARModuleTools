@@ -34,7 +34,7 @@ SolARMapFilter::SolARMapFilter():ConfigurableBase(xpcf::toUUID<SolARMapFilter>()
     declareProperty("cheiralityCheck", m_cheiralityCheck);
 }
 
-void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<CloudPoint>& input,  std::vector<CloudPoint>& output)
+void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<SRef<CloudPoint>>& input,  std::vector<SRef<CloudPoint>>& output)
 {
     if (input.size() == 0)
     {
@@ -53,7 +53,7 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
 
         // BUG patch To correct, Vector4f should but is not accepted with windows !
 #if (_WIN64) || (_WIN32)
-        Vector3f point(input[i].getX(), input[i].getY(), input[i].getZ());
+        Vector3f point(input[i]->getX(), input[i]->getY(), input[i]->getZ());
         Vector3f pointInCam1Ref, pointInCam2Ref;
 #else
         Vector4f point(input[i].getX(), input[i].getY(), input[i].getZ(), 1);
@@ -65,14 +65,14 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
         if ((!m_cheiralityCheck) || ((pointInCam1Ref(2) >= 0) && pointInCam2Ref(2) >=0))
         {
             // if the reprojection error is less than the threshold
-            if (input[i].getReprojError() < m_reprojErrorThreshold)
+            if (input[i]->getReprojError() < m_reprojErrorThreshold)
                 output.push_back(input[i]);
         }
     }
 
 }
 
-void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<CloudPoint>& input, std::vector<CloudPoint>& output, std::vector<int> &index)
+void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<SRef<CloudPoint>>& input, std::vector<SRef<CloudPoint>>& output, std::vector<int> &index)
 {
 	if (input.size() == 0)
 	{
@@ -91,7 +91,7 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
 
 		// BUG patch To correct, Vector4f should but is not accepted with windows !
 #if (_WIN64) || (_WIN32)
-		Vector3f point(input[i].getX(), input[i].getY(), input[i].getZ());
+		Vector3f point(input[i]->getX(), input[i]->getY(), input[i]->getZ());
 		Vector3f pointInCam1Ref, pointInCam2Ref;
 #else
 		Vector4f point(input[i].getX(), input[i].getY(), input[i].getZ(), 1);
@@ -103,7 +103,7 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
 		if ((!m_cheiralityCheck) || ((pointInCam1Ref(2) >= 0) && pointInCam2Ref(2) >= 0))
 		{
 			// if the reprojection error is less than the threshold
-			if (input[i].getReprojError() < m_reprojErrorThreshold) {
+			if (input[i]->getReprojError() < m_reprojErrorThreshold) {
 				index.push_back(i);
 				output.push_back(input[i]);
 			}
