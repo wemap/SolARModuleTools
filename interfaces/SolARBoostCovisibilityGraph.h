@@ -14,47 +14,48 @@
  * limitations under the License.
  */
 
-#ifndef SOLARCOVISIBILITYGRAPH_H
-#define SOLARCOVISIBILITYGRAPH_H
+#ifndef SOLARBOOSTCOVISIBILITYGRAPH_H
+#define SOLARBOOSTCOVISIBILITYGRAPH_H
 
 #include "api/storage/ICovisibilityGraph.h"
 #include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
+#include <mutex>
 
 namespace SolAR {
 using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 /**
- * @class SolARVisibilityStorageBiMap
+ * @class SolARBoostCovisibilityGraph
  * @brief A storage component to store with persistence the visibility between keypoints and 3D points, and respectively, based on a bimap from boost.
  */
-class SOLAR_TOOLS_EXPORT_API SolARCovisibilityGraph : public org::bcom::xpcf::ComponentBase,
+class SOLAR_TOOLS_EXPORT_API SolARBoostCovisibilityGraph : public org::bcom::xpcf::ComponentBase,
         public api::storage::ICovisibilityGraph {
 public:
 
-    SolARCovisibilityGraph();
-    ~SolARCovisibilityGraph() = default;
+    SolARBoostCovisibilityGraph();
+    ~SolARBoostCovisibilityGraph() = default;
 
 	/// @brief This method allow to increase edge between 2 nodes
 	/// @param[in] id of 1st node
 	/// @param[in] id of 2nd node
 	/// @param[in] weight to increase
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode increaseEdge(uint32_t node1_id, uint32_t node2_id, float weight) override;
+    FrameworkReturnCode increaseEdge(uint32_t node1_id, uint32_t node2_id, float weight) override;
 
 	/// @brief This method allow to decrease edge between 2 nodes
 	/// @param[in] id of 1st node
 	/// @param[in] id of 2nd node
 	/// @param[in] weight to decrease
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode decreaseEdge(uint32_t node1_id, uint32_t node2_id, float weight) override;
+    FrameworkReturnCode decreaseEdge(uint32_t node1_id, uint32_t node2_id, float weight) override;
 
 	/// @brief This method allow to remove an edge between 2 nodes
 	/// @param[in] id of 1st node
 	/// @param[in] id of 2nd node
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode removeEdge(uint32_t node1_id, uint32_t node2_id) override;
+    FrameworkReturnCode removeEdge(uint32_t node1_id, uint32_t node2_id) override;
 
 	/// @brief This method allow to get edge between 2 nodes
 	/// @param[in] id of 1st node
@@ -124,10 +125,11 @@ public:
 	 std::set<uint32_t>						m_nodes;
 	 std::map<uint32_t, std::set<uint32_t>> m_edges;
 	 std::map<uint64_t, float>				m_weights;
+     std::mutex                             m_mutex;
 };
 
 }
 }
 }
 
-#endif // SOLARCOVISIBILITYGRAPH_H
+#endif // SOLARBOOSTCOVISIBILITYGRAPH_H
