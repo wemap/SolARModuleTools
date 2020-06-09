@@ -169,13 +169,23 @@ int SolARPointCloudManager::getNbPoints()
 
 FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)
 {
-	LOG_WARNING("Coming soon!");
+	std::ofstream ofs(file);
+	boost::archive::text_oarchive oa(ofs);
+	oa << m_id;
+	oa << m_descriptorType;
+	oa << m_pointCloud;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARPointCloudManager::loadFromFile(std::string file)
 {
-	LOG_WARNING("Coming soon!");
+	std::ifstream ifs(file);
+	if (!ifs.is_open())
+		return FrameworkReturnCode::_ERROR_;
+	boost::archive::text_iarchive ia(ifs);
+	ia >> m_id;
+	ia >> m_descriptorType;
+	ia >> m_pointCloud;
 	return FrameworkReturnCode::_SUCCESS;
 }
 

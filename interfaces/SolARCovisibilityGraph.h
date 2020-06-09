@@ -20,6 +20,11 @@
 #include "api/storage/ICovisibilityGraph.h"
 #include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
+#include <fstream>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/set.hpp>
 
 namespace SolAR {
 using namespace datastructure;

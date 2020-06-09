@@ -21,6 +21,11 @@
 #include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+
 namespace SolAR {
 using namespace datastructure;
 namespace MODULES {
