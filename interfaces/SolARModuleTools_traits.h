@@ -43,6 +43,7 @@ class SolARBasicSource;
 class SolARKeyframesManager;
 class SolARPointCloudManager;
 class SolARCovisibilityGraph;
+class SolARBoostCovisibilityGraph;
 }
 }
 }
@@ -122,6 +123,11 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARCovisibilityGraph,
                              "17c7087f-3394-4b4b-8e6d-3f8639bb00ea",
                              "SolARCovisibilityGraph",
                              "A component to manage the covisibility between keyframes")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph,
+                             "b8104c93-b88a-4082-999c-802b52045043",
+                             "SolARBoostCovisibilityGraph",
+                             "A component to manage the covisibility between keyframes which uses the boost library")
 
 #endif // SOLARMODULETOOLS_TRAITS_H
 
