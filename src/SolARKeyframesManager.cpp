@@ -137,6 +137,7 @@ FrameworkReturnCode SolARKeyframesManager::saveToFile(std::string file)
 	oa << m_id;
 	oa << m_descriptorType;
 	oa << m_keyframes;
+	ofs.close();
 	return FrameworkReturnCode::_SUCCESS;
 }
 
@@ -149,6 +150,7 @@ FrameworkReturnCode SolARKeyframesManager::loadFromFile(std::string file)
 	ia >> m_id;
 	ia >> m_descriptorType;
 	ia >> m_keyframes;
+	ifs.close();
 	return FrameworkReturnCode::_SUCCESS;
 }
 

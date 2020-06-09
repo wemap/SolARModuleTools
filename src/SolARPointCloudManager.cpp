@@ -174,6 +174,7 @@ FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)
 	oa << m_id;
 	oa << m_descriptorType;
 	oa << m_pointCloud;
+	ofs.close();
 	return FrameworkReturnCode::_SUCCESS;
 }
 
@@ -186,6 +187,7 @@ FrameworkReturnCode SolARPointCloudManager::loadFromFile(std::string file)
 	ia >> m_id;
 	ia >> m_descriptorType;
 	ia >> m_pointCloud;
+	ifs.close();
 	return FrameworkReturnCode::_SUCCESS;
 }
 

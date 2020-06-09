@@ -27,13 +27,21 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-SolARMapper::SolARMapper():ComponentBase(xpcf::toUUID<SolARMapper>())
+SolARMapper::SolARMapper():ConfigurableBase(xpcf::toUUID<SolARMapper>())
 {
     declareInterface<IMapper>(this);
     declareInjectable<IPointCloudManager>(m_pointCloudManager);
     declareInjectable<IKeyframesManager>(m_keyframesManager);
     declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
     declareInjectable<IKeyframeRetriever>(m_keyframeRetriever);
+	
+	declareProperty("directory", m_directory);
+	declareProperty("identificationFileName", m_identificationFileName);
+	declareProperty("coordinateFileName", m_coordinateFileName);
+	declareProperty("pointCloudManagerFileName", m_pcManagerFileName);
+	declareProperty("keyframesManagerFileName", m_kfManagerFileName);
+	declareProperty("covisibilityGraphFileName", m_covisGraphFileName);
+	declareProperty("keyframeRetrieverFileName", m_kfRetrieverFileName);
 }
 
 FrameworkReturnCode SolARMapper::setIdentification(SRef<Identification>& identification)
@@ -191,15 +199,66 @@ FrameworkReturnCode SolARMapper::removeKeyframe(const SRef<Keyframe>& keyframe)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::saveToFile(std::string file)
+FrameworkReturnCode SolARMapper::saveToFile()
 {
-	LOG_WARNING("Coming soon!");
+	LOG_INFO("Saving the map to file...");
+	boost::filesystem::create_directory(boost::filesystem::path(m_directory.c_str()));
+	LOG_DEBUG("Save identification");
+	std::ofstream ofs_iden(m_directory + "/" + m_identificationFileName);
+	boost::archive::text_oarchive oa_iden(ofs_iden);
+	oa_iden << m_identification;
+	ofs_iden.close();
+	LOG_DEBUG("Save coordinate system");
+	std::ofstream ofs_coor(m_directory + "/" + m_coordinateFileName);
+	boost::archive::text_oarchive oa_coor(ofs_coor);
+	oa_coor << m_coordinateSystem;
+	ofs_coor.close();
+	LOG_DEBUG("Save point cloud manager");
+	if (m_pointCloudManager->saveToFile(m_directory + "/" + m_pcManagerFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Save keyframes manager");
+	if (m_keyframesManager->saveToFile(m_directory + "/" + m_kfManagerFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Save covisibility graph");
+	if (m_covisibilityGraph->saveToFile(m_directory + "/" + m_covisGraphFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Save keyframe retriever");
+	if (m_keyframeRetriever->saveToFile(m_directory + "/" + m_kfRetrieverFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_INFO("Save done!");
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::loadFromFile(std::string file)
+FrameworkReturnCode SolARMapper::loadFromFile()
 {
-	LOG_WARNING("Coming soon!");
+	LOG_INFO("Loading the map from file...");
+	LOG_DEBUG("Load identification");
+	std::ifstream ifs_iden(m_directory + "/" + m_identificationFileName);
+	if (!ifs_iden.is_open())
+		return FrameworkReturnCode::_ERROR_;
+	boost::archive::text_iarchive ia_iden(ifs_iden);
+	ia_iden >> m_identification;
+	ifs_iden.close();
+	LOG_DEBUG("Load coordinate system");
+	std::ifstream ifs_coor(m_directory + "/" + m_coordinateFileName);
+	if (!ifs_coor.is_open())
+		return FrameworkReturnCode::_ERROR_;
+	boost::archive::text_iarchive ia_coor(ifs_coor);
+	ia_coor >> m_coordinateSystem;
+	ifs_coor.close();
+	LOG_DEBUG("Load point cloud manager");
+	if (m_pointCloudManager->loadFromFile(m_directory + "/" + m_pcManagerFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Load keyframes manager");
+	if (m_keyframesManager->loadFromFile(m_directory + "/" + m_kfManagerFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Load covisibility graph");
+	if (m_covisibilityGraph->loadFromFile(m_directory + "/" + m_covisGraphFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Load keyframe retriever");
+	if (m_keyframeRetriever->loadFromFile(m_directory + "/" + m_kfRetrieverFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_INFO("Load done!");
 	return FrameworkReturnCode::_SUCCESS;
 }
 

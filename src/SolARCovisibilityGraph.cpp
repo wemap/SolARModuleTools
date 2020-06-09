@@ -341,6 +341,7 @@ FrameworkReturnCode SolARCovisibilityGraph::saveToFile(std::string file)
 	oa << m_nodes;
 	oa << m_edges;
 	oa << m_weights;
+	ofs.close();
 	return FrameworkReturnCode::_SUCCESS;
 }
 
@@ -353,6 +354,7 @@ FrameworkReturnCode SolARCovisibilityGraph::loadFromFile(std::string file)
 	ia >> m_nodes;
 	ia >> m_edges;
 	ia >> m_weights;
+	ifs.close();
 	return FrameworkReturnCode::_SUCCESS;
 }
 

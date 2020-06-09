@@ -5,11 +5,16 @@
 #include "api/solver/map/IMapper.h"
 
 #include "xpcf/component/ComponentBase.h"
+#include "xpcf/component/ConfigurableBase.h"
 #include <vector>
 #include <set>
 #include "SolARToolsAPI.h"
-
+#include <boost/filesystem.hpp>
 #include <string>
+#include <fstream>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 
 namespace SolAR {
 using namespace datastructure;
@@ -29,7 +34,7 @@ namespace TOOLS {
 * @class SolARMapper
 * @brief Store all components of a map
 */
-class SOLAR_TOOLS_EXPORT_API SolARMapper : public org::bcom::xpcf::ComponentBase,
+class SOLAR_TOOLS_EXPORT_API SolARMapper : public org::bcom::xpcf::ConfigurableBase,
     public api::solver::map::IMapper {
 public:
     SolARMapper();
@@ -119,14 +124,12 @@ public:
 	FrameworkReturnCode removeKeyframe(const SRef<Keyframe> &keyframe) override;
 
 	/// @brief Save the map to the external file
-	 /// @param[out] the file name
 	 /// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode saveToFile(std::string file) override;
+	FrameworkReturnCode saveToFile() override;
 
 	/// @brief Load the map from the external file
-	/// @param[in] the file name
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode loadFromFile(std::string file) override;
+	FrameworkReturnCode loadFromFile() override;
 
     void unloadComponent () override final;	
 
@@ -138,6 +141,14 @@ private:
 	SRef<ICovisibilityGraph>	m_covisibilityGraph;
 	SRef<IKeyframeRetriever>	m_keyframeRetriever;
 	std::mutex					m_mutex;
+
+	std::string					m_directory;
+	std::string					m_identificationFileName;
+	std::string					m_coordinateFileName;
+	std::string					m_pcManagerFileName;
+	std::string					m_kfManagerFileName;
+	std::string					m_covisGraphFileName;
+	std::string					m_kfRetrieverFileName;
 };
 }
 }
