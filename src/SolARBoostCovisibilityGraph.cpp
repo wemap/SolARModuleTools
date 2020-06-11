@@ -24,326 +24,519 @@ namespace xpcf  = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph);
 
-
+std::mutex m_boost_cg_mutex;
 
 namespace SolAR {
 using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-// join 2 vertex to make an edge
+using namespace boost;
+
+// join 2 vertex id to make an edge id
 inline static uint64_t join(uint32_t a, uint32_t b) {
-	if (a > b) std::swap(a, b);
-	uint64_t a_b;
-	uint32_t *_a_b_16 = (uint32_t*)&a_b;
-	_a_b_16[0] = b;
-	_a_b_16[1] = a;
-	return a_b;
+    if (a > b) std::swap(a, b);
+    uint64_t a_b;
+    uint32_t *_a_b_16 = (uint32_t*)&a_b;
+    _a_b_16[0] = b;
+    _a_b_16[1] = a;
+    return a_b;
 }
 
-// divides a 64bit edge into its components
-inline static std::pair<uint32_t, uint32_t> separe(uint64_t a_b) { 
-	uint32_t *_a_b_16 = (uint32_t*)&a_b; 
-	return std::make_pair(_a_b_16[1], _a_b_16[0]); 
+// divides a 64bit edge id into two vertex_id
+inline static std::pair<uint32_t, uint32_t> separe(uint64_t a_b) {
+    uint32_t *_a_b_16 = (uint32_t*)&a_b;
+    return std::make_pair(_a_b_16[1], _a_b_16[0]);
 }
+
 
 SolARBoostCovisibilityGraph::SolARBoostCovisibilityGraph():ComponentBase(xpcf::toUUID<SolARBoostCovisibilityGraph>())
 {
-   addInterface<api::storage::ICovisibilityGraph>(this);
+    addInterface<api::storage::ICovisibilityGraph>(this);
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(uint32_t node1_id, uint32_t node2_id, float weight)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
 	if (node1_id == node2_id)
 		return FrameworkReturnCode::_ERROR_;	
 
-	// add nodes
-	m_nodes.insert(node1_id);
-	m_nodes.insert(node2_id);
-	// add edge
-	m_edges[node1_id].insert(node2_id);
-	m_edges[node2_id].insert(node1_id);
-	// add weight
-	auto edge = join(node1_id, node2_id);
-	m_weights[edge] += weight;
+    if(!isNode(node1_id))
+        addNode(node1_id);
+    if(!isNode(node2_id))
+        addNode(node2_id);
+
+    if( isNode(node1_id) &&  isNode(node2_id))
+    {
+        vertex_t vertex_id_1  = m_map[node1_id];
+        vertex_t vertex_id_2  = m_map[node2_id];
+        edge_info_t edge_info = edge(vertex_id_1, vertex_id_2, m_graph);
+        if(edge_info.second)
+        {
+            edge_t edge_id = edge_info.first;
+            EdgeProperties& edgeProperties = m_graph[edge_id];
+            edgeProperties.weight = edgeProperties.weight + weight;
+        }else{
+            // unexistant edge
+            addEdge(node1_id, node2_id, weight);
+        }
+    }
+
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::decreaseEdge(uint32_t node1_id, uint32_t node2_id, float weight)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
 	if (node1_id == node2_id)
 		return FrameworkReturnCode::_ERROR_;
-	auto edge = join(node1_id, node2_id);
-	if (m_weights.count(edge) == 0)
-		return FrameworkReturnCode::_ERROR_;
-	// if m_weight > weight: decrease, else remove edge
-	float &_weight = m_weights.at(edge);
-	if (_weight > weight){
-		_weight -= weight;
-	}
-	else {
-		m_weights.erase(edge);
-		m_edges.at(node1_id).erase(node2_id);
-		m_edges.at(node2_id).erase(node1_id);
-	}
+
+    if( isNode(node1_id) &&  isNode(node2_id))
+    {
+        vertex_t vertex_id_1  = m_map[node1_id];
+        vertex_t vertex_id_2  = m_map[node2_id];
+        edge_info_t edge_info = boost::edge(vertex_id_1, vertex_id_2, m_graph);
+        if(edge_info.second)
+        {
+            edge_t edge_id = edge_info.first;
+            EdgeProperties& edgeProperties = m_graph[edge_id];
+            if (edgeProperties.weight > weight){
+                edgeProperties.weight = edgeProperties.weight - weight;
+            }else{
+                removeEdge(node1_id,node2_id);
+            }
+            edgeProperties.weight = edgeProperties.weight - weight;
+
+        } // else the edge does not exist and cannot be decreased
+
+    } // else the nodes don't exist
+
+
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::removeEdge(uint32_t node1_id, uint32_t node2_id)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	auto edge = join(node1_id, node2_id);
-	if (m_weights.count(edge) == 0)
-		return FrameworkReturnCode::_ERROR_;
-	// remove weight
-	m_weights.erase(edge);
-	// remove edges
-	m_edges.at(node1_id).erase(node2_id);
-	m_edges.at(node2_id).erase(node1_id);
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+//
+    if( isNode(node1_id) &&  isNode(node2_id))
+    {
+        vertex_t vertex_id_1  = m_map[node1_id];
+        vertex_t vertex_id_2  = m_map[node2_id];
+        edge_info_t edge_info = boost::edge(vertex_id_1, vertex_id_2, m_graph);
+        if(edge_info.second)
+        {
+            edge_t edge_id = edge_info.first;
+            m_graph.remove_edge(edge_id);
+        }else{
+            // unexistant edge
+            return FrameworkReturnCode::_ERROR_;
+        }
+    }else{
+        // unexistant nodes
+        return FrameworkReturnCode::_ERROR_;
+    }
+
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::getEdge(uint32_t node1_id, uint32_t node2_id, float & weight)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	auto edge = join(node1_id, node2_id);
-	if (m_weights.count(edge) == 0)
-		return FrameworkReturnCode::_ERROR_;
-	weight = m_weights.at(edge);
-	return FrameworkReturnCode::_SUCCESS;
-}
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
 
-bool SolARBoostCovisibilityGraph::isEdge(uint32_t node1_id, uint32_t node2_id)
-{
-	std::unique_lock<std::mutex> lock(m_mutex);
-	return m_weights.count(join(node1_id, node2_id));
+    if( isNode(node1_id) &&  isNode(node2_id))
+    {
+        vertex_t vertex_id_1  = m_map[node1_id];
+        vertex_t vertex_id_2  = m_map[node2_id];
+        edge_info_t edge_info = boost::edge(vertex_id_1, vertex_id_2, m_graph);
+        if(edge_info.second)
+        {
+            edge_t edge_id = edge_info.first;
+            EdgeProperties& edgeProperties = m_graph[edge_id];
+            weight = edgeProperties.weight;
+        }else{
+            // unexistant edge
+            return FrameworkReturnCode::_ERROR_;
+        }
+    }else{
+        // unexistant nodes
+        return FrameworkReturnCode::_ERROR_;
+    }
+
+	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::getAllNodes(std::set<uint32_t>& nodes_id)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	nodes_id = m_nodes;
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    std::pair<vertex_iterator_t, vertex_iterator_t> it_vertex = vertices(m_graph);
+    nodes_id.clear();
+    for( ; it_vertex.first != it_vertex.second; ++it_vertex.first)
+       nodes_id.insert(get(boost::vertex_bundle, m_graph)[*it_vertex.first].frame_id) ;
+
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::suppressNode(uint32_t node_id)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	if (m_nodes.find(node_id) == m_nodes.end())
-		return FrameworkReturnCode::_ERROR_;
-	// remove node
-	m_nodes.erase(node_id);
-	// get all weights to remove
-	std::list<uint64_t> weightsToRemove;
-	const std::set<uint32_t> &edges = m_edges.at(node_id);
-	for (auto &e : edges)
-		weightsToRemove.push_back(join(node_id, e));
-	// remove edges
-	m_edges.erase(node_id);
-	// remove weights
-	for (auto const &w : weightsToRemove)
-		m_weights.erase(w);
-	// remove all edges in other nodes
-	for (auto &e : m_edges)
-		e.second.erase(node_id);	
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    if(isNode(node_id))
+    {
+        // delete all edges connected to this node
+        vertex_t vertex_id = m_map[node_id];
+        clear_vertex(vertex_id, m_graph);
+        // removing node
+        remove_vertex(vertex_id, m_graph);
+        // remove reference from map
+        m_map.erase(node_id);
+
+    }// else is already removed
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::getNeighbors(uint32_t node_id, float minWeight, std::vector<uint32_t>& neighbors)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	std::vector < std:: pair<uint32_t, float> > neighbors_weights;
-	auto it = m_edges.find(node_id);
-	if (it == m_edges.end())
-		return FrameworkReturnCode::_ERROR_;
-	// get neighbors
-	for (auto n : it->second) {
-		auto edge = join(node_id, n);
-		if (m_weights[edge] > minWeight)
-			neighbors_weights.push_back(std::make_pair(n, m_weights[edge]));
-	}
-	// sort
-	std::sort(neighbors_weights.begin(), neighbors_weights.end(), [](const std::pair<uint32_t, float> &a, const std::pair<uint32_t, float> &b) {return a.second > b.second; });
-	// get sorted neighbors
-	for (auto const &it : neighbors_weights)
-		neighbors.push_back(it.first);
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+
+    // this version does not sort neighboors TODO ?
+    neighbors.clear();
+    if(isNode(node_id))
+    {
+        vertex_t vertex_id = m_map[node_id];
+        std::pair<in_edge_iterator_t, in_edge_iterator_t> it_edge = in_edges(vertex_id, m_graph);
+        for( ; it_edge.first != it_edge.second; ++it_edge.first)
+        {
+           edge_t edge_id = *it_edge.first;
+           EdgeProperties edge_properties = get(boost::edge_bundle, m_graph)[edge_id];
+           if(edge_properties.weight > minWeight)
+           {
+               vertex_t v1    = source(edge_id, m_graph);
+               vertex_t v2    = target(edge_id, m_graph);
+               if(node_id==m_graph[v1].frame_id)
+               {
+                    neighbors.push_back(m_graph[v2].frame_id);
+               }else{
+                    neighbors.push_back(m_graph[v1].frame_id);
+               }
+           }
+        }
+    }else{
+        // no node
+        return FrameworkReturnCode::_ERROR_;
+    }
+
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::minimalSpanningTree(std::vector<std::tuple<uint32_t, uint32_t, float>> &edges_weights, float &minTotalWeights)
 {
-	if (m_nodes.size() == 0)
-		return FrameworkReturnCode::_ERROR_;
+    //
+    std::vector<edge_t> spanning_tree;
+    property_map<CoGraph, float EdgeProperties::*>::type propmapWeight = boost::get(&EdgeProperties::weight, m_graph); // use unit weight but can use also coVisibility weight
+    IndexMap        mapIndex;
+    associative_property_map<IndexMap> propmapIndex(mapIndex);
+    int c = 0;
+    CoGraph::vertex_iterator v, vend;
+    for (boost::tie(v, vend) = boost::vertices(m_graph); v != vend; ++v)
+    {
+        // vertex_t v_id = map[graph[*v].frame_id]; // useless
+        vertex_t v_id = *v;
+        boost::put(propmapIndex,       v_id, c++);
+    }
+    kruskal_minimum_spanning_tree(m_graph, std::back_inserter(spanning_tree),weight_map(propmapWeight).vertex_index_map(propmapIndex));
+    minTotalWeights = 0.0;
+    edges_weights.clear();
+    for (std::vector < edge_t >::iterator ei = spanning_tree.begin(); ei != spanning_tree.end(); ++ei)
+    {
+        edge_t edge_id = *ei;
+        EdgeProperties edge_properties = boost::get(boost::edge_bundle, m_graph)[edge_id];
+        vertex_t v1         = boost::source(edge_id, m_graph);
+        vertex_t v2         = boost::target(edge_id, m_graph);
+        uint32_t frame_id_1 = m_graph[v1].frame_id;
+        uint32_t frame_id_2 = m_graph[v2].frame_id;
+        std::tuple<uint32_t, uint32_t, float> edge_tuple = std::make_tuple(frame_id_1,frame_id_2,edge_properties.weight);
+        edges_weights.push_back(edge_tuple);
+        minTotalWeights+=edge_properties.weight;
+    }
 
-	//first, add the elements to the  vector
-	std::vector<std::pair<uint64_t, float>> edges;
-	for (auto const& w : m_weights)
-		edges.push_back(w);
-	//sort in decreasing order
-	std::sort(edges.begin(), edges.end(), [](const std::pair<uint64_t, float> &a, const std::pair<uint64_t, float>& b) {return a.second < b.second; });
-	std::map<uint32_t, uint32_t> belongs;
-	for (auto n : m_nodes)
-		belongs.insert({ n,n });
-	std::vector<uint64_t> mst_edges;//this is in fact the spanning tree
-	size_t curEdge = 0;
-	bool isspanning = false;
-	while (curEdge < edges.size() && !isspanning) {
-		auto edge = edges[curEdge++];
-		//check that both do not belong to the same tree
-		auto i_j = separe(edge.first);
-
-		if (belongs[i_j.first] != belongs[i_j.second]) {
-			//good, add the link, and set all nodes from belongs[i_j.second] to belong now to the first one
-			mst_edges.push_back(edge.first);
-			auto b1 = belongs[i_j.first];
-			auto b2 = belongs[i_j.second];
-			for (auto &b : belongs)
-				if (b.second == b2) b.second = b1;
-			//now check if there is only one connected component
-			uint32_t cnn = belongs.begin()->second;
-			isspanning = true;
-			for (auto b : belongs)
-				if (b.second != cnn) {
-					isspanning = false;
-					break;
-				}
-		}
-	}
-
-	assert(isspanning); //there are more than one connected components in the graph!!!!
-	minTotalWeights = 0;
-	for (auto const &m : mst_edges) {
-		auto i_j = separe(m);
-		edges_weights.push_back(std::make_tuple(i_j.first, i_j.second, m_weights[m]));
-		minTotalWeights += m_weights[m];
-	}
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::maximalSpanningTree(std::vector<std::tuple<uint32_t, uint32_t, float>> &edges_weights, float &maxTotalWeights)
 {
-	if (m_nodes.size() == 0)
-		return FrameworkReturnCode::_ERROR_;
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // inputs
+    std::vector<edge_t> spanning_tree;
 
-	//first, add the elements to the  vector
-	std::vector<std::pair<uint64_t, float>> edges;
-	for (auto const& w : m_weights) 
-		edges.push_back(w);
-	//sort in decreasing order
-	std::sort(edges.begin(), edges.end(), [](const std::pair<uint64_t, float> &a, const std::pair<uint64_t, float>& b) {return a.second > b.second; });
-	std::map<uint32_t, uint32_t> belongs;
-	for (auto n : m_nodes) 
-		belongs.insert({ n,n });
-	std::vector<uint64_t> mst_edges;//this is in fact the spanning tree
-	size_t curEdge = 0;
-	bool isspanning = false;
-	while (curEdge < edges.size() && !isspanning) {
-		auto edge = edges[curEdge++];
-		//check that both do not belong to the same tree
-		auto i_j = separe(edge.first);
+    // additive inverse of each weight
+    CoGraph::edge_iterator e, eend;
+    for (boost::tie(e, eend) = edges(m_graph); e != eend; ++e)
+    {
+        edge_t e_id = *e;
+        EdgeProperties& edgeProperties = m_graph[e_id];
+        edgeProperties.weight = -1.0f * edgeProperties.weight;
+    }
 
-		if (belongs[i_j.first] != belongs[i_j.second]) {
-			//good, add the link, and set all nodes from belongs[i_j.second] to belong now to the first one
-			mst_edges.push_back(edge.first);
-			auto b1 = belongs[i_j.first];
-			auto b2 = belongs[i_j.second];
-			for (auto &b : belongs)
-				if (b.second == b2) b.second = b1;
-			//now check if there is only one connected component
-			uint32_t cnn = belongs.begin()->second;
-			isspanning = true;
-			for (auto b : belongs)
-				if (b.second != cnn) { 
-					isspanning = false; 
-					break; 
-				}
-		}
-	}
+    property_map<CoGraph, float EdgeProperties::*>::type propmapAdditiveInverseWeight = get(&EdgeProperties::weight, m_graph); // use unit weight but can use also coVisibility weight
+    IndexMap        mapIndex;
+    associative_property_map<IndexMap>  propmapIndex(mapIndex);
 
-	assert(isspanning); //there are more than one connected components in the graph!!!!
-	maxTotalWeights = 0;
-	for (auto const &m : mst_edges) {
-		auto i_j = separe(m);
-		edges_weights.push_back(std::make_tuple(i_j.first, i_j.second, m_weights[m]));
-		maxTotalWeights += m_weights[m];
-	}
+    int c = 0;
+    CoGraph::vertex_iterator v, vend;
+    for (boost::tie(v, vend) = boost::vertices(m_graph); v != vend; ++v)
+    {
+        // vertex_t v_id = map[graph[*v].frame_id]; // useless
+        vertex_t v_id = *v;
+        boost::put(propmapIndex,       v_id, c++);
+    }
+
+    // minimum spanning tree on additive inversed weight
+    kruskal_minimum_spanning_tree(m_graph, std::back_inserter(spanning_tree),weight_map(propmapAdditiveInverseWeight).vertex_index_map(propmapIndex));
+
+    // additive inverse of each weight back
+    for (boost::tie(e, eend) = edges(m_graph); e != eend; ++e)
+    {
+        edge_t e_id = *e;
+        EdgeProperties& edgeProperties = m_graph[e_id];
+        edgeProperties.weight          = -1.0f * edgeProperties.weight;
+    }
+
+    //
+    maxTotalWeights = 0.0;
+    for (std::vector < edge_t >::iterator ei = spanning_tree.begin(); ei != spanning_tree.end(); ++ei)
+    {
+        edge_t edge_id = *ei;
+        EdgeProperties edge_properties = get(boost::edge_bundle, m_graph)[edge_id];
+        vertex_t v1         = boost::source(edge_id, m_graph);
+        vertex_t v2         = boost::target(edge_id, m_graph);
+        uint32_t frame_id_1 = m_graph[v1].frame_id;
+        uint32_t frame_id_2 = m_graph[v2].frame_id;
+        std::tuple<uint32_t, uint32_t, float> edge_tuple = std::make_tuple(frame_id_1,frame_id_2,edge_properties.weight);
+        edges_weights.push_back(edge_tuple);
+        maxTotalWeights += edge_properties.weight;
+    }
+
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::getShortestPath(uint32_t node1_id, uint32_t node2_id, std::vector<uint32_t> &path)
 {
-	//just need to start
-	struct TreeNode {
-		TreeNode(uint32_t n, uint32_t p) :node(n), parent(p) {}
-		uint32_t node, parent;
-	};
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    if ( isNode(node1_id) && isNode(node2_id))
+    {
+        vertex_t _source      = m_map[node1_id];
+        // inputs
+        vertex_t _destination = m_map[node2_id];
+        boost::property_map<CoGraph, float EdgeProperties::*>::type propmapWeight = boost::get(&EdgeProperties::unit, m_graph); // use unit weight but can use also coVisibility weight
+        IndexMap        mapIndex;
+        // outputs
+        PredecessorMap  mapPredecessor;
+        DistanceMap     mapDistance;
+        boost::associative_property_map<IndexMap>       propmapIndex(mapIndex);
+        boost::associative_property_map<PredecessorMap> propmapPredecessor(mapPredecessor);
+        boost::associative_property_map<DistanceMap>    propmapDistance(mapDistance);
+        int c = 0;
+        CoGraph::vertex_iterator v, vend;
+        for (boost::tie(v, vend) = vertices(m_graph); v != vend; ++v)
+        {
+            // vertex_t v_id = map[m_graph[*v].frame_id]; // useless
+            vertex_t v_id = *v;
+            boost::put(propmapIndex,       v_id, c++);
+            boost::put(propmapPredecessor, v_id, v_id);
+            boost::put(propmapDistance,    v_id, 1.0f);
+        }
+        //
+        dijkstra_shortest_paths(m_graph, _destination,
+                                 weight_map(propmapWeight)
+                                .vertex_index_map(propmapIndex)
+                                .predecessor_map(propmapPredecessor)
+                                .distance_map(propmapDistance)); //
 
-	std::vector<TreeNode> trees; 
-	trees.reserve(m_nodes.size() * 4);
-	std::vector<bool> visited(m_nodes.size(), false);
-	trees.push_back({ node1_id,std::numeric_limits<uint32_t>::max() });
-	size_t curNode = 0;
-	bool found = false;
-	while (curNode < trees.size() && !found) {
-		//take current node
-		const auto &tn = trees[curNode];
-		//see ifs neighbors
-		for (auto neigh : m_edges[tn.node]) {
-			if (!visited[neigh]) {
-				visited[neigh] = true;
-				trees.push_back(TreeNode(neigh, curNode));
-				if (neigh == node2_id) {
-					found = true; 
-					break;
-				}
-			}
-		}
-		curNode++;
-	}
-	if (!found)//no path
-		return FrameworkReturnCode::_ERROR_;
-
-	//else ,reconstruct the path in inverse order
-	int cnode = trees.size() - 1;
-	while (cnode != 0) {
-		path.push_back(trees[cnode].node);
-		cnode = trees[cnode].parent;
-	}
-	//add the starting node
-	path.push_back(node1_id);
-	//invert the node order
-	std::reverse(path.rbegin(), path.rend());
+        //
+        path.clear();
+        vertex_t _current = _source;
+        path.push_back( m_graph[_current].frame_id );
+        vertex_t _next = propmapPredecessor[_source];
+        while(_current != _next )
+        {
+            _current = _next;
+            path.push_back( m_graph[_current].frame_id );
+            _next = propmapPredecessor[_current];
+        }
+        // totalCost = propmapDistance[_source] ;
+        if(_current == _destination)
+        {
+            // short path found
+        }else{
+            // unreachable destination
+            path.clear();
+            // totalCost = -1.0;
+            return FrameworkReturnCode::_ERROR_;
+        }
+    }
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::display()
 {
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
 	// display vertices
-	LOG_INFO("The vertices of the covisibility graph: ");
-	for (auto const &it : m_nodes)
-		std::cout << it << " ";
-	std::cout << std::endl;
-	LOG_INFO("The weighted edges of the covisibility graph: ");
-	for (auto const &it : m_weights) {
-		auto edge = it.first;
-		auto weight = it.second;
-		auto nodes = separe(edge);
-		std::cout << nodes.first << " - " << nodes.second << " : " << weight << std::endl;
-	}
+    std::pair<vertex_iterator_t, vertex_iterator_t> it_vertex = vertices(m_graph);
+    for( ; it_vertex.first != it_vertex.second; ++it_vertex.first)
+    {
+       std::cout << get(boost::vertex_bundle, m_graph)[*it_vertex.first].frame_id << " ";
+    }
+    std::cout << std::endl;
+    std::pair<edge_iterator_t, edge_iterator_t> it_edge = edges(m_graph);
+    for( ; it_edge.first != it_edge.second; ++it_edge.first)
+    {
+       edge_t edge_id = *it_edge.first;
+       EdgeProperties edge_properties = get(boost::edge_bundle, m_graph)[edge_id];
+       vertex_t v1    = source(edge_id, m_graph);
+       vertex_t v2    = target(edge_id, m_graph);
+       std::cout      << m_graph[v1].frame_id<<" - "<<m_graph[v2].frame_id << " : " << edge_properties.weight << std::endl;
+    }
+
 	return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(std::string file)
 {
-	return FrameworkReturnCode::_SUCCESS;
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // generic boost serialization
+    std::set<uint32_t>                      nodes;
+    std::map<uint32_t, std::set<uint32_t>>  edges;
+    std::map<uint64_t, float>				weights;
+
+    //
+    std::pair<vertex_iterator_t, vertex_iterator_t> it_vertex = boost::vertices(m_graph);
+    for( ; it_vertex.first != it_vertex.second; ++it_vertex.first){
+       uint32_t frame_id = get(boost::vertex_bundle, m_graph)[*it_vertex.first].frame_id;
+       nodes.insert(frame_id);
+
+       //
+       std::set<uint32_t> neighbors;
+       vertex_t vertex_id = m_map[frame_id];
+       std::pair<in_edge_iterator_t, in_edge_iterator_t> it_edge = in_edges(vertex_id, m_graph);
+       for( ; it_edge.first != it_edge.second; ++it_edge.first)
+       {
+          edge_t edge_id = *it_edge.first;
+          EdgeProperties edge_properties = get(boost::edge_bundle, m_graph)[edge_id];
+          vertex_t v1    = source(edge_id, m_graph);
+          vertex_t v2    = target(edge_id, m_graph);
+          if(frame_id==m_graph[v1].frame_id){
+            neighbors.insert(m_graph[v2].frame_id);
+          }else{
+            neighbors.insert(m_graph[v1].frame_id);
+          }
+          uint64_t edge_uid = join(m_graph[v1].frame_id, m_graph[v2].frame_id);
+          weights[edge_uid] = edge_properties.weight;
+       }
+       edges[frame_id] = neighbors;
+    }
+
+    std::ofstream ofs(file);
+    boost::archive::text_oarchive oa(ofs);
+    oa << nodes;
+    oa << edges;
+    oa << weights;
+    ofs.close();
+
+    return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(std::string file)
 {
-	return FrameworkReturnCode::_SUCCESS;
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    clear();
+    std::set<uint32_t>                      nodes;
+    std::map<uint32_t, std::set<uint32_t>>  edges;
+    std::map<uint64_t, float>				weights;
+
+    std::ifstream ifs(file);
+    if (!ifs.is_open())
+        return FrameworkReturnCode::_ERROR_;
+    boost::archive::text_iarchive ia(ifs);
+    ia >> nodes;
+    ia >> edges;
+    ia >> weights;
+    ifs.close();
+
+    for (std::map<uint64_t, float>::iterator it = weights.begin(); it!=weights.end(); ++it)
+    {
+        std::pair<uint32_t, uint32_t> vertex_pair = separe(it->first);
+        float weight                              = it->second;
+        addEdge(vertex_pair.first, vertex_pair.second, weight);
+    }
+
+
+    return FrameworkReturnCode::_SUCCESS;
 }
+
+bool SolARBoostCovisibilityGraph::isEdge(uint32_t node1_id, uint32_t node2_id)
+{
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    bool is_edge = false;
+    if( isNode(node1_id) && isNode(node2_id))
+    {
+        vertex_t vertex_id_1  = m_map[node1_id];
+        vertex_t vertex_id_2  = m_map[node2_id];
+        edge_info_t edge_info = edge(vertex_id_1, vertex_id_2, m_graph);
+        is_edge = edge_info.second;
+    }
+    return is_edge;
+}
+
+FrameworkReturnCode SolARBoostCovisibilityGraph::addEdge(uint32_t node_id_1, uint32_t node_id_2, float weight)
+{
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    if ( !isNode(node_id_1))
+        addNode(node_id_1);
+    if ( !isNode(node_id_2))
+        addNode(node_id_2);
+
+    vertex_t vertex_id_1  = m_map[node_id_1];
+    vertex_t vertex_id_2  = m_map[node_id_2];
+    if(SolARBoostCovisibilityGraph::isEdge(node_id_1, node_id_2))
+    {
+        edge_info_t edge_info = boost::edge(vertex_id_1, vertex_id_2, m_graph);
+        edge_t edge_id                                      = edge_info.first;
+        EdgeProperties& edgeProperties = m_graph[edge_id];
+        edgeProperties.weight = weight;
+
+    }else{
+        boost::add_edge(vertex_id_1, vertex_id_2, EdgeProperties(weight), m_graph);
+    }
+    return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolARBoostCovisibilityGraph::addNode(uint32_t node_id)
+{
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    if(!isNode(node_id))
+    {
+        vertex_t vertex_id = add_vertex(VertexProperties(node_id), m_graph);
+        m_map[node_id]       = vertex_id;
+    }// else the node is already present
+    return FrameworkReturnCode::_SUCCESS;
+}
+
+bool SolARBoostCovisibilityGraph::isNode(uint32_t node_id)
+{
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    return !(m_map.find(node_id) == m_map.end()) ;
+}
+
+
+FrameworkReturnCode SolARBoostCovisibilityGraph::clear()
+{
+    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    m_map.clear();
+    m_graph.clear();
+}
+
+
+
 
 
 

@@ -23,9 +23,9 @@ int main(int argc, char* argv[])
 	LOG_ADD_LOG_TO_CONSOLE();
 	SRef<xpcf::IComponentManager> xpcfComponentManager = xpcf::getComponentManagerInstance();
 
-	if (xpcfComponentManager->load("testSolARCovisibilityGraph_conf.xml") != org::bcom::xpcf::_SUCCESS)
+    if (xpcfComponentManager->load("testSolARBoostCovisibilityGraph_conf.xml") != org::bcom::xpcf::_SUCCESS)
 	{
-		std::cerr << "Failed to load the configuration file testSolARCovisibilityGraph_conf.xml" << std::endl;
+        std::cerr << "Failed to load the configuration file testSolARBoostCovisibilityGraph_conf.xml" << std::endl;
 		return -1;
 	}
     auto covisibilityGraph = xpcfComponentManager->resolve<SolAR::api::storage::ICovisibilityGraph>();
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	LOG_INFO("Load the covisibity graph from {}", fileName);
 	if (covisibilityGraph->loadFromFile(fileName) == FrameworkReturnCode::_ERROR_) {
 		LOG_INFO("This file doesn't exist. Create a new covisibility graph");
-		covisibilityGraph->increaseEdge(1, 2, 2);
+        covisibilityGraph->increaseEdge(1, 2, 2);
 		covisibilityGraph->increaseEdge(1, 2, 1);
 		covisibilityGraph->increaseEdge(1, 3, 6);
 		covisibilityGraph->decreaseEdge(1, 3, 1);
@@ -48,11 +48,21 @@ int main(int argc, char* argv[])
 		covisibilityGraph->increaseEdge(5, 7, 5);
 		covisibilityGraph->increaseEdge(6, 7, 6);
 		covisibilityGraph->increaseEdge(8, 7, 20);
+        //
+        LOG_INFO("DISPLAY BEFORE SAVE");
+        covisibilityGraph->display();
+
 		covisibilityGraph->saveToFile(fileName);
 	}
 	else {
 		LOG_INFO("Load done");
 	}
+    if (covisibilityGraph->loadFromFile(fileName) == FrameworkReturnCode::_ERROR_)
+    {
+        LOG_INFO("Load done");
+    }
+
+
 	// display initial graph
 	covisibilityGraph->display();
 
