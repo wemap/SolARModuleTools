@@ -336,8 +336,8 @@ FrameworkReturnCode SolARCovisibilityGraph::display()
 
 FrameworkReturnCode SolARCovisibilityGraph::saveToFile(std::string file)
 {
-	std::ofstream ofs(file);
-	boost::archive::text_oarchive oa(ofs);
+	std::ofstream ofs(file, std::ios::binary);
+	boost::archive::binary_oarchive oa(ofs);
 	oa << m_nodes;
 	oa << m_edges;
 	oa << m_weights;
@@ -347,10 +347,10 @@ FrameworkReturnCode SolARCovisibilityGraph::saveToFile(std::string file)
 
 FrameworkReturnCode SolARCovisibilityGraph::loadFromFile(std::string file)
 {
-	std::ifstream ifs(file);
+	std::ifstream ifs(file, std::ios::binary);
 	if (!ifs.is_open())
 		return FrameworkReturnCode::_ERROR_;
-	boost::archive::text_iarchive ia(ifs);
+	boost::archive::binary_iarchive ia(ifs);
 	ia >> m_nodes;
 	ia >> m_edges;
 	ia >> m_weights;

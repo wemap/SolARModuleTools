@@ -169,8 +169,8 @@ int SolARPointCloudManager::getNbPoints()
 
 FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)
 {
-	std::ofstream ofs(file);
-	boost::archive::text_oarchive oa(ofs);
+	std::ofstream ofs(file, std::ios::binary);
+	boost::archive::binary_oarchive oa(ofs);
 	oa << m_id;
 	oa << m_descriptorType;
 	oa << m_pointCloud;
@@ -180,10 +180,10 @@ FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)
 
 FrameworkReturnCode SolARPointCloudManager::loadFromFile(std::string file)
 {
-	std::ifstream ifs(file);
+	std::ifstream ifs(file, std::ios::binary);
 	if (!ifs.is_open())
 		return FrameworkReturnCode::_ERROR_;
-	boost::archive::text_iarchive ia(ifs);
+	boost::archive::binary_iarchive ia(ifs);
 	ia >> m_id;
 	ia >> m_descriptorType;
 	ia >> m_pointCloud;
