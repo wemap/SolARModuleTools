@@ -30,6 +30,7 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
 #include <boost/graph/graphml.hpp>
+#include <mutex>
 
 namespace SolAR {
 using namespace datastructure;
@@ -154,6 +155,8 @@ public:
 	void unloadComponent () override final;
 
  private:
+    std::mutex m_mutex;
+
     // Defines properties structure attached to each vertices of the covisibility graph
     struct VertexProperties
     {

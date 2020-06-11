@@ -16,7 +16,6 @@
 
 #include "SolARBoostCovisibilityGraph.h"
 #include "xpcf/component/ComponentFactory.h"
-#include <mutex>
 #include "core/Log.h"
 
 
@@ -24,7 +23,6 @@ namespace xpcf  = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph);
 
-std::mutex m_boost_cg_mutex;
 
 namespace SolAR {
 using namespace datastructure;
@@ -49,7 +47,6 @@ inline static std::pair<uint32_t, uint32_t> separe(uint64_t a_b) {
     return std::make_pair(_a_b_16[1], _a_b_16[0]);
 }
 
-
 SolARBoostCovisibilityGraph::SolARBoostCovisibilityGraph():ComponentBase(xpcf::toUUID<SolARBoostCovisibilityGraph>())
 {
     addInterface<api::storage::ICovisibilityGraph>(this);
@@ -57,7 +54,7 @@ SolARBoostCovisibilityGraph::SolARBoostCovisibilityGraph():ComponentBase(xpcf::t
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(uint32_t node1_id, uint32_t node2_id, float weight)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
 	if (node1_id == node2_id)
 		return FrameworkReturnCode::_ERROR_;	
 
@@ -87,7 +84,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(uint32_t node1_id,
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::decreaseEdge(uint32_t node1_id, uint32_t node2_id, float weight)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
 	if (node1_id == node2_id)
 		return FrameworkReturnCode::_ERROR_;
 
@@ -116,8 +113,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::decreaseEdge(uint32_t node1_id,
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::removeEdge(uint32_t node1_id, uint32_t node2_id)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
-//
+    // std::unique_lock<std::mutex> lock(m_mutex);
     if( isNode(node1_id) &&  isNode(node2_id))
     {
         vertex_t vertex_id_1  = m_map[node1_id];
@@ -141,7 +137,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::removeEdge(uint32_t node1_id, u
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::getEdge(uint32_t node1_id, uint32_t node2_id, float & weight)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
 
     if( isNode(node1_id) &&  isNode(node2_id))
     {
@@ -167,7 +163,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::getEdge(uint32_t node1_id, uint
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::getAllNodes(std::set<uint32_t>& nodes_id)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
     std::pair<vertex_iterator_t, vertex_iterator_t> it_vertex = vertices(m_graph);
     nodes_id.clear();
     for( ; it_vertex.first != it_vertex.second; ++it_vertex.first)
@@ -178,7 +174,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::getAllNodes(std::set<uint32_t>&
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::suppressNode(uint32_t node_id)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
     if(isNode(node_id))
     {
         // delete all edges connected to this node
@@ -195,8 +191,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::suppressNode(uint32_t node_id)
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::getNeighbors(uint32_t node_id, float minWeight, std::vector<uint32_t>& neighbors)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
-
+    //std::unique_lock<std::mutex> lock(m_mutex);
     // this version does not sort neighboors TODO ?
     neighbors.clear();
     if(isNode(node_id))
@@ -229,6 +224,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::getNeighbors(uint32_t node_id, 
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::minimalSpanningTree(std::vector<std::tuple<uint32_t, uint32_t, float>> &edges_weights, float &minTotalWeights)
 {
+    // std::unique_lock<std::mutex> lock(m_mutex);
     //
     std::vector<edge_t> spanning_tree;
     property_map<CoGraph, float EdgeProperties::*>::type propmapWeight = boost::get(&EdgeProperties::weight, m_graph); // use unit weight but can use also coVisibility weight
@@ -263,7 +259,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::minimalSpanningTree(std::vector
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::maximalSpanningTree(std::vector<std::tuple<uint32_t, uint32_t, float>> &edges_weights, float &maxTotalWeights)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
     // inputs
     std::vector<edge_t> spanning_tree;
 
@@ -320,7 +316,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::maximalSpanningTree(std::vector
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::getShortestPath(uint32_t node1_id, uint32_t node2_id, std::vector<uint32_t> &path)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
     if ( isNode(node1_id) && isNode(node2_id))
     {
         vertex_t _source      = m_map[node1_id];
@@ -378,6 +374,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::getShortestPath(uint32_t node1_
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::display()
 {
+    // std::unique_lock<std::mutex> lock(m_mutex);
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
 	// display vertices
     std::pair<vertex_iterator_t, vertex_iterator_t> it_vertex = vertices(m_graph);
@@ -401,7 +398,8 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::display()
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(std::string file)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
+
     // generic boost serialization
     std::set<uint32_t>                      nodes;
     std::map<uint32_t, std::set<uint32_t>>  edges;
@@ -446,7 +444,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(std::string file)
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(std::string file)
 {
-    // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
+    // std::unique_lock<std::mutex> lock(m_mutex);
     clear();
     std::set<uint32_t>                      nodes;
     std::map<uint32_t, std::set<uint32_t>>  edges;
