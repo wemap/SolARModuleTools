@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
         covisibilityGraph->increaseEdge(1, 2, 2);
 		covisibilityGraph->increaseEdge(1, 2, 1);
 		covisibilityGraph->increaseEdge(1, 3, 6);
-		covisibilityGraph->decreaseEdge(1, 3, 1);
+        covisibilityGraph->decreaseEdge(1, 3, 1);
 		covisibilityGraph->increaseEdge(2, 4, 4);
 		covisibilityGraph->increaseEdge(4, 3, 12);
 		covisibilityGraph->increaseEdge(4, 5, 9);
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
         LOG_INFO("DISPLAY BEFORE SAVE");
         covisibilityGraph->display();
 
-		covisibilityGraph->saveToFile(fileName);
+        covisibilityGraph->saveToFile(fileName);
 	}
 	else {
 		LOG_INFO("Load done");

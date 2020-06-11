@@ -70,7 +70,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(uint32_t node1_id,
     {
         vertex_t vertex_id_1  = m_map[node1_id];
         vertex_t vertex_id_2  = m_map[node2_id];
-        edge_info_t edge_info = edge(vertex_id_1, vertex_id_2, m_graph);
+        edge_info_t edge_info = boost::edge(vertex_id_1, vertex_id_2, m_graph);
         if(edge_info.second)
         {
             edge_t edge_id = edge_info.first;
@@ -105,7 +105,6 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::decreaseEdge(uint32_t node1_id,
             }else{
                 removeEdge(node1_id,node2_id);
             }
-            edgeProperties.weight = edgeProperties.weight - weight;
 
         } // else the edge does not exist and cannot be decreased
 
