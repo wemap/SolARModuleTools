@@ -132,8 +132,8 @@ int SolARKeyframesManager::getNbKeyframes()
 
 FrameworkReturnCode SolARKeyframesManager::saveToFile(std::string file)
 {
-	std::ofstream ofs(file);
-    OutputArchive oa(ofs);
+	std::ofstream ofs(file, std::ios::binary);
+	OutputArchive oa(ofs);
 	oa << m_id;
 	oa << m_descriptorType;
 	oa << m_keyframes;
@@ -143,7 +143,7 @@ FrameworkReturnCode SolARKeyframesManager::saveToFile(std::string file)
 
 FrameworkReturnCode SolARKeyframesManager::loadFromFile(std::string file)
 {
-	std::ifstream ifs(file);
+	std::ifstream ifs(file, std::ios::binary);
 	if (!ifs.is_open())
 		return FrameworkReturnCode::_ERROR_;
     InputArchive ia(ifs);
