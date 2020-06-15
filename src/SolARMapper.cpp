@@ -205,12 +205,12 @@ FrameworkReturnCode SolARMapper::saveToFile()
 	boost::filesystem::create_directory(boost::filesystem::path(m_directory.c_str()));
 	LOG_DEBUG("Save identification");
 	std::ofstream ofs_iden(m_directory + "/" + m_identificationFileName, std::ios::binary);
-	boost::archive::binary_oarchive oa_iden(ofs_iden);
+	OutputArchive oa_iden(ofs_iden);
 	oa_iden << m_identification;
 	ofs_iden.close();
 	LOG_DEBUG("Save coordinate system");
 	std::ofstream ofs_coor(m_directory + "/" + m_coordinateFileName, std::ios::binary);
-	boost::archive::binary_oarchive oa_coor(ofs_coor);
+	OutputArchive oa_coor(ofs_coor);
 	oa_coor << m_coordinateSystem;
 	ofs_coor.close();
 	LOG_DEBUG("Save point cloud manager");
@@ -236,14 +236,14 @@ FrameworkReturnCode SolARMapper::loadFromFile()
 	std::ifstream ifs_iden(m_directory + "/" + m_identificationFileName, std::ios::binary);
 	if (!ifs_iden.is_open())
 		return FrameworkReturnCode::_ERROR_;
-	boost::archive::binary_iarchive ia_iden(ifs_iden);
+	InputArchive ia_iden(ifs_iden);
 	ia_iden >> m_identification;
 	ifs_iden.close();
 	LOG_DEBUG("Load coordinate system");
 	std::ifstream ifs_coor(m_directory + "/" + m_coordinateFileName, std::ios::binary);
 	if (!ifs_coor.is_open())
 		return FrameworkReturnCode::_ERROR_;
-	boost::archive::binary_iarchive ia_coor(ifs_coor);
+	InputArchive ia_coor(ifs_coor);
 	ia_coor >> m_coordinateSystem;
 	ifs_coor.close();
 	LOG_DEBUG("Load point cloud manager");

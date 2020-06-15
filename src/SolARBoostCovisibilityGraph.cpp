@@ -432,8 +432,8 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(std::string file)
        edges[frame_id] = neighbors;
     }
 
-    std::ofstream ofs(file);
-    boost::archive::text_oarchive oa(ofs);
+	std::ofstream ofs(file, std::ios::binary);
+	OutputArchive oa(ofs);
     oa << nodes;
     oa << edges;
     oa << weights;
@@ -450,10 +450,10 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(std::string file)
     std::map<uint32_t, std::set<uint32_t>>  edges;
     std::map<uint64_t, float>				weights;
 
-    std::ifstream ifs(file);
-    if (!ifs.is_open())
-        return FrameworkReturnCode::_ERROR_;
-    boost::archive::text_iarchive ia(ifs);
+	std::ifstream ifs(file, std::ios::binary);
+	if (!ifs.is_open())
+		return FrameworkReturnCode::_ERROR_;
+	InputArchive ia(ifs);
     ia >> nodes;
     ia >> edges;
     ia >> weights;

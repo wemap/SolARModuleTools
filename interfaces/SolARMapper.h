@@ -12,9 +12,7 @@
 #include <boost/filesystem.hpp>
 #include <string>
 #include <fstream>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/serialization/shared_ptr.hpp>
+#include "core/SerializationDefinitions.h"
 
 namespace SolAR {
 using namespace datastructure;

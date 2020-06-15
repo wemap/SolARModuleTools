@@ -22,7 +22,6 @@
 #include "SolARToolsAPI.h"
 #include <fstream>
 #include <core/SerializationDefinitions.h>
-#include <boost/serialization/set.hpp>
 
 namespace SolAR {
 using namespace datastructure;
