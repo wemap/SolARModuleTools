@@ -41,7 +41,7 @@ INCLUDEPATH += interfaces/
 
 include (SolARModuleTools.pri)
 
-unix {
+unix:!android {
 }
 
 macx {
