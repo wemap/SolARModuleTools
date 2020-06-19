@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 		LOG_INFO("Information of point {}", point->getId());
 		std::cout << "Coordinate: " << point->getX() << " " << point->getY() << " " << point->getZ() << std::endl;
 		std::cout << "Color: " << point->getR() << " " << point->getG() << " " << point->getB() << std::endl;
-		std::cout << "Normal: " << point->getNormal()[0] << " " << point->getNormal()[1] << " " << point->getNormal()[2] << std::endl;
+		std::cout << "Normal: " << point->getViewDirection()[0] << " " << point->getViewDirection()[1] << " " << point->getViewDirection()[2] << std::endl;
 		const std::map<uint32_t, uint32_t> &visibility = point->getVisibility();
 		std::cout << "Visibility: " << std::endl;
 		for (const auto & it : visibility)
