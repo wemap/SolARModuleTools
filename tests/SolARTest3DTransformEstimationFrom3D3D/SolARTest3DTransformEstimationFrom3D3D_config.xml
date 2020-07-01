@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<xpcf-registry autoAlias="true"> 
+	<module uuid="28b89d39-41bd-451d-b19e-d25a3d7c5797" name="SolARModuleTools"  description="SolARModuleTools"  path="$REMAKEN_PKG_ROOT/packages/SolARBuild/win-cl-14.1/SolARModuleTools/0.8.0/lib/x86_64/shared">
+		<component uuid="33f24be2-e2cc-4057-9c2b-a5bf865dc9f5" name="SolAR3DTransformEstimationFrom3D3D" description="SolAR3DTransformEstimationFrom3D3D">
+			<interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+			<interface uuid="689f2963-cbcb-41de-a2dd-1f626d7c2131" name="I3DTransformFinderFrom3D3D" description="I3DTransformFinderFrom3D3D"/>
+		</component>
+		<component uuid="f05dd955-33bd-4d52-8717-93ad298ed3e3" name="SolAR3DTransform" description="SolAR3DTransform">
+			<interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+			<interface uuid="9c1052b2-46c0-467b-8363-36f19b6b445f" name="I3DTransform" description="I3DTransform"/>
+		</component>
+	</module>
+</xpcf-registry>

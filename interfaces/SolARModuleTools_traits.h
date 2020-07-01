@@ -35,6 +35,7 @@ class SolARKeypointsReIndexer;
 class SolARKeyframeSelector;
 class SolAR2DTransform;
 class SolAR3DTransform;
+class SolAR3DTransformEstimationFrom3D3D;
 class SolARBasicMatchesFilter;
 class SolARMapFilter;
 class SolARMapper;
@@ -54,6 +55,11 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3DTransform,
                              "f05dd955-33bd-4d52-8717-93ad298ed3e3",
                              "SolAR3DTransform",
                              "Applies a 3D Transform to a set of 3D points.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3DTransformEstimationFrom3D3D,
+							"33f24be2-e2cc-4057-9c2b-a5bf865dc9f5",
+							"SolAR3DTransformEstimationFrom3D3D",
+							"Finds the 3D transform of 3D-3D points correspondences.")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBasicMatchesFilter,
                              "cbb620c3-a7fc-42d7-bcbf-f59b475b23b0",

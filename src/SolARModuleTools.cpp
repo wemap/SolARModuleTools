@@ -20,6 +20,7 @@
 #include "SolARKeypointsReIndexer.h"
 #include "SolAR2DTransform.h"
 #include "SolAR3DTransform.h"
+#include "SolAR3DTransformEstimationFrom3D3D.h"
 #include "SolARBasicMatchesFilter.h"
 #include "SolARMapFilter.h"
 #include "SolARMapper.h"
@@ -44,6 +45,10 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR3DTransform>(componentUUID,interfaceRef);
     }
+	if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+	{
+		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR3DTransformEstimationFrom3D3D>(componentUUID, interfaceRef);
+	}
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARBasicMatchesFilter>(componentUUID,interfaceRef);
@@ -93,6 +98,7 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframeSelector)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR2DTransform)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransform)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransformEstimationFrom3D3D)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapper)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapFilter)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSink)
