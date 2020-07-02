@@ -11,7 +11,11 @@ interfaces/SolARModuleTools_traits.h \
 interfaces/SolARBasicMatchesFilter.h \
 interfaces/SolARKeyframeSelector.h \
 interfaces/SolARBasicSink.h \
-interfaces/SolARBasicSource.h
+interfaces/SolARBasicSource.h \
+interfaces/SolARPointCloudManager.h \
+interfaces/SolARKeyframesManager.h \
+interfaces/SolARCovisibilityGraph.h \
+interfaces/SolARBoostCovisibilityGraph.h
 
 
 
@@ -27,4 +31,8 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARModuleTools.cpp \
     src/SolARKeyframeSelector.cpp \
     src/SolARBasicSink.cpp \
-    src/SolARBasicSource.cpp
+    src/SolARBasicSource.cpp \
+    src/SolARPointCloudManager.cpp \
+    src/SolARKeyframesManager.cpp \
+    src/SolARCovisibilityGraph.cpp \
+    src/SolARBoostCovisibilityGraph.cpp

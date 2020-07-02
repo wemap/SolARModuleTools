@@ -23,219 +23,246 @@ namespace xpcf  = org::bcom::xpcf;
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARMapper)
 
 namespace SolAR {
-    using namespace datastructure;
-    namespace MODULES {
-    namespace TOOLS {
+using namespace datastructure;
+namespace MODULES {
+namespace TOOLS {
 
-    SolARMapper::SolARMapper():ComponentBase(xpcf::toUUID<SolARMapper>())
-    {
-        declareInterface<IMapper>(this);
-        m_map = xpcf::utils::make_shared<Map>();
-    }
+SolARMapper::SolARMapper():ConfigurableBase(xpcf::toUUID<SolARMapper>())
+{
+    declareInterface<IMapper>(this);
+    declareInjectable<IPointCloudManager>(m_pointCloudManager);
+    declareInjectable<IKeyframesManager>(m_keyframesManager);
+    declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
+    declareInjectable<IKeyframeRetriever>(m_keyframeRetriever);
+	
+	declareProperty("directory", m_directory);
+	declareProperty("identificationFileName", m_identificationFileName);
+	declareProperty("coordinateFileName", m_coordinateFileName);
+	declareProperty("pointCloudManagerFileName", m_pcManagerFileName);
+	declareProperty("keyframesManagerFileName", m_kfManagerFileName);
+	declareProperty("covisibilityGraphFileName", m_covisGraphFileName);
+	declareProperty("keyframeRetrieverFileName", m_kfRetrieverFileName);
+}
 
-    FrameworkReturnCode SolARMapper::update (SRef<Map> & map,
-                                             SRef<Keyframe> & newKeyframe,
-                                             const std::vector<CloudPoint> & newCloud,
-                                             const std::vector<DescriptorMatch> & newPointsMatches,
-                                             const std::vector<DescriptorMatch> & existingPointsMatches)
-    {
-		std::unique_lock<std::mutex> lock(m_mutex);
-        if (m_kframes.size() == 0)
-        {
-            if (newCloud.size() != 0 || newPointsMatches.size() != 0 || existingPointsMatches.size() != 0)
-            {
-                LOG_WARNING("For the first update of the Mapper, only the first keyframe is required");
-            }
-            m_kframes.push_back(newKeyframe);
-            map = m_map;
-            return FrameworkReturnCode::_SUCCESS;
-        }
+FrameworkReturnCode SolARMapper::setIdentification(SRef<Identification>& identification)
+{
+	m_identification = identification;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        // A point cloud exist and we need to check if matches have already a corresponding 3D points
-        SRef<Keyframe> referenceKeyframe = newKeyframe->getReferenceKeyframe();
-        if (referenceKeyframe == nullptr)
-        {
-            LOG_ERROR("When updating the map, if the keyframe is not the first one, it should have a reference keyframe");
-            map = m_map;
-            return FrameworkReturnCode::_ERROR_;
-        }
+FrameworkReturnCode SolARMapper::getIdentification(SRef<Identification>& identification)
+{
+	identification = m_identification;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        int idxLastCP = m_map->getPointCloud().size();
+FrameworkReturnCode SolARMapper::setCoordinateSystem(SRef<CoordinateSystem>& coordinateSystem)
+{
+	m_coordinateSystem = coordinateSystem;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        std::map<unsigned int, unsigned int> keyframeVisibility, newRefKeyframeVisibility, refKeyframeVisibility = referenceKeyframe->getVisibleMapPoints();
-        std::map<unsigned int, unsigned int>::const_iterator visIt;
+FrameworkReturnCode SolARMapper::getCoordinateSystem(SRef<CoordinateSystem>& coordinateSystem)
+{
+	coordinateSystem = m_coordinateSystem;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        for (int i = 0; i < newCloud.size(); i++)
-        {
-            const std::map<unsigned int, unsigned int> & cloudPointVisibility = newCloud[i].getVisibility();
-            // update the visibility of the current keyframe with the new 3D points
-            visIt = cloudPointVisibility.find(newKeyframe->m_idx);
-            if (visIt != cloudPointVisibility.end())
-            {
-                keyframeVisibility[visIt->second] = idxLastCP + i;
-            }
-            // update the visibility of the reference keyframe with the new 3D points
-            visIt = cloudPointVisibility.find(referenceKeyframe->m_idx);
-            if (visIt != cloudPointVisibility.end())
-            {
-                newRefKeyframeVisibility[visIt->second] = idxLastCP + i;
-            }
-        }
+FrameworkReturnCode SolARMapper::setPointCloudManager(SRef<IPointCloudManager>& pointCloudManager)
+{
+	m_pointCloudManager = pointCloudManager;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        if (m_kframes.size() == 1)
-        {
-            if (existingPointsMatches.size() != 0)
-            {
-                LOG_WARNING("For the second update of the Mapper, not need of existing points");
-            }
-        }
-        else
-        {
-            for ( auto & currentExistingMatch : existingPointsMatches) {
-                // update the existing 3D points already in the map visible by the current keyframe and reciprocally
-                std::map<unsigned int, unsigned int>::iterator refKFVisIt = refKeyframeVisibility.find(currentExistingMatch.getIndexInDescriptorA());
-                if ( refKFVisIt != refKeyframeVisibility.end() ) {
-                    keyframeVisibility[currentExistingMatch.getIndexInDescriptorB()] = refKFVisIt->second;
-                    m_map->getAPoint(refKFVisIt->second).visibilityAddKeypoint(newKeyframe->m_idx, currentExistingMatch.getIndexInDescriptorB());
-                }
-            }
-        }
-        m_gmatches[std::make_pair(referenceKeyframe->m_idx, newKeyframe->m_idx)] = newPointsMatches;
-        newKeyframe->addVisibleMapPoints(keyframeVisibility);
-        referenceKeyframe->addVisibleMapPoints(newRefKeyframeVisibility);
-        m_kframes.push_back(newKeyframe);
-        // Add the 3D points that have just been triangulated
-        m_map->addCloudPoints(newCloud);
-		// Update neighboring connections
-		updateNeighborConnections(newKeyframe, 100);
-        map = m_map;
-        return FrameworkReturnCode::_SUCCESS;
-    }
+FrameworkReturnCode SolARMapper::getPointCloudManager(SRef<IPointCloudManager>& pointCloudManager)
+{
+	pointCloudManager = m_pointCloudManager;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-    FrameworkReturnCode SolARMapper::update(const std::vector<Transform3Df> & correctedPoses,
-							 const std::vector<CloudPoint> & correctedCloud) {
-		std::unique_lock<std::mutex> lock(m_mutex);
-        // update keyframes:
-        //	# update poses and leave other members fixed (descriptors, keypoints..etc).
-        for (unsigned int j = 0; j < m_kframes.size(); ++j) {
-            m_kframes[j]->setPose(correctedPoses[j]);
-        }
-        //	# update cloud point and leave other members fixed (visibility..etc)
-        m_map->updateCloudPoints(correctedCloud);
-        return FrameworkReturnCode::_SUCCESS;
-    }
+FrameworkReturnCode SolARMapper::setKeyframesManager(SRef<IKeyframesManager>& keyframesManager)
+{
+	m_keyframesManager = keyframesManager;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-    void SolARMapper::getLocalMap(SRef<Keyframe> refKF, std::vector<CloudPoint> &localCloudPoints)
-    {
-		std::unique_lock<std::mutex> lock(m_mutex);
-        // Get all 3D cloud points seen from refKF and its neighbors
+FrameworkReturnCode SolARMapper::getKeyframesManager(SRef<IKeyframesManager>& keyframesManager)
+{
+	keyframesManager = m_keyframesManager;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        std::set<unsigned int> idxPC;
-        localCloudPoints.clear();
-        const std::map<unsigned int, unsigned int> & cpRefKF = refKF->getVisibleMapPoints();
-        for (auto & kv : cpRefKF) {
-            idxPC.insert(kv.second);
-        }
+FrameworkReturnCode SolARMapper::setCovisibilityGraph(SRef<ICovisibilityGraph>& covisibilityGraph)
+{
+	m_covisibilityGraph = covisibilityGraph;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        const std::map<unsigned int, unsigned int> & neighbors = refKF->getNeighborKeyframes();
+FrameworkReturnCode SolARMapper::getCovisibilityGraph(SRef<ICovisibilityGraph>& covisibilityGraph)
+{
+	covisibilityGraph = m_covisibilityGraph;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        for (auto & kv  : neighbors) {
-            std::map<unsigned int, unsigned int> neighborVisibility = m_kframes[kv.first]->getVisibleMapPoints();
-            for (auto & kvNeighborVis : neighborVisibility) {
-                idxPC.insert(kvNeighborVis.second);
-            }
-        }
+FrameworkReturnCode SolARMapper::setKeyframeRetriever(SRef<IKeyframeRetriever>& keyframeRetriever)
+{
+	m_keyframeRetriever = keyframeRetriever;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        std::vector<CloudPoint> pointCloud = m_map->getPointCloud();
+FrameworkReturnCode SolARMapper::getKeyframeRetriever(SRef<IKeyframeRetriever>& keyframeRetriever)
+{
+	keyframeRetriever = m_keyframeRetriever;
+	return FrameworkReturnCode::_SUCCESS;
+}
 
-        for (auto index : idxPC) {
-            localCloudPoints.push_back(pointCloud[index]);
-        }
-    }
-
-    SRef<Map> SolARMapper::getGlobalMap() {
-		std::unique_lock<std::mutex> lock(m_mutex);
-        return m_map;
-    }
-
-    void SolARMapper::getLocalMapIndex(SRef<Keyframe> refKF, std::vector<unsigned int>& idxLocalCloudPoints)
-    {		
-		std::unique_lock<std::mutex> lock(m_mutex);
-        // Get all index of 3D cloud points seen from refKF and its neighbors
-
-        idxLocalCloudPoints.clear();
-
-        std::set<unsigned int> idxPC;
-
-        const std::map<unsigned int, unsigned int> & cpRefKF = refKF->getVisibleMapPoints();
-        for (auto & kv : cpRefKF) {
-            idxPC.insert(kv.second);
-        }
-
-        const std::map<unsigned int, unsigned int> & neighbors = refKF->getNeighborKeyframes();
-
-        for (auto & kv : neighbors) {
-            const std::map<unsigned int, unsigned int> & neighborVisibility = m_kframes[kv.first]->getVisibleMapPoints();
-            for (auto & kvVisMap : neighborVisibility) {
-                idxPC.insert(kvVisMap.second);
-            }
-        }
-        idxLocalCloudPoints.assign(idxPC.begin(), idxPC.end());
-    }
-
-	FrameworkReturnCode SolARMapper::update(SRef<Map>& map, SRef<Keyframe>& newKeyframe, 
-											const std::vector<CloudPoint>& newCloud, 
-											const std::vector<std::tuple<unsigned int, int, unsigned int>>& newPointMatches)
-	{		
-		std::unique_lock<std::mutex> lock(m_mutex);
-		int idxLastCP = m_map->getPointCloud().size();
-
-		std::map<unsigned int, unsigned int> newKeyframeVisibility;
-
-		for (int i = 0; i < newCloud.size(); i++)
-		{
-			unsigned int idx_kpNewKf = std::get<0>(newPointMatches[i]);
-			int idx_tmpKf = std::get<1>(newPointMatches[i]);
-			unsigned int idx_kpTmpKf = std::get<2>(newPointMatches[i]);
-
-			// update the visibility of the current keyframe with the new 3D point
-			newKeyframe->addVisibleMapPoint(idx_kpNewKf, idxLastCP + i);
-
-			// update the visibility of the keyframe which triangulates the new 3D point with the current keyframe
-			m_kframes[idx_tmpKf]->addVisibleMapPoint(idx_kpTmpKf, idxLastCP + i);
-		}
-
-		// add new keyframe to mapper
-		m_kframes.push_back(newKeyframe);
-		// Add the 3D points that have just been triangulated
-		m_map->addCloudPoints(newCloud);
-		// Update neighboring connections
-		updateNeighborConnections(newKeyframe, 20);
-		// return map
-		map = m_map;
-		return FrameworkReturnCode::_SUCCESS;
+FrameworkReturnCode SolARMapper::getLocalPointCloud(const SRef<Keyframe>& keyframe, float minWeightNeighbor, std::vector<SRef<CloudPoint>>& localPointCloud)
+{
+	// get neighbor keyframes of the keyframe
+	std::vector<uint32_t> neighKeyframesId;
+	m_covisibilityGraph->getNeighbors(keyframe->getId(), minWeightNeighbor, neighKeyframesId);
+	neighKeyframesId.push_back(keyframe->getId());
+	// get all cloud point visibilities from keyframes
+	std::set<uint32_t> tmpIdxLocalMap;
+	for (auto const &it : neighKeyframesId) {
+		SRef<Keyframe> keyframe;
+		m_keyframesManager->getKeyframe(it, keyframe);
+		const std::map<uint32_t, uint32_t> &visibility = keyframe->getVisibility();
+		for (auto const &v : visibility)
+			tmpIdxLocalMap.insert(v.second);
 	}
-
-	void SolARMapper::updateNeighborConnections(SRef<Keyframe>& newKeyframe, int minDis)
-	{
-		const std::map<unsigned int, unsigned int> & kfMapVisibility = newKeyframe->getVisibleMapPoints();
-		const std::vector<CloudPoint> &cloudPoint = m_map->getPointCloud();
-		std::map<unsigned int, int> kfCounter;
-
-		// calculate the number of connections to other keyframes
-		for (auto it_cp = kfMapVisibility.begin(); it_cp != kfMapVisibility.end(); it_cp++) {
-			std::map<unsigned int, unsigned int> cpKfVisibility = cloudPoint[it_cp->second].getVisibility();
-			for (auto it_kf = cpKfVisibility.begin(); it_kf != cpKfVisibility.end(); it_kf++)
-				kfCounter[it_kf->first]++;
-		}
-
-		// update the connections
-		for (auto it = kfCounter.begin(); it != kfCounter.end(); it++)
-			if ((it->first != newKeyframe->m_idx) && (it->second > minDis)) {
-				newKeyframe->addNeighborKeyframe(it->first, it->second);
-				m_kframes[it->first]->addNeighborKeyframe(newKeyframe->m_idx, it->second);
-			}
+	// get local point cloud
+	for (auto const &it : tmpIdxLocalMap) {
+		SRef<CloudPoint> point;
+		m_pointCloudManager->getPoint(it, point);
+		localPointCloud.push_back(point);
 	}
+	return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolARMapper::addCloudPoint(const SRef<CloudPoint>& cloudPoint)
+{
+	// add point to cloud
+	m_pointCloudManager->addPoint(cloudPoint);
+	const std::map<uint32_t, uint32_t>& pointVisibility = cloudPoint->getVisibility();
+	std::vector<uint32_t> keyframeIds;
+	// add visibility to keyframes
+	for (auto const &v : pointVisibility) {		
+		SRef<Keyframe> keyframe;
+		if (m_keyframesManager->getKeyframe(v.first, keyframe) == FrameworkReturnCode::_SUCCESS) {
+			keyframeIds.push_back(v.first);
+			keyframe->addVisibility(v.second, cloudPoint->getId());
+		}
+	}
+	// update covisibility graph
+	for (int i = 0; i < keyframeIds.size() - 1; i++)
+		for (int j = i + 1; j < keyframeIds.size(); j++)
+			m_covisibilityGraph->increaseEdge(keyframeIds[i], keyframeIds[j], 1);
+	return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolARMapper::removeCloudPoint(const SRef<CloudPoint>& cloudPoint)
+{	
+	const std::map<uint32_t, uint32_t>& pointVisibility = cloudPoint->getVisibility();
+	std::vector<uint32_t> keyframeIds;
+	// remove visibility from keyframes
+	for (auto const &v : pointVisibility) {
+		SRef<Keyframe> keyframe;
+		if (m_keyframesManager->getKeyframe(v.first, keyframe) == FrameworkReturnCode::_SUCCESS) {
+			keyframeIds.push_back(v.first);
+			keyframe->removeVisibility(v.second, cloudPoint->getId());
+		}
+	}
+	// update covisibility graph
+	for (int i = 0; i < keyframeIds.size() - 1; i++)
+		for (int j = i + 1; j < keyframeIds.size(); j++)
+			m_covisibilityGraph->decreaseEdge(keyframeIds[i], keyframeIds[j], 1);
+
+	// add point to cloud
+	m_pointCloudManager->suppressPoint(cloudPoint->getId());
+	return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolARMapper::removeKeyframe(const SRef<Keyframe>& keyframe)
+{
+	const std::map<uint32_t, uint32_t>& keyframeVisibility = keyframe->getVisibility();
+	// remove visibility of point cloud
+	for (auto const &v : keyframeVisibility) {
+		SRef<CloudPoint> point;
+		if (m_pointCloudManager->getPoint(v.second, point) == FrameworkReturnCode::_SUCCESS)
+			point->removeVisibility(keyframe->getId(), v.first);
+	}
+	// remove covisibility graph
+	m_covisibilityGraph->suppressNode(keyframe->getId());
+	// remove keyframe
+	m_keyframesManager->suppressKeyframe(keyframe->getId());
+	return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolARMapper::saveToFile()
+{
+	LOG_INFO("Saving the map to file...");
+	boost::filesystem::create_directory(boost::filesystem::path(m_directory.c_str()));
+	LOG_DEBUG("Save identification");
+	std::ofstream ofs_iden(m_directory + "/" + m_identificationFileName, std::ios::binary);
+	OutputArchive oa_iden(ofs_iden);
+	oa_iden << m_identification;
+	ofs_iden.close();
+	LOG_DEBUG("Save coordinate system");
+	std::ofstream ofs_coor(m_directory + "/" + m_coordinateFileName, std::ios::binary);
+	OutputArchive oa_coor(ofs_coor);
+	oa_coor << m_coordinateSystem;
+	ofs_coor.close();
+	LOG_DEBUG("Save point cloud manager");
+	if (m_pointCloudManager->saveToFile(m_directory + "/" + m_pcManagerFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Save keyframes manager");
+	if (m_keyframesManager->saveToFile(m_directory + "/" + m_kfManagerFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Save covisibility graph");
+	if (m_covisibilityGraph->saveToFile(m_directory + "/" + m_covisGraphFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Save keyframe retriever");
+	if (m_keyframeRetriever->saveToFile(m_directory + "/" + m_kfRetrieverFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_INFO("Save done!");
+	return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolARMapper::loadFromFile()
+{
+	LOG_INFO("Loading the map from file...");
+	LOG_DEBUG("Load identification");
+	std::ifstream ifs_iden(m_directory + "/" + m_identificationFileName, std::ios::binary);
+	if (!ifs_iden.is_open())
+		return FrameworkReturnCode::_ERROR_;
+	InputArchive ia_iden(ifs_iden);
+	ia_iden >> m_identification;
+	ifs_iden.close();
+	LOG_DEBUG("Load coordinate system");
+	std::ifstream ifs_coor(m_directory + "/" + m_coordinateFileName, std::ios::binary);
+	if (!ifs_coor.is_open())
+		return FrameworkReturnCode::_ERROR_;
+	InputArchive ia_coor(ifs_coor);
+	ia_coor >> m_coordinateSystem;
+	ifs_coor.close();
+	LOG_DEBUG("Load point cloud manager");
+	if (m_pointCloudManager->loadFromFile(m_directory + "/" + m_pcManagerFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Load keyframes manager");
+	if (m_keyframesManager->loadFromFile(m_directory + "/" + m_kfManagerFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Load covisibility graph");
+	if (m_covisibilityGraph->loadFromFile(m_directory + "/" + m_covisGraphFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_DEBUG("Load keyframe retriever");
+	if (m_keyframeRetriever->loadFromFile(m_directory + "/" + m_kfRetrieverFileName) == FrameworkReturnCode::_ERROR_)
+		return FrameworkReturnCode::_ERROR_;
+	LOG_INFO("Load done!");
+	return FrameworkReturnCode::_SUCCESS;
+}
+
+    
 
 }
 }

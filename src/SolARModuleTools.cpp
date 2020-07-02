@@ -25,6 +25,11 @@
 #include "SolARMapper.h"
 #include "SolARBasicSink.h"
 #include "SolARBasicSource.h"
+#include "SolARKeyframesManager.h"
+#include "SolARPointCloudManager.h"
+#include "SolARCovisibilityGraph.h"
+#include "SolARBoostCovisibilityGraph.h"
+
 
 #include <iostream>
 
@@ -80,6 +85,22 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARBasicSource>(componentUUID,interfaceRef);
     }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARKeyframesManager>(componentUUID,interfaceRef);
+    }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARPointCloudManager>(componentUUID,interfaceRef);
+    }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARCovisibilityGraph>(componentUUID,interfaceRef);
+    }
+    if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+    {
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph>(componentUUID,interfaceRef);
+    }
       return errCode;
 }
 
@@ -97,5 +118,9 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapper)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapFilter)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSink)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSource)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframesManager)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARPointCloudManager)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARCovisibilityGraph)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph)
 XPCF_END_COMPONENTS_DECLARATION
 

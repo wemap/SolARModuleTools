@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<xpcf-registry autoAlias="true">
+    <module uuid="28b89d39-41bd-451d-b19e-d25a3d7c5797" name="SolARModuleTools"  description="SolARModuleTools"  path="$REMAKENROOT/SolARBuild/SolARModuleTools/0.8.1/lib/x86_64/shared">
+                <component uuid="ad59a5ba-beb8-11e8-a355-529269fb1459" name="SolARKeyframeSelector" description="SolARKeyframeSelector">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+                <interface uuid="4d5f2abe-beb7-11e8-a355-529269fb1459" name="IKeyframeSelector" description="IKeyframeSelector"/>
+        </component>
+                <component uuid="09205b96-7cba-4415-bc61-64744bc26222" name="SolARMapFilterOpencv" description="SolARMapFilterOpencv">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+                <interface uuid="68dc9152-5199-11ea-8d77-2e728ce88125" name="IMapFilter" description="IMapFilter"/>
+        </component>
+                <component uuid="8e3c926a-0861-46f7-80b2-8abb5576692c" name="SolARMapperOpencv" description="SolARMapperOpencv">
+                <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+                <interface uuid="90075c1b-915b-469d-b92d-41c5d575bf15" name="IMapper" description="IMapper"/>
+        </component>
+        <component uuid="a2ef5542-029e-4fce-9974-0aea14b29d6f" name="SolARSBPatternReIndexer" description="SolARSBPatternReIndexer">
+            <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+            <interface uuid="79c5b810-d557-11e7-9296-cec278b6b50a" name="ISBPatternReIndexer" description="ISBPatternReIndexer"/>
+        </component>
+        <component uuid="6fed0169-4f01-4545-842a-3e2425bee248" name="SolARImage2WorldMapper4Marker2D" description="SolARImage2WorldMapper4Marker2D">
+            <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+            <interface uuid="67bcd080-258d-4b16-b693-cd30c013eb05" name="IImage2WorldMapper" description="IImage2WorldMapper"/>
+        </component>
+        <component uuid="958165e9-c4ea-4146-be50-b527a9a851f0" name="SolARPointCloudManager" description="SolARPointCloudManager">
+            <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+            <interface uuid="264d4406-b726-4ce9-a430-35d8b5e70331" name="IPointCloudManager" description="IPointCloudManager"/>
+        </component>
+        <component uuid="f94b4b51-b8f2-433d-b535-ebf1f54b4bf6" name="SolARKeyframesManager" description="SolARPointCloudManager">
+            <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+            <interface uuid="2c147595-6c74-4f69-b63d-91e162c311ed" name="IKeyframesManager" description="IPointCloudManager"/>
+        </component>
+    </module>
+    <factory>
+        <bindings>
+                <bind interface="IPointCloudManager" to="SolARPointCloudManager" scope="Singleton"/>
+                <bind interface="IKeyframesManager" to="SolARKeyframesManager" scope="Singleton"/>
+        </bindings>
+    </factory>
+    <properties>
+        <configure component="SolARKeyframeRetrieverFBOW">
+                <property name="VOCpath" type="String" value="akaze.fbow"/>
+                <property name="threshold" type="Float" value="0.02"/>
+                <property name="level" type="Integer" value="3"/>
+                <property name="matchingDistanceRatio" type="Float" value="0.7"/>
+                <property name="matchingDistanceMax" type="Float" value="100"/>
+        </configure>
+    </properties>
+</xpcf-registry>
