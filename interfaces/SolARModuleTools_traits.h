@@ -44,6 +44,7 @@ class SolARKeyframesManager;
 class SolARPointCloudManager;
 class SolARCovisibilityGraph;
 class SolARBoostCovisibilityGraph;
+class SolAR3D3DCorrespondencesFinder;
 }
 }
 }
@@ -128,6 +129,11 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph,
                              "b8104c93-b88a-4082-999c-802b52045043",
                              "SolARBoostCovisibilityGraph",
                              "A component to manage the covisibility between keyframes which uses the boost library")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3D3DCorrespondencesFinder,
+							"978068ef-7f93-41ef-8e24-13419776d9c6",
+							"SolAR3D3DCorrespondencesFinder",
+							"Finds the 3D-3D correspondences from feature matches of two keyframes")
 
 #endif // SOLARMODULETOOLS_TRAITS_H
 

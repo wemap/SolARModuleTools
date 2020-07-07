@@ -15,7 +15,8 @@ interfaces/SolARBasicSource.h \
 interfaces/SolARPointCloudManager.h \
 interfaces/SolARKeyframesManager.h \
 interfaces/SolARCovisibilityGraph.h \
-interfaces/SolARBoostCovisibilityGraph.h
+interfaces/SolARBoostCovisibilityGraph.h \
+interfaces/SolAR3D3DcorrespondencesFinder.h
 
 
 
@@ -35,4 +36,5 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARPointCloudManager.cpp \
     src/SolARKeyframesManager.cpp \
     src/SolARCovisibilityGraph.cpp \
-    src/SolARBoostCovisibilityGraph.cpp
+    src/SolARBoostCovisibilityGraph.cpp \
+    src/SolAR3D3DcorrespondencesFinder.cpp
