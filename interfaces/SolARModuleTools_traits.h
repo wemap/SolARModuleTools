@@ -45,6 +45,7 @@ class SolARPointCloudManager;
 class SolARCovisibilityGraph;
 class SolARBoostCovisibilityGraph;
 class SolAR3D3DCorrespondencesFinder;
+class SolAR3DTransformEstimationSACFrom3D3D;
 }
 }
 }
@@ -134,6 +135,11 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3D3DCorrespondencesFind
 							"978068ef-7f93-41ef-8e24-13419776d9c6",
 							"SolAR3D3DCorrespondencesFinder",
 							"Finds the 3D-3D correspondences from feature matches of two keyframes")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3DTransformEstimationSACFrom3D3D,
+							"3b7a1117-8b59-46b1-8e0c-6e76a8377ab4",
+							"SolAR3DTransformEstimationSACFrom3D3D",
+							"Finds the 3D transform of 3D-3D points correspondences with a SAmple Consensus")
 
 #endif // SOLARMODULETOOLS_TRAITS_H
 

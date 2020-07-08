@@ -30,6 +30,7 @@
 #include "SolARCovisibilityGraph.h"
 #include "SolARBoostCovisibilityGraph.h"
 #include "SolAR3D3DcorrespondencesFinder.h"
+#include "SolAR3DTransformEstimationSACFrom3D3D.h"
 
 #include <iostream>
 
@@ -104,6 +105,10 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
 	if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
 	{
 		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR3D3DCorrespondencesFinder>(componentUUID, interfaceRef);
+	}
+	if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+	{
+		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAR3DTransformEstimationSACFrom3D3D>(componentUUID, interfaceRef);
 	}
     return errCode;
 }
