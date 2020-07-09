@@ -1,4 +1,5 @@
 HEADERS += interfaces/SolARImage2WorldMapper4Marker2D.h \
+    $$PWD/interfaces/SolARLoopClosingDetector.h \
 interfaces/SolAR2DTransform.h \
 interfaces/SolAR3DTransform.h \
 interfaces/SolARHomographyValidation.h \
@@ -16,6 +17,8 @@ interfaces/SolARPointCloudManager.h \
 interfaces/SolARKeyframesManager.h \
 interfaces/SolARCovisibilityGraph.h \
 interfaces/SolARBoostCovisibilityGraph.h \
+interfaces/SolARLoopCorrector.h \
+interfaces/SolARLoopClosingDetector.h \
 interfaces/SolAR3D3DcorrespondencesFinder.h \
 interfaces/SolAR3DTransformEstimationSACFrom3D3D.h
 
@@ -38,5 +41,7 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARKeyframesManager.cpp \
     src/SolARCovisibilityGraph.cpp \
     src/SolARBoostCovisibilityGraph.cpp \
+    src/SolARLoopCorrector.cpp \
+    src/SolARLoopClosingDetector.cpp \
     src/SolAR3D3DcorrespondencesFinder.cpp \
     src/SolAR3DTransformEstimationSACFrom3D3D.cpp
