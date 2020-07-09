@@ -25,7 +25,7 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARLoopClosingDetec
 
 
 namespace SolAR {
-using namespace datastructure;
+//using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -33,7 +33,7 @@ using namespace boost;
 
 SolARLoopClosingDetector::SolARLoopClosingDetector():ComponentBase(xpcf::toUUID<SolARLoopClosingDetector>())
 {
-    addInterface<api::loop_closing::ILoopClosingDetector>(this);
+    addInterface<api::loop::ILoopClosingDetector>(this);
 }
 
 

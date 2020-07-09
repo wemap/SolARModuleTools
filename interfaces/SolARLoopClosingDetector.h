@@ -17,7 +17,7 @@
 #ifndef SOLARLOOPCLOSINGDETECTOR_H
 #define SOLARLOOPCLOSINGDETECTOR_H
 
-#include "api/loop_closing/ILoopClosingDetector.h"
+#include "api/loop/ILoopClosingDetector.h"
 
 #include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
@@ -27,7 +27,6 @@
 
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -37,11 +36,12 @@ namespace TOOLS {
  * @brief TODO
  */
 class SOLAR_TOOLS_EXPORT_API SolARLoopClosingDetector : public org::bcom::xpcf::ComponentBase,
-        public api::loop_closing::ILoopClosingDetector {
+        public api::loop::ILoopClosingDetector {
 public:
 
     SolARLoopClosingDetector();
     ~SolARLoopClosingDetector() = default;
+
 	void unloadComponent () override final;
 
  private:

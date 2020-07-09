@@ -25,7 +25,7 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARLoopCorrector);
 
 
 namespace SolAR {
-using namespace datastructure;
+//using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -33,7 +33,7 @@ using namespace boost;
 
 SolARLoopCorrector::SolARLoopCorrector():ComponentBase(xpcf::toUUID<SolARLoopCorrector>())
 {
-    addInterface<api::loop_closing::ILoopCorrector>(this);
+    addInterface<api::loop::ILoopCorrector>(this);
 }
 
 

@@ -17,7 +17,7 @@
 #ifndef SOLARLOOPCORRECTOR_H
 #define SOLARLOOPCORRECTOR_H
 
-#include "api/loop_closing/ILoopCorrector.h"
+#include "api/loop/ILoopCorrector.h"
 
 
 #include "xpcf/component/ComponentBase.h"
@@ -28,7 +28,7 @@
 
 
 namespace SolAR {
-using namespace datastructure;
+// using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -38,7 +38,7 @@ namespace TOOLS {
  * @brief TODO
  */
 class SOLAR_TOOLS_EXPORT_API SolARLoopCorrector : public org::bcom::xpcf::ComponentBase,
-        public api::loop_closing::ILoopCorrector {
+        public api::loop::ILoopCorrector {
 public:
 
     SolARLoopCorrector();
