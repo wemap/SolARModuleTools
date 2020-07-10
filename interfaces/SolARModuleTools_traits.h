@@ -46,7 +46,7 @@ class SolARCovisibilityGraph;
 class SolARBoostCovisibilityGraph;
 class SolAR3D3DCorrespondencesFinder;
 class SolAR3DTransformEstimationSACFrom3D3D;
-class SolARLoopClosingDetector;
+class SolARLoopClosureDetector;
 class SolARLoopCorrector;
 }
 }
@@ -143,10 +143,10 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3DTransformEstimationSA
 							"SolAR3DTransformEstimationSACFrom3D3D",
 							"Finds the 3D transform of 3D-3D points correspondences with a SAmple Consensus")
 
-XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopClosingDetector,
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopClosureDetector,
                             "e3d5946c-c1f1-11ea-b3de-0242ac130004",
                             "SolARLoopClosingDetector",
-                            "Detects loop closing.")
+                            "Detect a loop closure from a given keyframe..")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopCorrector,
                             "1007b588-c1f2-11ea-b3de-0242ac130004",

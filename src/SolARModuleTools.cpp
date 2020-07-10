@@ -31,7 +31,7 @@
 #include "SolARBoostCovisibilityGraph.h"
 #include "SolAR3D3DcorrespondencesFinder.h"
 #include "SolAR3DTransformEstimationSACFrom3D3D.h"
-#include "SolARLoopClosingDetector.h"
+#include "SolARLoopClosureDetector.h"
 #include "SolARLoopCorrector.h"
 #include <iostream>
 
@@ -113,7 +113,7 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
 	}
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARLoopClosingDetector>(componentUUID, interfaceRef);
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARLoopClosureDetector>(componentUUID, interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
@@ -140,7 +140,9 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframesManager)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARPointCloudManager)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARCovisibilityGraph)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph)
-XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARLoopClosingDetector)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3D3DCorrespondencesFinder)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransformEstimationSACFrom3D3D)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARLoopClosureDetector)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARLoopCorrector)
 
 XPCF_END_COMPONENTS_DECLARATION
