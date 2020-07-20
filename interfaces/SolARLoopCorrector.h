@@ -18,17 +18,22 @@
 #define SOLARLOOPCORRECTOR_H
 
 #include "api/loop/ILoopCorrector.h"
-
-
-#include "xpcf/component/ComponentBase.h"
+// #include "api/reloc/IKeyframeRetriever.h"
+#include "api/storage/ICovisibilityGraph.h"
+#include "api/storage/IKeyframesManager.h"
+#include "api/solver/pose/I3DTransformSACFinderFrom3D3D.h"
+#include "api/geom/I3DTransform.h"
+#include "api/features/IDescriptorMatcher.h"
+#include "api/solver/pose/I3D3DCorrespondencesFinder.h"
+#include "api/features/IMatchesFilter.h"
+#include "xpcf/component/ConfigurableBase.h"
 #include "SolARToolsAPI.h"
 #include <fstream>
-
 #include <mutex>
 
-
 namespace SolAR {
-// using namespace datastructure;
+using namespace SolAR::datastructure;
+using namespace SolAR::api;
 namespace MODULES {
 namespace TOOLS {
 
@@ -37,12 +42,21 @@ namespace TOOLS {
  * @class SolARLoopCorrector
  * @brief TODO
  */
-class SOLAR_TOOLS_EXPORT_API SolARLoopCorrector : public org::bcom::xpcf::ComponentBase,
+class SOLAR_TOOLS_EXPORT_API SolARLoopCorrector : public org::bcom::xpcf::ConfigurableBase,
         public api::loop::ILoopCorrector {
 public:
 
     SolARLoopCorrector();
     ~SolARLoopCorrector() = default;
+
+    /// @brief corrects a loop of keyframes and their associated point clouds from a loop detection result.
+    /// @param[in] queryKeyframe: the query keyframe.
+    /// @param[in] detectedLoopKeyframe: the detected loop keyframe.
+    /// @param[in] S_c_wl : 3D similarity transformation (Sim(3)) from loop world c.s to reference keyframe c.s..
+    // TODO adapt transformation on detector side ??? /// @param[out] sim3Transform : 3D similarity transformation (Sim(3)) from query keyframe to the detected loop keyframe.
+    /// @param[in] duplicatedPointsIndices: indices of duplicated cloud points. The first index is the id of point cloud seen from the detected loop keyframe. The second one is id of point cloud seen from the query keyframe
+    /// @return FrameworkReturnCode::_SUCCESS if loop closure is correctly corrected, else FrameworkReturnCode::_ERROR_
+    FrameworkReturnCode correct(const SRef<Keyframe> &queryKeyframe, const SRef<Keyframe> &detectedLoopKeyframe, const Transform3Df &S_c_wl, const std::vector<std::pair<uint32_t, uint32_t>> &duplicatedPointsIndices) override;
 
     // virtual double correctsLoop(   const uint32_t reference_keyframe_id, const uint32_t loop_keyframe_id, const Transform3Df& S_c_wl) override;
      /*
@@ -90,7 +104,16 @@ public:
 	void unloadComponent () override final;
 
  private:
-   
+    SRef<IKeyframesManager>								m_keyframesManager;
+    SRef<ICovisibilityGraph>							m_covisibilityGraph;
+    // SRef<reloc::IKeyframeRetriever>						m_keyframeRetriever;
+    SRef<features::IDescriptorMatcher>					m_matcher;
+    SRef<features::IMatchesFilter>						m_matchesFilter;
+    // SRef<solver::pose::I3D3DCorrespondencesFinder>		m_corr3D3DFinder;
+    SRef<geom::I3DTransform>							m_transform3D;
+    //SRef<loop::ILoopOptimizer>                          m_loopOptimizer;
+
+
 
 };
 

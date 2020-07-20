@@ -15,7 +15,6 @@
  */
 
 #include "SolARLoopCorrector.h"
-#include "xpcf/component/ComponentFactory.h"
 #include "core/Log.h"
 
 
@@ -29,13 +28,21 @@ namespace SolAR {
 namespace MODULES {
 namespace TOOLS {
 
-using namespace boost;
 
-SolARLoopCorrector::SolARLoopCorrector():ComponentBase(xpcf::toUUID<SolARLoopCorrector>())
+SolARLoopCorrector::SolARLoopCorrector():ConfigurableBase(xpcf::toUUID<SolARLoopCorrector>())
 {
     addInterface<api::loop::ILoopCorrector>(this);
+    declareInjectable<IKeyframesManager>(m_keyframesManager);
+    declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
+    declareInjectable<features::IDescriptorMatcher>(m_matcher);
+    declareInjectable<features::IMatchesFilter>(m_matchesFilter);
+    declareInjectable<geom::I3DTransform>(m_transform3D);
 }
 
+FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyframe, const SRef<Keyframe> & detectedLoopKeyframe, const Transform3Df & S_c_wl, const std::vector<std::pair<uint32_t, uint32_t>> & duplicatedPointsIndices)
+{
+    return FrameworkReturnCode::_SUCCESS;
+}
 
 
 }
