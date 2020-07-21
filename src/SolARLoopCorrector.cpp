@@ -39,8 +39,61 @@ SolARLoopCorrector::SolARLoopCorrector():ConfigurableBase(xpcf::toUUID<SolARLoop
     declareInjectable<geom::I3DTransform>(m_transform3D);
 }
 
+void SolARLoopCorrector::getNeighborhoodTransformedSimPoses(const uint32_t kfCurrentId,
+                                                            const std::vector<uint32_t> & kfCurrentNeighbors,
+                                                            const Transform3Df & S_c_wl,
+                                                            std::map<uint32_t, Transform3Df > & KFSim_i_wls,
+                                                            std::map<uint32_t, Transform3Df > & KFSim_i_wcs)
+{
+    // Compute current keyframe's neighboors similarity poses in loop keyframe and current keyframe worlds c.s.
+    // Let :
+    // - T_c_wc be the pose of current keyframe in current keyframe world c.s.,
+    // - T_wc_c be the inverse pose of current keyframe in current keyframe world c.s.,
+    // - T_i_wc be the pose of the ith neighbors of current keyframe c.s.,
+    // - T_i_c  = T_i_wc * T_wc_c be the SE3 transform from current keyframe c.s. to the ith neighbors of current keyframe c.s.
+    // - T_i_c  = T_i_wi * T_wi_wc * T_wc_c
+    // - T_i_c  = T_i_wi * T_wc_c
+    // assuming that T_wi_wc = Id
+    // - S_i_c  = SE3_to_SIM3( T_i_c, 1) be the SIM3 transform from current keyframe c.s. to the ith neighbors of current keyframe c.s.
+    // - S_c_wl be the SIM3 transform from loop keyframe world c.s. to the current keyframe c.s. (computed by loop detection component)
+    // - S_i_wl = S_i_c * S_c_wl be the SIM3 pose i.e. the similarity pose of the ith neighbors of current keyframe (i.e. the transform from loop keyframe world c.s. to the ith neighbors of current keyframe c.s.)
+    // S_c_wl != S_wl_wc
+    // Detection S_wl_wc
+    for(int i=0; i < kfCurrentNeighbors.size(); i++){
+        uint32_t neighb_id = kfCurrentNeighbors[i];
+        Transform3Df S_i_wl, S_i_wc, S_i_c;
+
+        // S_i_c  = T_i_c, 1)
+        S_i_wl = S_i_c * S_c_wl;
+        KFSim_i_wls.insert ( std::pair<uint32_t, Transform3Df>(neighb_id,S_i_wl) );
+        KFSim_i_wcs.insert ( std::pair<uint32_t, Transform3Df>(neighb_id,S_i_wc) );
+
+    }
+    return;
+}
+
+
 FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyframe, const SRef<Keyframe> & detectedLoopKeyframe, const Transform3Df & S_c_wl, const std::vector<std::pair<uint32_t, uint32_t>> & duplicatedPointsIndices)
 {
+    // Get current and loop neighbors
+    std::vector<uint32_t> kfLoopNeighbors;
+    std::vector<uint32_t> kfCurrentNeighbors;
+    uint32_t kfCurrentId = queryKeyframe->getId();
+    uint32_t kfLoopId    = detectedLoopKeyframe->getId();
+    m_covisibilityGraph->getNeighbors(kfCurrentId, 1.0, &kfCurrentNeighbors);
+    m_covisibilityGraph->getNeighbors(kfLoopId, 1.0, &kfLoopNeighbors);
+
+    // Compute current keyframe's neighboors similarity poses in loop keyframe and current keyframe worlds c.s.
+    std::map<uint32_t, Transform3Df > KFSim_i_wls;
+    std::map<uint32_t, Transform3Df > KFSim_i_wcs;
+    getNeighborhoodTransformedSimPoses(kfCurrentId,
+                                       &kfCurrentNeighbors,
+                                       &S_c_wl,
+                                       &KFSim_i_wls,
+                                       &KFSim_i_wcs);
+
+    //
+
     return FrameworkReturnCode::_SUCCESS;
 }
 

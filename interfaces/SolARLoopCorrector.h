@@ -58,6 +58,7 @@ public:
     /// @return FrameworkReturnCode::_SUCCESS if loop closure is correctly corrected, else FrameworkReturnCode::_ERROR_
     FrameworkReturnCode correct(const SRef<Keyframe> &queryKeyframe, const SRef<Keyframe> &detectedLoopKeyframe, const Transform3Df &S_c_wl, const std::vector<std::pair<uint32_t, uint32_t>> &duplicatedPointsIndices) override;
 
+
     // virtual double correctsLoop(   const uint32_t reference_keyframe_id, const uint32_t loop_keyframe_id, const Transform3Df& S_c_wl) override;
      /*
      double SolARLoopCorrector::correctsLoop(   const uint32_t reference_keyframe_id, const uint32_t loop_keyframe_id, const Transform3Df& S_c_wl)
@@ -75,9 +76,14 @@ public:
          // - T_wc_c be the inverse pose of current keyframe in current keyframe world c.s.,
          // - T_i_wc be the pose of the ith neighbors of current keyframe c.s.,
          // - T_i_c  = T_i_wc * T_wc_c be the SE3 transform from current keyframe c.s. to the ith neighbors of current keyframe c.s.
+         // - T_i_c  = T_i_wi * T_wi_wc * T_wc_c
+         // - T_i_c  = T_i_wi * T_wc_c
+         // assuming that T_wi_wc = Id
          // - S_i_c  = SE3_to_SIM3( T_i_c, 1) be the SIM3 transform from current keyframe c.s. to the ith neighbors of current keyframe c.s.
          // - S_c_wl be the SIM3 transform from loop keyframe world c.s. to the current keyframe c.s. (computed by loop detection component)
          // - S_i_wl = S_i_c * S_c_wl be the SIM3 pose i.e. the similarity pose of the ith neighbors of current keyframe (i.e. the transform from loop keyframe world c.s. to the ith neighbors of current keyframe c.s.)
+         // S_c_wl != S_wl_wc
+         // Détection S_wl_wc
          getNeighborhoodTransformedSimPoses(Vec<uint32_t> & kfCurrentNeighboors,  Map<uint32_t, Transform3Df > & KFSim_i_wls, Map<uint32_t, Transform3Df > & KFSim_i_wcs);  // CorrectedSim3/ Non Corrected
 
          // Transforms current keyframe neighboorhood observed points in loop keyframe world c.s.
@@ -113,6 +119,7 @@ public:
     SRef<geom::I3DTransform>							m_transform3D;
     //SRef<loop::ILoopOptimizer>                          m_loopOptimizer;
 
+    //
 
 
 };
