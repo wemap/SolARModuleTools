@@ -59,6 +59,7 @@ public:
     FrameworkReturnCode correct(const SRef<Keyframe> &queryKeyframe, const SRef<Keyframe> &detectedLoopKeyframe, const Transform3Df &S_c_wl, const std::vector<std::pair<uint32_t, uint32_t>> &duplicatedPointsIndices) override;
 
 
+
     // virtual double correctsLoop(   const uint32_t reference_keyframe_id, const uint32_t loop_keyframe_id, const Transform3Df& S_c_wl) override;
      /*
      double SolARLoopCorrector::correctsLoop(   const uint32_t reference_keyframe_id, const uint32_t loop_keyframe_id, const Transform3Df& S_c_wl)
@@ -119,8 +120,18 @@ public:
     SRef<geom::I3DTransform>							m_transform3D;
     //SRef<loop::ILoopOptimizer>                          m_loopOptimizer;
 
-    //
-
+    /// @brief corrects a loop of keyframes and their associated point clouds from a loop detection result.
+    /// @param[in] kfCurrentId : current keyframe id
+    /// @param[in] kfCurrentNeighbors : current keyframe neighborhood as a vector of neighborhood key frame id
+    /// @param[in] S_c_wl : SIM(3) transform that maps a point expressed in the loop keyframe world c.s. to current camera c.s.
+    /// @param[out] KFSim_i_wls : map of pairs of ith neighboord keyframe id and SIM(3) that transforms a world loop point to ith neighbor camera c.s
+    /// @param[out] KFSim_i_wcs : map of pairs of ith neighboord keyframe id and SIM(3) that transforms a world current point to ith neighbor camera c.s
+    /// @return void
+    void getNeighborhoodTransformedSimPoses(const uint32_t kfCurrentId,
+                                            const std::vector<uint32_t> & kfCurrentNeighbors,
+                                            const Transform3Df & S_c_wl,
+                                            std::map<uint32_t, Transform3Df > & KFSim_i_wls,
+                                            std::map<uint32_t, Transform3Df > & KFSim_i_wcs);
 
 };
 
