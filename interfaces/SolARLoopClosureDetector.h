@@ -39,6 +39,7 @@ namespace TOOLS {
 /**
 * @class SolARLoopClosureDetector
 * @brief Detect a loop closure from a given keyframe.
+* <TT>UUID: e3d5946c-c1f1-11ea-b3de-0242ac130004</TT>
 */
 class SOLAR_TOOLS_EXPORT_API SolARLoopClosureDetector : public org::bcom::xpcf::ConfigurableBase,
         public api::loop::ILoopClosureDetector {
