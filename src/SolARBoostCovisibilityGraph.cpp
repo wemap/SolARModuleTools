@@ -530,6 +530,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::clear()
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
     m_map.clear();
     m_graph.clear();
+	return FrameworkReturnCode::_SUCCESS;
 }
 
 
