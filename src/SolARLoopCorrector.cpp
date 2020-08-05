@@ -58,8 +58,8 @@ void SolARLoopCorrector::getLocalMapPoints(const std::map<uint32_t, SRef<Keyfram
 	// get local point cloud
 	for (auto const &it : tmpIdxLocalMap) {
 		SRef<CloudPoint> point;
-		m_pointCloudManager->getPoint(it, point);
-		localMapPoints.push_back(point);
+		if (m_pointCloudManager->getPoint(it, point) == FrameworkReturnCode::_SUCCESS)
+			localMapPoints.push_back(point);
 	}
 }
 

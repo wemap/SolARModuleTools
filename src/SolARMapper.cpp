@@ -134,8 +134,8 @@ FrameworkReturnCode SolARMapper::getLocalPointCloud(const SRef<Keyframe>& keyfra
 	// get local point cloud
 	for (auto const &it : tmpIdxLocalMap) {
 		SRef<CloudPoint> point;
-		m_pointCloudManager->getPoint(it, point);
-		localPointCloud.push_back(point);
+		if (m_pointCloudManager->getPoint(it, point) == FrameworkReturnCode::_SUCCESS)
+			localPointCloud.push_back(point);
 	}
 	return FrameworkReturnCode::_SUCCESS;
 }
