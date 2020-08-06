@@ -33,6 +33,8 @@
 #include "SolAR3DTransformEstimationSACFrom3D3D.h"
 #include "SolARLoopClosureDetector.h"
 #include "SolARLoopCorrector.h"
+#include "SolARFiducialMarkerPoseEstimator.h"
+#include "SolARSLAMBootstrapper.h"
 #include <iostream>
 
 namespace xpcf=org::bcom::xpcf;
@@ -119,6 +121,14 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     {
         errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARLoopCorrector>(componentUUID, interfaceRef);
     }
+	if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+	{
+		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARFiducialMarkerPoseEstimator>(componentUUID, interfaceRef);
+	}
+	if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+	{
+		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARSLAMBootstrapper>(componentUUID, interfaceRef);
+	}
     return errCode;
 }
 
@@ -144,6 +154,7 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3D3DCorrespondencesFinder)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransformEstimationSACFrom3D3D)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARLoopClosureDetector)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARLoopCorrector)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARFiducialMarkerPoseEstimator)
 
 XPCF_END_COMPONENTS_DECLARATION
 
