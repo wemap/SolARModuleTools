@@ -68,13 +68,14 @@ public:
 
 private:
 	/// bootstrap uses marker
-	FrameworkReturnCode initWithMarker();
+	FrameworkReturnCode initFiducialMarker();
 	/// bootstrap doesn't use marker
-	FrameworkReturnCode initWithoutMarker();
+	FrameworkReturnCode initMarkerLess();
 
 private:
 	int													m_useMarker = 1;
 	int													m_nbMinInitPointCloud = 50;
+	float												m_angleThres = 0.1;
 	CamCalibration										m_camMatrix;
 	CamDistortion										m_camDistortion;
 	SRef<api::input::devices::ICamera>					m_camera;

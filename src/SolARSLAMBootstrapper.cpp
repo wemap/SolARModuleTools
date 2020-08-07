@@ -36,7 +36,7 @@ SolARSLAMBootstrapper::SolARSLAMBootstrapper() :ConfigurableBase(xpcf::toUUID<So
 	declareInjectable<api::solver::map::IMapper>(m_mapper);
 	declareInjectable<api::features::IKeypointDetector>(m_keypointsDetector);
 	declareInjectable<api::features::IDescriptorsExtractor>(m_descriptorExtractor);
-	declareInjectable<api::features::IDescriptorMatcher>(m_matcher, "Matcher");
+	declareInjectable<api::features::IDescriptorMatcher>(m_matcher, "Matcher-Bootstrap");
 	declareInjectable<api::features::IMatchesFilter>(m_matchesFilter);
 	declareInjectable<api::solver::map::ITriangulator>(m_triangulator);
 	declareInjectable<api::solver::map::IMapFilter>(m_mapFilter);
@@ -47,6 +47,7 @@ SolARSLAMBootstrapper::SolARSLAMBootstrapper() :ConfigurableBase(xpcf::toUUID<So
 	declareInjectable<api::display::IImageViewer>(m_imageViewer);
 	declareProperty("useMarker", m_useMarker);
 	declareProperty("nbMinInitPointCloud", m_nbMinInitPointCloud);
+	declareProperty("angleThres", m_angleThres);
 }
 
 void SolARSLAMBootstrapper::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
@@ -60,12 +61,16 @@ void SolARSLAMBootstrapper::setCameraParameters(const CamCalibration & intrinsic
 FrameworkReturnCode SolARSLAMBootstrapper::run()
 {
 	if (m_useMarker)
-		return initWithMarker();
+		return initFiducialMarker();
 	else
-		return initWithoutMarker();
+		return initMarkerLess();
 }
 
-FrameworkReturnCode SolARSLAMBootstrapper::initWithMarker()
+inline float angleCamDistance(const Transform3Df & pose1, const Transform3Df & pose2) {
+	return std::acos(pose1(0, 2) * pose2(0, 2) + pose1(1, 2) * pose2(1, 2) + pose1(2, 2) * pose2(2, 2));
+}
+
+FrameworkReturnCode SolARSLAMBootstrapper::initFiducialMarker()
 {
 	SRef<Image>							view, imageMatches;
 	Transform3Df						poseFrame;
@@ -118,7 +123,7 @@ FrameworkReturnCode SolARSLAMBootstrapper::initWithMarker()
 			if (m_imageViewer->display(imageMatches) == SolAR::FrameworkReturnCode::_STOP)
 				break;
 			// check baseline to triangulation
-			if (m_keyframeSelector->select(frame2, matches)) {
+			if ((m_keyframeSelector->select(frame2, matches)) && (angleCamDistance(keyframe1->getPose(), poseFrame) < m_angleThres)) {
 				// Triangulate
 				cloud.clear();
 				filteredCloud.clear();
@@ -151,7 +156,7 @@ FrameworkReturnCode SolARSLAMBootstrapper::initWithMarker()
 	return FrameworkReturnCode::_ERROR_;
 }
 
-FrameworkReturnCode SolARSLAMBootstrapper::initWithoutMarker()
+FrameworkReturnCode SolARSLAMBootstrapper::initMarkerLess()
 {
 	// Initialization by get two keyframes using pose estimation from fiducial marker
 	SRef<Image>							view, imageMatches;
@@ -204,6 +209,8 @@ FrameworkReturnCode SolARSLAMBootstrapper::initWithoutMarker()
 			if (m_keyframeSelector->select(frame2, matches)) {
 				// pose estimation
 				m_poseFinderFrom2D2D->estimate(keyframe1->getKeypoints(), frame2->getKeypoints(), keyframe1->getPose(), poseFrame, matches);
+				if (angleCamDistance(keyframe1->getPose(), poseFrame) > m_angleThres)
+					continue;
 				frame2->setPose(poseFrame);
 				// Triangulate
 				cloud.clear();

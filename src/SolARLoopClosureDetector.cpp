@@ -34,7 +34,7 @@ SolARLoopClosureDetector::SolARLoopClosureDetector():ConfigurableBase(xpcf::toUU
 	declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
 	declareInjectable<reloc::IKeyframeRetriever>(m_keyframeRetriever);
 	declareInjectable<solver::pose::I3DTransformSACFinderFrom3D3D>(m_estimator3D);
-	declareInjectable<features::IDescriptorMatcher>(m_matcher);
+	declareInjectable<features::IDescriptorMatcher>(m_matcher, "Matcher-Loop");
 	declareInjectable<features::IMatchesFilter>(m_matchesFilter);
 	declareInjectable<solver::pose::I3D3DCorrespondencesFinder>(m_corr3D3DFinder);
 	declareInjectable<geom::I3DTransform>(m_transform3D);
