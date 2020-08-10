@@ -42,6 +42,7 @@ SolARMapper::SolARMapper():ConfigurableBase(xpcf::toUUID<SolARMapper>())
 	declareProperty("keyframesManagerFileName", m_kfManagerFileName);
 	declareProperty("covisibilityGraphFileName", m_covisGraphFileName);
 	declareProperty("keyframeRetrieverFileName", m_kfRetrieverFileName);
+	declareProperty("reprojErrorThreshold", m_reprojErrorThres);
 }
 
 FrameworkReturnCode SolARMapper::setIdentification(SRef<Identification>& identification)
@@ -197,6 +198,28 @@ FrameworkReturnCode SolARMapper::removeKeyframe(const SRef<Keyframe>& keyframe)
 	// remove keyframe
 	m_keyframesManager->suppressKeyframe(keyframe->getId());
 	return FrameworkReturnCode::_SUCCESS;
+}
+
+void SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
+{
+	// get cloud points
+	std::vector<SRef<CloudPoint>> cloudPointsPruning;
+	if (cloudPoints.size() == 0) {
+		m_pointCloudManager->getAllPoints(cloudPointsPruning);		
+	}
+	else {
+		cloudPointsPruning = cloudPoints;
+	}
+
+	// check reprojection error to prune cloud points
+	int count(0);
+	for (const auto &it : cloudPointsPruning)
+		if (it->getReprojError() > m_reprojErrorThres) {
+			this->removeCloudPoint(it);
+			count++;
+		}
+
+	LOG_INFO("Number pruning cloud points: {}", count);
 }
 
 FrameworkReturnCode SolARMapper::saveToFile()
