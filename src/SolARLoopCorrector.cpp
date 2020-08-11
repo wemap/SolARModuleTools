@@ -171,7 +171,7 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 			}
 		}
 	}
-	LOG_INFO("Number of duplicated points: {}", duplicatedCPs.size());
+
 	// Fuse duplicated points, replace the first cloud point by the second one
 	// - change keyframe visibility of cp1 to cp2
 	// - keyframes see cp1, right now see cp2
