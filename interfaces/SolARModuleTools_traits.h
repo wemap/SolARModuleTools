@@ -50,6 +50,8 @@ class SolARLoopClosureDetector;
 class SolARLoopCorrector;
 class SolARFiducialMarkerPoseEstimator;
 class SolARSLAMBootstrapper;
+class SolARSLAMTracking;
+class SolARSLAMMapping;
 }
 }
 }
@@ -164,6 +166,16 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSLAMBootstrapper,
 							"8f43eed0-1a2e-4c47-83f0-8dd5b259cdb0",
 							"SolARSLAMBootstrapper",
 							"Initialization SLAM using an image stream of a camera.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSLAMTracking,
+							"c45da19d-9637-48b6-ab52-33d3f0af6f72",
+							"SolARSLAMTracking",
+							"SLAM tracking.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSLAMMapping,
+							"c276bcb1-2ac8-42f2-806d-d4fe0ce7d4be",
+							"SolARSLAMMapping",
+							"SLAM mapping.")
 							
 
 #endif // SOLARMODULETOOLS_TRAITS_H
