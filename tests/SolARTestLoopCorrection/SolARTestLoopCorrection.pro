@@ -63,8 +63,9 @@ win32 {
     INCLUDEPATH += $$(WINDOWSSDKDIR)lib/winv6.3/um/x64
 }
 
-configfile.path = $${TARGETDEPLOYDIR}/
-configfile.files = $${PWD}/SolARTestLoopCorrection_config.xml
+configfile.path = $${TARGETDEPLOYDIR}
+configfile.files = $$files($${PWD}/SolARTestLoopCorrection_config.xml)\
+					$$files($${PWD}/camera_calibration.yml)
 INSTALLS += configfile
 
 #NOTE : Must be placed at the end of the .pro

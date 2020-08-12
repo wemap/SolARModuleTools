@@ -104,7 +104,13 @@ int main(int argc,char** argv)
 		// detected loop keyframe
 		LOG_INFO("Detected loop keyframe id: {}", detectedLoopKeyframe->getId());
 		LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
-
+		Eigen::Matrix3f scale, rot;
+		sim3Transform.computeScalingRotation(&scale, &rot);
+		std::cout << "Scale : " << scale << std::endl;
+		std::cout << "Rot : " << rot << std::endl;
+		sim3Transform.linear() = rot;
+		sim3Transform.translation() = sim3Transform.translation() / scale(0, 0);
+		LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
 		// display point cloud
 		while (viewer3DPoints->display(localPointCloudTrans, lastKeyframe->getPose(), { detectedLoopKeyframe->getPose() }, {}, pointCloud, keyframePoses) == FrameworkReturnCode::_SUCCESS);
 	}

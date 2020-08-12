@@ -15,6 +15,7 @@
  */
 
 #include "xpcf/xpcf.h"
+#include "api/input/devices/ICamera.h"
 #include "api/solver/map/IMapper.h"
 #include "api/reloc/IKeyframeRetriever.h"
 #include "api/storage/ICovisibilityGraph.h"
@@ -62,7 +63,11 @@ int main(int argc,char** argv)
 	auto loopDetector = xpcfComponentManager->resolve<loop::ILoopClosureDetector>();
 	auto loopCorrector = xpcfComponentManager->resolve<loop::ILoopCorrector>();
 	auto transform3D = xpcfComponentManager->resolve<geom::I3DTransform>();
+	auto camera = xpcfComponentManager->resolve<input::devices::ICamera>();
 	auto viewer3DPoints = xpcfComponentManager->resolve<display::I3DPointsViewer>();
+
+	// set intrinsic parameters for loop corrector component
+	loopCorrector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 
 	// Load map from file
 	if (mapper->loadFromFile() == FrameworkReturnCode::_SUCCESS) {
@@ -76,14 +81,18 @@ int main(int argc,char** argv)
 	LOG_INFO("Number of keyframes: {}", keyframesManager->getNbKeyframes());
 	LOG_INFO("Number of cloud points: {}", pointCloudManager->getNbPoints());
 
-	// get all keyframes and point cloud to display
-	std::vector<Transform3Df> keyframePoses;
+	// get all keyframes and point cloud before loop closure process
+	std::vector<Transform3Df> keyframePosesBefore;
 	std::vector<SRef<Keyframe>> allKeyframes;
 	keyframesManager->getAllKeyframes(allKeyframes);	
 	for (auto const &it : allKeyframes)
-		keyframePoses.push_back(it->getPose());
-	std::vector<SRef<CloudPoint>> pointCloud;
-	pointCloudManager->getAllPoints(pointCloud);
+		keyframePosesBefore.push_back(it->getPose());
+	std::vector<SRef<CloudPoint>> allPointCloud;
+	pointCloudManager->getAllPoints(allPointCloud);
+	std::vector<SRef<CloudPoint>> pointCloudBefore;
+	for (auto const &it : allPointCloud) {
+		pointCloudBefore.push_back(xpcf::utils::make_shared<CloudPoint>(it->getX(), it->getY(), it->getZ()));
+	}
 
 	// test loop closure with the last keyframe
 	SRef<Keyframe> lastKeyframe = allKeyframes[allKeyframes.size() - 1];
@@ -93,25 +102,17 @@ int main(int argc,char** argv)
 	Transform3Df sim3Transform;
 	std::vector<std::pair<uint32_t, uint32_t>> duplicatedPointsIndices;
 	if (loopDetector->detect(lastKeyframe, detectedLoopKeyframe, sim3Transform, duplicatedPointsIndices) == FrameworkReturnCode::_SUCCESS) {
-		// try to transform local point cloud of current keyframe to the detected loop keyframe
-		std::vector<SRef<CloudPoint>> localPointCloud, localPointCloudTrans;
-		std::vector<Point3Df> localPoint3D, localPoint3DTrans;
-		mapper->getLocalPointCloud(lastKeyframe, 10, localPointCloud);
-		for (auto it : localPointCloud)
-			localPoint3D.push_back(Point3Df(it->getX(), it->getY(), it->getZ()));
-		transform3D->transform(localPoint3D, sim3Transform, localPoint3DTrans);
-		for (auto it : localPoint3DTrans)
-			localPointCloudTrans.push_back(xpcf::utils::make_shared<CloudPoint>(it.getX(), it.getY(), it.getZ()));
-
 		// detected loop keyframe
 		LOG_INFO("Detected loop keyframe id: {}", detectedLoopKeyframe->getId());
 		LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
+		// performs loop correction 
+		loopCorrector->correct(lastKeyframe, detectedLoopKeyframe, sim3Transform, duplicatedPointsIndices);
 
 		// display point cloud
-		while (viewer3DPoints->display(localPointCloudTrans, lastKeyframe->getPose(), { detectedLoopKeyframe->getPose() }, {}, pointCloud, keyframePoses) == FrameworkReturnCode::_SUCCESS);
-		
-		// performs correction here 
-		
+		std::vector<Transform3Df> keyframePosesAfter;
+		for (auto const &it : allKeyframes)
+			keyframePosesAfter.push_back(it->getPose());
+		while (viewer3DPoints->display(allPointCloud, lastKeyframe->getPose(), keyframePosesAfter, {}, pointCloudBefore, keyframePosesBefore) == FrameworkReturnCode::_SUCCESS);
 	}
 	else
 		LOG_INFO("Cannot detect a loop closure from last keyframe");

@@ -121,6 +121,10 @@ public:
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
 	FrameworkReturnCode removeKeyframe(const SRef<Keyframe> &keyframe) override;
 
+	/// @brief Prune cloud points and keyframes of a map
+	/// @param[in] cloudPoints: the cloud points are checked to prune
+	void pruning(const std::vector<SRef<CloudPoint>> &cloudPoints = {}) override;
+
 	/// @brief Save the map to the external file
 	 /// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
 	FrameworkReturnCode saveToFile() override;
@@ -147,6 +151,8 @@ private:
 	std::string					m_kfManagerFileName;
 	std::string					m_covisGraphFileName;
 	std::string					m_kfRetrieverFileName;
+
+	float						m_reprojErrorThres = 3.0;
 };
 }
 }
