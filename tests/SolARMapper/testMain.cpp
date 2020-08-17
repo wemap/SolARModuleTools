@@ -4,8 +4,6 @@
 
 #include <iostream>
 
-#include <cxxopts.hpp>
-
 #include <xpcf/api/IComponentManager.h>
 #include <xpcf/core/helpers.h>
 #include <api/solver/map/IMapper.h>
@@ -13,11 +11,6 @@
 
 namespace xpcf = org::bcom::xpcf;
 
-// print help options
-void print_help(const cxxopts::Options& options)
-{
-    std::cout << options.help({"", "compilation"}) << '\n';
-}
 
 // print error message
 void print_error(const std::string& msg)
