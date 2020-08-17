@@ -8,7 +8,7 @@ CONFIG -= qt
 DEFINES += MYVERSION=$${VERSION}
 DEFINES += WITHREMOTING
 
-include(../findremakenrules.pri)
+include(findremakenrules.pri)
 
 CONFIG(debug,debug|release) {
     DEFINES += _DEBUG=1
