@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<xpcf-configuration>
+    <aliases>
+       <alias name="SolARPointCloudManager" type="component" uuid="958165e9-c4ea-4146-be50-b527a9a851f0"/>
+       <alias name="SolARKeyframesManager" type="component" uuid="f94b4b51-b8f2-433d-b535-ebf1f54b4bf6"/>
+       <alias name="SolARKeyframeRetriever" type="component" uuid="9d1b1afa-bdbc-11e8-a355-529269fb1459"/>
+    </aliases>
+    <factory>
+        <!-- default bindings -->
+        <bindings>
+            <bind interface="IPointCloudManager" to="SolARPointCloudManager" scope="Singleton"/>
+            <bind interface="IKeyframesManager" to="SolARKeyframesManager" scope="Singleton"/>
+            <bind interface="IKeyframeRetriever" to="SolARKeyframeRetriever" scope="Singleton"/>
+        </bindings>
+    </factory>
+</xpcf-configuration>
+

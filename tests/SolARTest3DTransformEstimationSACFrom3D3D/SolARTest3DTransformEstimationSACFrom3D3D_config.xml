@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<xpcf-registry autoAlias="true"> 
+    <module uuid="28b89d39-41bd-451d-b19e-d25a3d7c5797" name="SolARModuleTools"  description="SolARModuleTools"  path="$REMAKEN_PKG_ROOT/packages/SolARBuild/win-cl-14.1/SolARModuleTools/0.8.1/lib/x86_64/shared">
+        <component uuid="3b7a1117-8b59-46b1-8e0c-6e76a8377ab4" name="SolAR3DTransformEstimationSACFrom3D3D" description="SolAR3DTransformEstimationSACFrom3D3D">
+            <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+            <interface uuid="940bddba-da70-4a6e-a327-890c1e61386d" name="I3DTransformSACFinderFrom3D3D" description="I3DTransformSACFinderFrom3D3D"/>
+        </component>
+        <component uuid="f05dd955-33bd-4d52-8717-93ad298ed3e3" name="SolAR3DTransform" description="SolAR3DTransform">
+            <interface uuid="125f2007-1bf9-421d-9367-fbdc1210d006" name="IComponentIntrospect" description="IComponentIntrospect"/>
+            <interface uuid="9c1052b2-46c0-467b-8363-36f19b6b445f" name="I3DTransform" description="I3DTransform"/>
+        </component>
+    </module>
+	<properties>
+		<configure component="SolAR3DTransformEstimationSACFrom3D3D">
+			<property name="iterationsCount" type="Integer" value="500"/>
+			<property name="reprojError" type="Float" value="0.1"/>
+			<property name="confidence" type="Float" value="0.9"/>
+			<property name="minNbInliers" type="Integer" value="5"/>
+		</configure>
+	</properties>
+</xpcf-registry>
