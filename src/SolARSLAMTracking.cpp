@@ -75,8 +75,14 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	// matching feature
 	m_matcher->match(m_frameToTrack->getDescriptors(), frame->getDescriptors(), matches);
 	m_matchesFilter->filter(matches, matches, m_frameToTrack->getKeypoints(), frame->getKeypoints());
-	LOG_DEBUG("Nb of matches: {}", matches.size());
-
+	//LOG_INFO("Nb of matches: {}", matches.size());
+	float maxMatchDistance = -FLT_MAX;
+	for (const auto &it : matches) {
+		float score = it.getMatchingScore();
+		if (score > maxMatchDistance)
+			maxMatchDistance = score;
+	}
+	//LOG_INFO("Max distance matches: {} / {}", maxMatchDistance);
 	// find 2D-3D point correspondences
 	std::vector<Point2Df> pt2d;
 	std::vector<Point3Df> pt3d;
@@ -84,7 +90,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	std::vector<DescriptorMatch> foundMatches;
 	std::vector<DescriptorMatch> remainingMatches;
 	m_corr2D3DFinder->find(m_frameToTrack, frame, matches, pt3d, pt2d, foundMatches, remainingMatches);
-	LOG_DEBUG("Nb of 2D-3D correspondences: {}", pt2d.size());
+	LOG_INFO("Nb of 2D-3D correspondences: {}", pt2d.size());
 
 	// init image to display
 	displayImage = frame->getView()->copy();
@@ -93,7 +99,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	std::vector<Point2Df> imagePoints_inliers;
 	std::vector<Point3Df> worldPoints_inliers;
 	if (m_pnpRansac->estimate(pt2d, pt3d, imagePoints_inliers, worldPoints_inliers, framePose, m_lastPose) == FrameworkReturnCode::_SUCCESS) {
-		LOG_DEBUG(" pnp inliers size: {} / {}", worldPoints_inliers.size(), pt3d.size());
+		//LOG_INFO(" pnp inliers size: {} / {}", worldPoints_inliers.size(), pt3d.size());
 		LOG_DEBUG("Estimated pose: \n {}", framePose.matrix());
 		// Set the pose of the new frame
 		frame->setPose(framePose);
@@ -112,7 +118,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 			desAllLocalMap.push_back(it_cp->getDescriptor());
 		}
 		std::vector<DescriptorMatch> allMatches;
-		m_matcher->matchInRegion(projected2DPts, desAllLocalMap, frame, allMatches, 5.f);
+		m_matcher->matchInRegion(projected2DPts, desAllLocalMap, frame, allMatches, 0, maxMatchDistance);
 
 		// find visibility of new frame
 		std::vector<Point2Df> pt2d;
@@ -133,7 +139,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 
 		// update map visibility of current frame
 		frame->addVisibilities(newMapVisibility);
-		LOG_DEBUG("Nb of map visibility of frame: {}", newMapVisibility.size());
+		LOG_INFO("Nb of correspondences and map visibility of frame: {} / {}", pt2d.size(), newMapVisibility.size());
 
 		// display tracked points
 		if (m_displayTrackedPoints)

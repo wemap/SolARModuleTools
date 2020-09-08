@@ -52,7 +52,8 @@ private:
     //@brief if not null, the point reconstructed behind the camera are removed
     int m_cheiralityCheck = 1;
 
-
+	//@brief min angle between rays
+	float m_minTriangulationAngle = 0.03;
 };
 }
 }
