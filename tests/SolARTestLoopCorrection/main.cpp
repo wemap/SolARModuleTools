@@ -66,7 +66,8 @@ int main(int argc,char** argv)
 	auto camera = xpcfComponentManager->resolve<input::devices::ICamera>();
 	auto viewer3DPoints = xpcfComponentManager->resolve<display::I3DPointsViewer>();
 
-	// set intrinsic parameters for loop corrector component
+	// set intrinsic parameters for loop detector and loop corrector component
+	loopDetector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 	loopCorrector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 
 	// Load map from file
@@ -104,6 +105,7 @@ int main(int argc,char** argv)
 	if (loopDetector->detect(lastKeyframe, detectedLoopKeyframe, sim3Transform, duplicatedPointsIndices) == FrameworkReturnCode::_SUCCESS) {
 		// detected loop keyframe
 		LOG_INFO("Detected loop keyframe id: {}", detectedLoopKeyframe->getId());
+		LOG_INFO("Number of duplicated points: {}", duplicatedPointsIndices.size());
 		LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
 		// performs loop correction 
 		loopCorrector->correct(lastKeyframe, detectedLoopKeyframe, sim3Transform, duplicatedPointsIndices);

@@ -47,6 +47,11 @@ public:
 	SolARLoopClosureDetector();
 	~SolARLoopClosureDetector() = default;
 
+	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
+	/// @param[in] intrinsicParams: Camera calibration matrix parameters.
+	/// @param[in] distortionParams: Camera distortion parameters.
+	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) override;
+
 	/// @brief Detect a loop closure from a given keyframe.
 	/// @param[in] queryKeyframe: the query keyframe.
 	/// @param[out] detectedLoopKeyframe: the detected loop keyframe.		

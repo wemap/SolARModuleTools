@@ -15,6 +15,7 @@
  */
 
 #include "xpcf/xpcf.h"
+#include "api/input/devices/ICamera.h"
 #include "api/solver/map/IMapper.h"
 #include "api/reloc/IKeyframeRetriever.h"
 #include "api/storage/ICovisibilityGraph.h"
@@ -59,8 +60,11 @@ int main(int argc,char** argv)
 	auto keyframeRetriever = xpcfComponentManager->resolve<IKeyframeRetriever>();
 	auto mapper = xpcfComponentManager->resolve<solver::map::IMapper>();
 	auto loopDetector = xpcfComponentManager->resolve<loop::ILoopClosureDetector>();
+	auto camera = xpcfComponentManager->resolve<input::devices::ICamera>();
 	auto transform3D = xpcfComponentManager->resolve<geom::I3DTransform>();
 	auto viewer3DPoints = xpcfComponentManager->resolve<display::I3DPointsViewer>();
+
+	loopDetector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 
 	// Load map from file
 	if (mapper->loadFromFile() == FrameworkReturnCode::_SUCCESS) {
@@ -103,6 +107,7 @@ int main(int argc,char** argv)
 
 		// detected loop keyframe
 		LOG_INFO("Detected loop keyframe id: {}", detectedLoopKeyframe->getId());
+		LOG_INFO("Number of duplicated points: {}", duplicatedPointsIndices.size());
 		LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
 		Eigen::Matrix3f scale, rot;
 		sim3Transform.computeScalingRotation(&scale, &rot);

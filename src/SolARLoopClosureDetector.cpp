@@ -41,6 +41,10 @@ SolARLoopClosureDetector::SolARLoopClosureDetector():ConfigurableBase(xpcf::toUU
 	declareProperty("minNbInliers", m_NbMinInliers);
 }
 
+void SolARLoopClosureDetector::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
+	m_estimator3D->setCameraParameters(intrinsicParams, distortionParams);
+}
+
 FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe>& queryKeyframe, SRef<Keyframe>& detectedLoopKeyframe, Transform3Df & sim3Transform, std::vector<std::pair<uint32_t, uint32_t>>& duplicatedPointsIndices)
 {
 	uint32_t queryKeyframeId = queryKeyframe->getId();
@@ -62,7 +66,7 @@ FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe>& query
 		candidateKeyframes.push_back(keyframe);
 		candidateKeyframePoses.push_back(keyframe->getPose());
 	}
-
+	
 	// find best candidate loop detection
 	Transform3Df bestTransform;
 	SRef<Keyframe> bestDetectedLoopKeyframe;
@@ -83,7 +87,7 @@ FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe>& query
 		}
 		Transform3Df pose;
 		std::vector<int> inliers;
-		if (m_estimator3D->estimate(pts1, pts2, pose, inliers) == FrameworkReturnCode::_SUCCESS) {
+		if (m_estimator3D->estimate(queryKeyframe, it, foundMatches, pts1, pts2, pose, inliers) == FrameworkReturnCode::_SUCCESS) {
 			if (inliers.size() > bestInliers.size()) {
 				bestTransform = pose;
 				bestDetectedLoopKeyframe = it;

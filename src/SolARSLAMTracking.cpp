@@ -73,8 +73,8 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	frame->setReferenceKeyframe(m_referenceKeyframe);
 
 	// matching feature
-	m_matcher->match(m_frameToTrack->getDescriptors(), frame->getDescriptors(), matches);
-	m_matchesFilter->filter(matches, matches, m_frameToTrack->getKeypoints(), frame->getKeypoints());
+	m_matcher->match(m_referenceKeyframe->getDescriptors(), frame->getDescriptors(), matches);
+	m_matchesFilter->filter(matches, matches, m_referenceKeyframe->getKeypoints(), frame->getKeypoints());
 	//LOG_INFO("Nb of matches: {}", matches.size());
 	float maxMatchDistance = -FLT_MAX;
 	for (const auto &it : matches) {
@@ -89,7 +89,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	std::vector<CloudPoint> foundPoints;
 	std::vector<DescriptorMatch> foundMatches;
 	std::vector<DescriptorMatch> remainingMatches;
-	m_corr2D3DFinder->find(m_frameToTrack, frame, matches, pt3d, pt2d, foundMatches, remainingMatches);
+	m_corr2D3DFinder->find(m_referenceKeyframe, frame, matches, pt3d, pt2d, foundMatches, remainingMatches);
 	LOG_INFO("Nb of 2D-3D correspondences: {}", pt2d.size());
 
 	// init image to display
@@ -148,28 +148,25 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 		LOG_DEBUG("Refined pose: \n {}", frame->getPose().matrix());
 		m_lastPose = frame->getPose();
 
-		// update frame to track
-		m_frameToTrack = frame;
-
 		// tracking is good
 		m_isLostTrack = false;	
 
 	}
 	else {
-		LOG_DEBUG("Pose estimation has failed");
+		LOG_INFO("Pose estimation has failed");
 		// lost tracking
 		m_isLostTrack = true;		
 		// reloc
 		std::vector < uint32_t> retKeyframesId;
 		if (m_keyframeRetriever->retrieve(frame, retKeyframesId) == FrameworkReturnCode::_SUCCESS) {
 			LOG_DEBUG("Retrieval Success");
-			LOG_DEBUG("Update reference keyframe to the best retrieval keyframe id {}", retKeyframesId[0]);
+			LOG_INFO("Update reference keyframe to the best retrieval keyframe id {}", retKeyframesId[0]);
 			SRef<Keyframe> bestRetKeyframe;
 			m_keyframesManager->getKeyframe(retKeyframesId[0], bestRetKeyframe);
 			updateReferenceKeyframe(bestRetKeyframe);		
 		}
 		else
-			LOG_DEBUG("Retrieval Failed");
+			LOG_INFO("Retrieval Failed");
 	}
 	if (m_isLostTrack)
 		return FrameworkReturnCode::_ERROR_;
@@ -180,8 +177,6 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 void SolARSLAMTracking::updateLocalMap()
 {
 	std::unique_lock<std::mutex> lock(m_refKeyframeMutex);
-	m_frameToTrack = xpcf::utils::make_shared<Frame>(m_referenceKeyframe);
-	m_frameToTrack->setReferenceKeyframe(m_referenceKeyframe);
 	m_localMap.clear();
 	// get local point cloud
 	m_mapper->getLocalPointCloud(m_referenceKeyframe, m_minWeightNeighbor, m_localMap);

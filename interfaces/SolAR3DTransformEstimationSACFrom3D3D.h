@@ -20,6 +20,7 @@
 #include <string>
 #include "api/solver/pose/I3DTransformSACFinderFrom3D3D.h"
 #include "api/geom/I3DTransform.h"
+#include "api/geom/IProject.h"
 #include "datastructure/Image.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
@@ -46,12 +47,33 @@ public:
     ///@brief SolAR3DTransformEstimationFrom3D3D destructor;
     ~SolAR3DTransformEstimationSACFrom3D3D() = default;
 
+	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
+	/// @param[in] intrinsicParams: Camera calibration matrix parameters.
+	/// @param[in] distortionParams: Camera distortion parameters.
+	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) override;
+
 	/// @brief Estimates camera pose from a set of 3D-3D point correspondences.
 	/// @param[in] firstPoints3D: first set of 3D points.
 	/// @param[in] secondPoints3D: second set of 3D points.
 	/// @param[out] pose: 3D transformation maps the first set of 3D points to the second one.
 	/// @param[out] inliers: indices of inlier correspondences.
 	FrameworkReturnCode estimate(const std::vector<Point3Df> & firstPoints3D,
+								const std::vector<Point3Df> & secondPoints3D,
+								Transform3Df & pose,
+								std::vector<int> &inliers) override;
+
+	/// @brief Estimates camera pose from a set of 3D-3D point correspondences.
+	/// @param[in] firstKeyframe: first keyframe.
+	/// @param[in] secondKeyframe: second keyframe.
+	/// @param[in] matches: matches between two keyframes.
+	/// @param[in] firstPoints3D: first set of 3D points.
+	/// @param[in] secondPoints3D: second set of 3D points.
+	/// @param[out] pose: 3D transformation maps the first set of 3D points to the second one.
+	/// @param[out] inliers: indices of inlier correspondences.
+	FrameworkReturnCode estimate(const SRef<Keyframe> &firstKeyframe,
+								const SRef<Keyframe> &secondKeyframe,
+								const std::vector<DescriptorMatch> &matches,
+								const std::vector<Point3Df> & firstPoints3D,
 								const std::vector<Point3Df> & secondPoints3D,
 								Transform3Df & pose,
 								std::vector<int> &inliers) override;
@@ -65,6 +87,9 @@ private:
 	/// @brief Inlier threshold value used by the RANSAC procedure. The parameter value is the maximum allowed distance between the observed and computed point projections to consider it an inlier.
 	float m_reprojError = 4.0;
 
+	/// @brief Inlier threshold value based on 3d distance error
+	float m_distanceError = 0.1;
+
 	/// @brief The probability that the algorithm produces a useful result.
 	float m_confidence = 0.99f;
 
@@ -73,6 +98,9 @@ private:
 
 	/// @brief Transform 3D
 	SRef<I3DTransform> m_transform3D;
+
+	/// @brief Projector
+	SRef<api::geom::IProject> m_projector;
 };
 
 }
