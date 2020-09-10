@@ -44,6 +44,14 @@ class SolARKeyframesManager;
 class SolARPointCloudManager;
 class SolARCovisibilityGraph;
 class SolARBoostCovisibilityGraph;
+class SolAR3D3DCorrespondencesFinder;
+class SolAR3DTransformEstimationSACFrom3D3D;
+class SolARLoopClosureDetector;
+class SolARLoopCorrector;
+class SolARFiducialMarkerPoseEstimator;
+class SolARSLAMBootstrapper;
+class SolARSLAMTracking;
+class SolARSLAMMapping;
 }
 }
 }
@@ -128,6 +136,47 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph,
                              "b8104c93-b88a-4082-999c-802b52045043",
                              "SolARBoostCovisibilityGraph",
                              "A component to manage the covisibility between keyframes which uses the boost library")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3D3DCorrespondencesFinder,
+							"978068ef-7f93-41ef-8e24-13419776d9c6",
+							"SolAR3D3DCorrespondencesFinder",
+							"Finds the 3D-3D correspondences from feature matches of two keyframes")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAR3DTransformEstimationSACFrom3D3D,
+							"3b7a1117-8b59-46b1-8e0c-6e76a8377ab4",
+							"SolAR3DTransformEstimationSACFrom3D3D",
+							"Finds the 3D transform of 3D-3D points correspondences with a SAmple Consensus")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopClosureDetector,
+                            "e3d5946c-c1f1-11ea-b3de-0242ac130004",
+                            "SolARLoopClosingDetector",
+                            "Detect a loop closure from a given keyframe..")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopCorrector,
+                            "1007b588-c1f2-11ea-b3de-0242ac130004",
+                            "SolARLoopCorrector",
+                            "Corrects a loop of camera poses and updates associated geometry.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARFiducialMarkerPoseEstimator,
+							"cddd23c4-da4e-4c5c-b3f9-7d095d097c97",
+							"SolARFiducialMarkerPoseEstimator",
+							"Estimate camera pose based on a fiducial marker.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSLAMBootstrapper,
+							"8f43eed0-1a2e-4c47-83f0-8dd5b259cdb0",
+							"SolARSLAMBootstrapper",
+							"Initialization SLAM using an image stream of a camera.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSLAMTracking,
+							"c45da19d-9637-48b6-ab52-33d3f0af6f72",
+							"SolARSLAMTracking",
+							"SLAM tracking.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSLAMMapping,
+							"c276bcb1-2ac8-42f2-806d-d4fe0ce7d4be",
+							"SolARSLAMMapping",
+							"SLAM mapping.")
+							
 
 #endif // SOLARMODULETOOLS_TRAITS_H
 

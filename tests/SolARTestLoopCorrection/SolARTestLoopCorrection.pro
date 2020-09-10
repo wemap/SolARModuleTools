@@ -3,7 +3,7 @@ QT       -= core gui
 CONFIG -= qt
 
 ## global defintions : target lib name, version
-TARGET = testSolARCovisibilityGraph
+TARGET = SolARTestLoopCorrection
 VERSION=0.8.0
 
 DEFINES += MYVERSION=$${VERSION}
@@ -24,7 +24,7 @@ CONFIG(release,debug|release) {
     DEFINES += NDEBUG=1
 }
 
-DEPENDENCIESCONFIG = shared install_recurse
+DEPENDENCIESCONFIG = sharedlib recursive install_recurse
 
 win32:CONFIG -= static
 win32:CONFIG += shared
@@ -35,15 +35,17 @@ PROJECTCONFIG = QTVS
 #NOTE : CONFIG as staticlib or sharedlib, DEPENDENCIESCONFIG as staticlib or sharedlib, QMAKE_TARGET.arch and PROJECTDEPLOYDIR MUST BE DEFINED BEFORE templatelibconfig.pri inclusion
 include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/templateappconfig.pri)))  # Shell_quote & shell_path required for visual on windows
 
-HEADERS += \
+#DEFINES += BOOST_ALL_NO_LIB
+DEFINES += BOOST_ALL_DYN_LINK
+DEFINES += BOOST_AUTO_LINK_NOMANGLE
+DEFINES += BOOST_LOG_DYN_LINK
 
 SOURCES += \
     main.cpp
 
-
 unix {
     LIBS += -ldl
-    QMAKE_CXXFLAGS += -DBOOST_LOG_DYN_LINK
+    QMAKE_CXXFLAGS += -DBOOST_ALL_DYN_LINK
 }
 
 macx {
@@ -59,17 +61,12 @@ win32 {
     # Windows Kit (msvc2013 64)
     LIBS += -L$$(WINDOWSSDKDIR)lib/winv6.3/um/x64 -lshell32 -lgdi32 -lComdlg32
     INCLUDEPATH += $$(WINDOWSSDKDIR)lib/winv6.3/um/x64
-
 }
 
-configfile.path = $${TARGETDEPLOYDIR}/
-configfile.files = $${PWD}/testSolARCovisibilityGraph_conf.xml
+configfile.path = $${TARGETDEPLOYDIR}
+configfile.files = $$files($${PWD}/SolARTestLoopCorrection_config.xml)\
+					$$files($${PWD}/camera_calibration.yml)
 INSTALLS += configfile
-
-DISTFILES += \
-    packagedependencies.txt
 
 #NOTE : Must be placed at the end of the .pro
 include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/remaken_install_target.pri)))) # Shell_quote & shell_path required for visual on windows
-
-

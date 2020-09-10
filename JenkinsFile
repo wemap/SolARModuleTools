@@ -1,4 +1,7 @@
 SolArModulePipeline {
     moduleName="SolARModuleTools"
     dirName="SolARBuild"
+    makeTarget="install"
+    runTests=true
+    android=true
 }

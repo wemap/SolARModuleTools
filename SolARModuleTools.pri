@@ -15,7 +15,15 @@ interfaces/SolARBasicSource.h \
 interfaces/SolARPointCloudManager.h \
 interfaces/SolARKeyframesManager.h \
 interfaces/SolARCovisibilityGraph.h \
-interfaces/SolARBoostCovisibilityGraph.h
+interfaces/SolARBoostCovisibilityGraph.h \
+interfaces/SolARLoopCorrector.h \
+interfaces/SolARLoopClosureDetector.h \
+interfaces/SolAR3D3DcorrespondencesFinder.h \
+interfaces/SolAR3DTransformEstimationSACFrom3D3D.h \
+interfaces/SolARFiducialMarkerPoseEstimator.h \
+interfaces/SolARSLAMBootstrapper.h \
+interfaces/SolARSLAMTracking.h \
+interfaces/SolARSLAMMapping.h
 
 
 
@@ -35,4 +43,12 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARPointCloudManager.cpp \
     src/SolARKeyframesManager.cpp \
     src/SolARCovisibilityGraph.cpp \
-    src/SolARBoostCovisibilityGraph.cpp
+    src/SolARBoostCovisibilityGraph.cpp \
+    src/SolARLoopCorrector.cpp \
+    src/SolARLoopClosureDetector.cpp \
+    src/SolAR3D3DcorrespondencesFinder.cpp \
+    src/SolAR3DTransformEstimationSACFrom3D3D.cpp \
+    src/SolARFiducialMarkerPoseEstimator.cpp \
+    src/SolARSLAMBootstrapper.cpp \
+    src/SolARSLAMTracking.cpp \
+    src/SolARSLAMMapping.cpp

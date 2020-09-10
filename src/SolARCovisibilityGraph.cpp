@@ -273,6 +273,8 @@ FrameworkReturnCode SolARCovisibilityGraph::maximalSpanningTree(std::vector<std:
 
 FrameworkReturnCode SolARCovisibilityGraph::getShortestPath(uint32_t node1_id, uint32_t node2_id, std::vector<uint32_t> &path)
 {
+	if (node1_id == node2_id)
+		return FrameworkReturnCode::_ERROR_;
 	//just need to start
 	struct TreeNode {
 		TreeNode(uint32_t n, uint32_t p) :node(n), parent(p) {}
