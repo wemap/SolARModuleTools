@@ -88,9 +88,9 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame>& frame, SRef<Key
 			LOG_INFO("Nb keyframe to local bundle: {}", bestIdx.size());
 			double bundleReprojError = m_bundler->bundleAdjustment(m_camMatrix, m_camDistortion, bestIdx);
 			// map pruning
-			std::vector<SRef<CloudPoint>> cloudPointsCheckPruning;
-			m_mapper->getLocalPointCloud(keyframe, m_minWeightNeighbor, cloudPointsCheckPruning);
-			m_mapper->pruning(cloudPointsCheckPruning);
+			//std::vector<SRef<CloudPoint>> cloudPointsCheckPruning;
+			//m_mapper->getLocalPointCloud(keyframe, m_minWeightNeighbor, cloudPointsCheckPruning);
+			//m_mapper->pruning(cloudPointsCheckPruning);
 			return FrameworkReturnCode::_SUCCESS;
 		}
 	}
@@ -109,7 +109,7 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	updateAssociateCloudPoint(newKeyframe);
 	// get best neighbor keyframes
 	std::vector<uint32_t> idxBestNeighborKfs;
-	m_covisibilityGraph->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor, idxBestNeighborKfs);
+	m_covisibilityGraph->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor / 2, idxBestNeighborKfs);
 	// find matches between unmatching keypoints in the new keyframe and the best neighboring keyframes
 	std::vector<SRef<CloudPoint>> newCloudPoint;
 	findMatchesAndTriangulation(newKeyframe, idxBestNeighborKfs, newCloudPoint);
@@ -189,7 +189,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		}
 
 	// Triangulate to neighboring keyframes
-	for (int i = 0; i < idxBestNeighborKfs.size(); ++i) {
+	for (int i = 0; i < idxBestNeighborKfs.size(); ++i) {		
 		// get non map point view keypoints
 		std::vector<int> newKf_indexKeypoints;
 		for (int j = 0; j < checkMatches.size(); ++j)
@@ -200,6 +200,10 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		SRef<Keyframe> tmpKf;
 		m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf);
 		const Transform3Df &tmpKf_pose = tmpKf->getPose();
+
+		// check base line
+		if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() < 0.1)
+			continue;
 
 		// Matching based on BoW
 		std::vector < DescriptorMatch> tmpMatches, goodMatches;

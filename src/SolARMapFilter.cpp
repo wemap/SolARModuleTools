@@ -34,6 +34,7 @@ SolARMapFilter::SolARMapFilter():ConfigurableBase(xpcf::toUUID<SolARMapFilter>()
     declareProperty("reprojErrorThreshold", m_reprojErrorThreshold);
     declareProperty("cheiralityCheck", m_cheiralityCheck);
     declareProperty("minTriangulationAngle", m_minTriangulationAngle);
+    declareProperty("maxTriangulationAngle", m_maxTriangulationAngle);
 }
 
 float calculateTriangulationAngle(const Eigen::Vector3f& center1,
@@ -96,7 +97,8 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
 			// if the reprojection error is less than the threshold
 			if (input[i]->getReprojError() < m_reprojErrorThreshold) {
 				// if the angle is greater than the threshold
-				if (calculateTriangulationAngle(pose1.translation(), pose2.translation(), point) > m_minTriangulationAngle) {
+				float angle = calculateTriangulationAngle(pose1.translation(), pose2.translation(), point);
+				if ((angle > m_minTriangulationAngle) && (angle < m_maxTriangulationAngle)) {
 					index.push_back(i);
 					output.push_back(input[i]);
 				}

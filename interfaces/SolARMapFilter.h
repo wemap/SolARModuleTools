@@ -54,6 +54,9 @@ private:
 
 	//@brief min angle between rays
 	float m_minTriangulationAngle = 0.03;
+
+	//@brief max angle between rays
+	float m_maxTriangulationAngle = 0.2;
 };
 }
 }

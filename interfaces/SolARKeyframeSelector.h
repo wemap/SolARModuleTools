@@ -74,6 +74,9 @@ public:
     // Minimum mean distance for a frame to be a keyframe
     float m_minMeanDistanceIsKeyframe = 20.0;
 
+	// Minimum number of tracked points
+	int m_minTrackedPoints = 100;
+
 };
 
 }
