@@ -1,9 +1,9 @@
 #include "KeyFrameRetrieverMock.h"
 #include <core/Log.h>
-#include <filesystem>
+#include<boost/filesystem.hpp>
 
 namespace xpcf = org::bcom::xpcf;
-
+namespace fs = boost::filesystem;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::KeyFrameRetrieverMock)
 
@@ -23,7 +23,6 @@ KeyFrameRetrieverMock::KeyFrameRetrieverMock():ConfigurableBase(xpcf::toUUID<Key
     declareProperty("matchingDistanceMAX", m_distanceMax);
 
    LOG_DEBUG("KeyFrameRetrieverMock constructor");
-
 }
 
 KeyFrameRetrieverMock::~KeyFrameRetrieverMock()
@@ -36,7 +35,7 @@ xpcf::XPCFErrorCode KeyFrameRetrieverMock::onConfigured()
     LOG_DEBUG(" KeyFrameRetrieverMock onConfigured");
 
     // Load a vocabulary from m_VOCpath
-    if (!std::filesystem::exists(m_VOCPath)) {
+    if (!fs::filesystem::exists(m_VOCPath)) {
         LOG_DEBUG(" KeyFrameRetrieverMock onConfigured: the vocabulary file doesn't exists ");
         return xpcf::_ERROR_INVALID_ARGUMENT;
     }
