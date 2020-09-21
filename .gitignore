@@ -74,6 +74,9 @@ Debug/
 Release/
 *-packagedependencies.*
 *-packagedependencies-win.*
+*-packagedependencies-linux.*
+*-packagedependencies-unix.*
+*-packagedependencies-android.*
 *.pc
 
 # generated documentation
