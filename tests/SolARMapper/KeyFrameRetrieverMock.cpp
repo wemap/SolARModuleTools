@@ -35,7 +35,7 @@ xpcf::XPCFErrorCode KeyFrameRetrieverMock::onConfigured()
     LOG_DEBUG(" KeyFrameRetrieverMock onConfigured");
 
     // Load a vocabulary from m_VOCpath
-    if (!fs::filesystem::exists(m_VOCPath)) {
+    if (!fs::exists(m_VOCPath)) {
         LOG_DEBUG(" KeyFrameRetrieverMock onConfigured: the vocabulary file doesn't exists ");
         return xpcf::_ERROR_INVALID_ARGUMENT;
     }
