@@ -1,10 +1,10 @@
-
 *.user
 
 *-Debug
 
 *-Release
 
+*.vcxproj*
 
 # Prerequisites
 *.d
@@ -14,6 +14,8 @@
 *.lo
 *.o
 *.obj
+
+.\build
 
 # Precompiled Headers
 *.gch
@@ -40,7 +42,7 @@
 *.app
 
 #others
-
+*.*pre1
 *.rej
 *.stash
 *.rc
@@ -48,6 +50,7 @@
 *.exp
 *.ilk
 *.pdb
+*.autosave
 
 # Visual Studio files
 *.ib_pdb_index
@@ -73,14 +76,24 @@ Release/
 *-packagedependencies-win.*
 *.pc
 
-# MinGW generated files
-*.Debug
-*.Release
+# generated documentation
+doc/ 
 
-# documentation
-doc/
-doxygen/
+*.log
+*.tlog
+*.TMP
+*.tmp
 
-tests/SolARHomographyEstimation/xpcf_custom\.xml
+tests/bin
+
 build/
-SolARModuleTools.pro.user.4.9-pre1
+
+*InstallDependencies.bat
+*debug.bat
+*release.bat
+*remakeninfo.txt
+*.pc
+
+Makefile
+Makefile.Debug
+Makefile.Release
