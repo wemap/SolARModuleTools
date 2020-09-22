@@ -45,6 +45,7 @@ SolARSLAMMapping::SolARSLAMMapping() :ConfigurableBase(xpcf::toUUID<SolARSLAMMap
 	declareInjectable<api::geom::IProject>(m_projector);
 	declareInjectable<api::features::IDescriptorMatcher>(m_matcher, "Matcher-Mapping");
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
+	declareProperty("minTrackedPoints", m_minTrackedPoints);
 }
 
 void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
@@ -71,7 +72,7 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame>& frame, SRef<Key
 	}
 	//LOG_INFO("Nb matches to reference keyframe: {}", matches.size());
 	// check need new keyframe
-	if (m_keyframeSelector->select(frame, matches))
+	if (m_keyframeSelector->select(frame, matches) || (frame->getVisibility().size() < m_minTrackedPoints))
 	{
 		//LOG_INFO("Pass first condition to need new keyframe");
 		if (!checkNeedNewKeyframeInLocalMap(frame)) {

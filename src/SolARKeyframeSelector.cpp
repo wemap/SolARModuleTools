@@ -29,16 +29,12 @@ SolARKeyframeSelector::SolARKeyframeSelector():ConfigurableBase(xpcf::toUUID<Sol
 {
    declareInterface<api::solver::map::IKeyframeSelector>(this);
    declareProperty("minNbMatchesIsKeyframe", m_minNbMatchesIsKeyframe);
-   declareProperty("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);
-   declareProperty("minTrackedPoints", m_minTrackedPoints);
+   declareProperty("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);   
 }
 
 
 bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::vector<DescriptorMatch>& matches)
 {
-	if (frame->getVisibility().size() < m_minTrackedPoints)
-		return true;
-
     if (matches.size() < m_minNbMatchesIsKeyframe)
         return false;
 

@@ -75,6 +75,7 @@ private:
 
 private:
 	float												m_minWeightNeighbor = 10.f;
+	int													m_minTrackedPoints = 100;
 	SRef<Keyframe>										m_updatedReferenceKeyframe;
 	CamCalibration										m_camMatrix;
 	CamDistortion										m_camDistortion;
