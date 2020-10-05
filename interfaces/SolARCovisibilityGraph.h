@@ -28,7 +28,7 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 /**
- * @class SolARVisibilityStorageBiMap
+ * @class SolARCovisibilityGraph
  * @brief A storage component to store with persistence the visibility between keypoints and 3D points, and respectively, based on a bimap from boost.
  */
 class SOLAR_TOOLS_EXPORT_API SolARCovisibilityGraph : public org::bcom::xpcf::ComponentBase,

@@ -27,17 +27,17 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 /**
- * @class SolARKeyframesStorageSet
+ * @class SolARKeyframesManager
  * @brief A storage component to store a persistent set of keyframes, based on a std::set.
  */
 class SOLAR_TOOLS_EXPORT_API SolARKeyframesManager : public org::bcom::xpcf::ComponentBase,
         public api::storage::IKeyframesManager {
 public:
 
-    /// @brief SolARKeypointsStorageSet default constructor
+    /// @brief SolARKeyframesManager default constructor
 	SolARKeyframesManager();
 
-    /// @brief SolARKeypointsStorageSet default destructor
+    /// @brief SolARKeyframesManager default destructor
     ~SolARKeyframesManager() = default;
 
 	/// @brief This method allow to add a frame to the keyframe manager component
