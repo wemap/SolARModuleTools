@@ -82,16 +82,6 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame>& frame, SRef<Key
 		else {
 			// create new keyframe
 			keyframe = processNewKeyframe(frame);
-			// Local bundle adjustment
-			std::vector<uint32_t> bestIdx;
-			m_covisibilityGraph->getNeighbors(keyframe->getId(), m_minWeightNeighbor, bestIdx);
-			bestIdx.push_back(keyframe->getId());
-			LOG_INFO("Nb keyframe to local bundle: {}", bestIdx.size());
-			double bundleReprojError = m_bundler->bundleAdjustment(m_camMatrix, m_camDistortion, bestIdx);
-			// map pruning
-			//std::vector<SRef<CloudPoint>> cloudPointsCheckPruning;
-			//m_mapper->getLocalPointCloud(keyframe, m_minWeightNeighbor, cloudPointsCheckPruning);
-			//m_mapper->pruning(cloudPointsCheckPruning);
 			return FrameworkReturnCode::_SUCCESS;
 		}
 	}
@@ -110,13 +100,13 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	updateAssociateCloudPoint(newKeyframe);
 	// get best neighbor keyframes
 	std::vector<uint32_t> idxBestNeighborKfs;
-	m_covisibilityGraph->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor / 2, idxBestNeighborKfs);
+	m_covisibilityGraph->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor, idxBestNeighborKfs);
 	// find matches between unmatching keypoints in the new keyframe and the best neighboring keyframes
 	std::vector<SRef<CloudPoint>> newCloudPoint;
 	findMatchesAndTriangulation(newKeyframe, idxBestNeighborKfs, newCloudPoint);
 	// fuse duplicate points
-	if (newCloudPoint.size() > 0)
-		fuseCloudPoint(newKeyframe, idxBestNeighborKfs, newCloudPoint);
+	//if (newCloudPoint.size() > 0)
+	//	fuseCloudPoint(newKeyframe, idxBestNeighborKfs, newCloudPoint);
 	LOG_INFO("Nb of new 3D points: {}", newCloudPoint.size());
 	// add new points to point cloud manager, update visibility map and covisibility graph
 	for (auto const &point : newCloudPoint)
@@ -190,13 +180,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		}
 
 	// Triangulate to neighboring keyframes
-	for (int i = 0; i < idxBestNeighborKfs.size(); ++i) {		
-		// get non map point view keypoints
-		std::vector<int> newKf_indexKeypoints;
-		for (int j = 0; j < checkMatches.size(); ++j)
-			if (!checkMatches[j])
-				newKf_indexKeypoints.push_back(j);
-
+	for (int i = 0; i < idxBestNeighborKfs.size(); ++i) {				
 		// get neighbor keyframe i
 		SRef<Keyframe> tmpKf;
 		m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf);
@@ -206,12 +190,20 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() < 0.1)
 			continue;
 
+		// get non map point view keypoints
+		std::vector<int> newKf_indexKeypoints;
+		for (int j = 0; j < checkMatches.size(); ++j)
+			if (!checkMatches[j])
+				newKf_indexKeypoints.push_back(j);
+
 		// Matching based on BoW
 		std::vector < DescriptorMatch> tmpMatches, goodMatches;
 		m_keyframeRetriever->match(newKf_indexKeypoints, newKf_des, tmpKf, tmpMatches);
+		//LOG_INFO("Idx kf: {}", idxBestNeighborKfs[i]);
 		//LOG_INFO("Nb of matches: {}", tmpMatches.size());
-		// matches filter based epipolar lines
-		m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints(), newKf_pose, tmpKf_pose, m_camMatrix);
+		// matches filter based epipolar lines		
+		m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints());
+		//m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints(), newKf_pose, tmpKf_pose, m_camMatrix);
 		//LOG_INFO("Nb of filtered matches: {}", tmpMatches.size());
 		// find info to triangulate				
 		const std::map<unsigned int, unsigned int> & tmpMapVisibility = tmpKf->getVisibility();
