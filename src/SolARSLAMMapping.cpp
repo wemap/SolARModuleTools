@@ -199,12 +199,8 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		// Matching based on BoW
 		std::vector < DescriptorMatch> tmpMatches, goodMatches;
 		m_keyframeRetriever->match(newKf_indexKeypoints, newKf_des, tmpKf, tmpMatches);
-		//LOG_INFO("Idx kf: {}", idxBestNeighborKfs[i]);
-		//LOG_INFO("Nb of matches: {}", tmpMatches.size());
-		// matches filter based epipolar lines		
+		// matches filter based homography matrix
 		m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints());
-		//m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints(), newKf_pose, tmpKf_pose, m_camMatrix);
-		//LOG_INFO("Nb of filtered matches: {}", tmpMatches.size());
 		// find info to triangulate				
 		const std::map<unsigned int, unsigned int> & tmpMapVisibility = tmpKf->getVisibility();
 		for (int j = 0; j < tmpMatches.size(); ++j) {
