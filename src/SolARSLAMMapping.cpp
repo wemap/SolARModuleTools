@@ -107,7 +107,7 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	// fuse duplicate points
 	//if (newCloudPoint.size() > 0)
 	//	fuseCloudPoint(newKeyframe, idxBestNeighborKfs, newCloudPoint);
-	LOG_INFO("Nb of new 3D points: {}", newCloudPoint.size());
+	LOG_DEBUG("Nb of new 3D points: {}", newCloudPoint.size());
 	// add new points to point cloud manager, update visibility map and covisibility graph
 	for (auto const &point : newCloudPoint)
 		m_mapper->addCloudPoint(point);

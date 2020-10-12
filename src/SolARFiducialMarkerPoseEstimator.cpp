@@ -78,7 +78,10 @@ FrameworkReturnCode SolARFiducialMarkerPoseEstimator::estimate(const SRef<Image>
 	std::vector<Point3Df>			pattern3DPoints;
 
 	// Convert Image from RGB to grey
-	m_imageConvertor->convert(image, greyImage, Image::ImageLayout::LAYOUT_GREY);
+	if (image->getNbChannels() != 1)
+		m_imageConvertor->convert(image, greyImage, Image::ImageLayout::LAYOUT_GREY);
+	else
+		greyImage = image->copy();
 	for (int num_threshold = 0; num_threshold < m_nbThreshold; num_threshold++)
 	{
 		// Compute the current Threshold valu for image binarization

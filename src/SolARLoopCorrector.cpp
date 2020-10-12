@@ -37,7 +37,6 @@ SolARLoopCorrector::SolARLoopCorrector():ConfigurableBase(xpcf::toUUID<SolARLoop
     declareInjectable<features::IDescriptorMatcher>(m_matcher);
     declareInjectable<geom::I3DTransform>(m_transform3D);
     declareInjectable<geom::IProject>(m_projector);
-    declareInjectable<solver::map::IBundler>(m_bundler);
 }
 
 void SolARLoopCorrector::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
@@ -201,10 +200,6 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 		// suppress cp1
 		m_pointCloudManager->suppressPoint(cp1->getId());
 	}
-
-	// Loop optimisation
-	// - run global bundle adjustment
-	m_bundler->bundleAdjustment(m_camMatrix, m_camDistortion);
 
     return FrameworkReturnCode::_SUCCESS;
 }
