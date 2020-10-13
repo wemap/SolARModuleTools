@@ -40,6 +40,7 @@ class SOLAR_TOOLS_EXPORT_API SolAR3DTransform : public org::bcom::xpcf::Componen
 public:
 
     SolAR3DTransform();
+
    ~SolAR3DTransform() override;
 
     /// @brief This method applies a 3D transform to a set of 3D points
@@ -47,8 +48,13 @@ public:
     /// @param[in] transformation The 3D transform to apply to the set of 3D points.
     /// @param[out] outputPoints The resulting 3D points after application of the 3D transform.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    
     FrameworkReturnCode transform(const std::vector<Point3Df> & inputPoints, const Transform3Df & transformation, std::vector<Point3Df> & outputPoints) override;
+
+	/// @brief This method applies a transformation (4x4 float matrix) to a point cloud
+	/// @param[in] inputPointCloud the point cloud to transform
+	/// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
+	/// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode transformInPlace(SRef<PointCloud> inputPointCloud, const Transform3Df transformation) const override;
 
     void unloadComponent () override final;
 

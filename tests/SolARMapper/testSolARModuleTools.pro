@@ -1,5 +1,5 @@
 TARGET = testSolARModuleTools
-VERSION = 1.0.0
+VERSION=0.8.1
 
 CONFIG += c++1z
 CONFIG += console
@@ -8,7 +8,7 @@ CONFIG -= qt
 DEFINES += MYVERSION=$${VERSION}
 DEFINES += WITHREMOTING
 
-include(../findremakenrules.pri)
+include(findremakenrules.pri)
 
 CONFIG(debug,debug|release) {
     DEFINES += _DEBUG=1
