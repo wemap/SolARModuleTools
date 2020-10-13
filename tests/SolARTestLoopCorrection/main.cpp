@@ -24,6 +24,7 @@
 #include "api/loop/ILoopClosureDetector.h"
 #include "api/loop/ILoopCorrector.h"
 #include "api/geom/I3DTransform.h"
+#include "api/solver/map/IBundler.h"
 #include "api/display/I3DPointsViewer.h"
 #include "core/Log.h"
 #include <boost/log/core.hpp>
@@ -62,11 +63,14 @@ int main(int argc,char** argv)
 	auto mapper = xpcfComponentManager->resolve<solver::map::IMapper>();
 	auto loopDetector = xpcfComponentManager->resolve<loop::ILoopClosureDetector>();
 	auto loopCorrector = xpcfComponentManager->resolve<loop::ILoopCorrector>();
+	auto bundler = xpcfComponentManager->resolve<api::solver::map::IBundler>();
 	auto transform3D = xpcfComponentManager->resolve<geom::I3DTransform>();
 	auto camera = xpcfComponentManager->resolve<input::devices::ICamera>();
 	auto viewer3DPoints = xpcfComponentManager->resolve<display::I3DPointsViewer>();
 
 	// set intrinsic parameters for loop detector and loop corrector component
+	CamCalibration camCalibration = camera->getIntrinsicsParameters();
+	CamDistortion camDistortion = camera->getDistortionParameters();
 	loopDetector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 	loopCorrector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 
@@ -109,7 +113,10 @@ int main(int argc,char** argv)
 		LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
 		// performs loop correction 
 		loopCorrector->correct(lastKeyframe, detectedLoopKeyframe, sim3Transform, duplicatedPointsIndices);
-
+		// loop optimization
+		bundler->bundleAdjustment(camCalibration, camDistortion);
+		// map pruning
+		mapper->pruning();
 		// display point cloud
 		std::vector<Transform3Df> keyframePosesAfter;
 		for (auto const &it : allKeyframes)
