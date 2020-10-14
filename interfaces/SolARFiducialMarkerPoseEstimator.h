@@ -56,6 +56,10 @@ public:
 		/// @param[in] Camera distorsion parameters.
 	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distorsionParams) override;
 
+    /// @brief this method is used to set the fiducial marker
+    /// @param[in] Fiducial marker.
+    void setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> & marker) override;
+
 	/// @brief Estimates camera pose based on a fiducial marker.
 	/// @param[in] image: input image.
 	/// @param[out] pose: camera pose.
