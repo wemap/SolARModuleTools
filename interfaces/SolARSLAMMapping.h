@@ -29,6 +29,7 @@
 #include "api/solver/map/IMapFilter.h"
 #include "api/geom/IProject.h"
 #include "api/features/IDescriptorMatcher.h"
+#include "api/solver/pose/I2D3DCorrespondencesFinder.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
 
@@ -91,6 +92,7 @@ private:
 	SRef<api::solver::map::IMapFilter>					m_mapFilter;
 	SRef<api::geom::IProject>							m_projector;
 	SRef<api::features::IDescriptorMatcher>				m_matcher;
+	SRef<api::solver::pose::I2D3DCorrespondencesFinder>	m_corr2D3DFinder;
 };
 
 }

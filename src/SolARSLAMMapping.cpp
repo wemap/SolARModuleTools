@@ -44,6 +44,7 @@ SolARSLAMMapping::SolARSLAMMapping() :ConfigurableBase(xpcf::toUUID<SolARSLAMMap
 	declareInjectable<api::solver::map::IMapFilter>(m_mapFilter);
 	declareInjectable<api::geom::IProject>(m_projector);
 	declareInjectable<api::features::IDescriptorMatcher>(m_matcher, "Matcher-Mapping");
+	declareInjectable<api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
 	declareProperty("minTrackedPoints", m_minTrackedPoints);
 }
@@ -125,9 +126,23 @@ bool SolARSLAMMapping::checkNeedNewKeyframeInLocalMap(const SRef<Frame>& frame)
 		candidates.insert(it);
 	if (m_keyframeRetriever->retrieve(frame, candidates, ret_keyframesId) == FrameworkReturnCode::_SUCCESS) {
 		if (ret_keyframesId[0] != referenceKeyframe->getId()) {
-			m_keyframesManager->getKeyframe(ret_keyframesId[0], m_updatedReferenceKeyframe);
-			LOG_INFO("Update new reference keyframe with id {}", m_updatedReferenceKeyframe->getId());
-			return false;
+			SRef<Keyframe> bestRetKeyframe;
+			m_keyframesManager->getKeyframe(ret_keyframesId[0], bestRetKeyframe);
+			// Check find enough matches to best ret keyframe
+			std::vector<DescriptorMatch> matches;
+			m_matcher->match(bestRetKeyframe->getDescriptors(), frame->getDescriptors(), matches);
+			m_matchesFilter->filter(matches, matches, bestRetKeyframe->getKeypoints(), frame->getKeypoints());			
+			std::vector<Point2Df> pts2d;
+			std::vector<Point3Df> pts3d;
+			std::vector < std::pair<uint32_t, SRef<CloudPoint>>> corres2D3D;
+			std::vector<DescriptorMatch> foundMatches;
+			std::vector<DescriptorMatch> remainingMatches;
+			m_corr2D3DFinder->find(bestRetKeyframe, frame, matches, pts3d, pts2d, corres2D3D, foundMatches, remainingMatches);
+			if (corres2D3D.size() >= m_minTrackedPoints) {
+				m_updatedReferenceKeyframe = bestRetKeyframe;
+				LOG_INFO("Update new reference keyframe with id {}", m_updatedReferenceKeyframe->getId());
+				return false;
+			}						
 		}
 		else {
 			LOG_INFO("Find same reference keyframe with id {}", referenceKeyframe->getId());
