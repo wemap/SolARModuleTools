@@ -125,7 +125,7 @@ FrameworkReturnCode SolARPointCloudManager::suppressPoint(uint32_t id)
 	}
 }
 
-FrameworkReturnCode SolARPointCloudManager::suppressPoints(std::vector<uint32_t>& ids)
+FrameworkReturnCode SolARPointCloudManager::suppressPoints(const std::vector<uint32_t>& ids)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : ids) {
@@ -167,7 +167,7 @@ int SolARPointCloudManager::getNbPoints()
 	return m_pointCloud.size();
 }
 
-FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)
+FrameworkReturnCode SolARPointCloudManager::saveToFile(const std::string& file)
 {
 	std::ofstream ofs(file, std::ios::binary);
 	OutputArchive oa(ofs);
@@ -178,7 +178,7 @@ FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::loadFromFile(std::string file)
+FrameworkReturnCode SolARPointCloudManager::loadFromFile(const std::string& file)
 {
 	std::ifstream ifs(file, std::ios::binary);
 	if (!ifs.is_open())

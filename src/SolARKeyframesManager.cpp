@@ -130,7 +130,7 @@ int SolARKeyframesManager::getNbKeyframes()
 	return m_keyframes.size();
 }
 
-FrameworkReturnCode SolARKeyframesManager::saveToFile(std::string file)
+FrameworkReturnCode SolARKeyframesManager::saveToFile(const std::string& file)
 {
 	std::ofstream ofs(file, std::ios::binary);
 	OutputArchive oa(ofs);
@@ -141,7 +141,7 @@ FrameworkReturnCode SolARKeyframesManager::saveToFile(std::string file)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARKeyframesManager::loadFromFile(std::string file)
+FrameworkReturnCode SolARKeyframesManager::loadFromFile(const std::string& file)
 {
 	std::ifstream ifs(file, std::ios::binary);
 	if (!ifs.is_open())
