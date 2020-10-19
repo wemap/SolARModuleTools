@@ -60,7 +60,7 @@ public:
 	/// @param[in] a vector of ids of the keyframes to get
 	/// @param[out] a vector of keyframes stored in the keyframe manager
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getKeyframes(std::vector<uint32_t> &ids, std::vector<SRef<Keyframe>>& keyframes) override;
+    FrameworkReturnCode getKeyframes(const std::vector<uint32_t> &ids, std::vector<SRef<Keyframe>>& keyframes) override;
 
 	/// @brief This method allows to get all keyframes
 	/// @param[out] the set of keyframes

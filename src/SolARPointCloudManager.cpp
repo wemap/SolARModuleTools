@@ -89,7 +89,7 @@ FrameworkReturnCode SolARPointCloudManager::getPoint(uint32_t id, SRef<CloudPoin
 	}
 }
 
-FrameworkReturnCode SolARPointCloudManager::getPoints(std::vector<uint32_t>& ids, std::vector<SRef<CloudPoint>>& points)
+FrameworkReturnCode SolARPointCloudManager::getPoints(const std::vector<uint32_t>& ids, std::vector<SRef<CloudPoint>>& points)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : ids) {

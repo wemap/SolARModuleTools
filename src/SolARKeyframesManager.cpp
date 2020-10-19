@@ -66,7 +66,7 @@ FrameworkReturnCode SolARKeyframesManager::getKeyframe(uint32_t id, SRef<Keyfram
 	}
 }
 
-FrameworkReturnCode SolARKeyframesManager::getKeyframes(std::vector<uint32_t>& ids, std::vector<SRef<Keyframe>>& keyframes)
+FrameworkReturnCode SolARKeyframesManager::getKeyframes(const std::vector<uint32_t>& ids, std::vector<SRef<Keyframe>>& keyframes)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : ids) {

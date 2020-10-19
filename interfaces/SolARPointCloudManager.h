@@ -67,7 +67,7 @@ public:
 	/// @param[in] a vector of ids of the points to get
 	/// @param[out] a vector of 3D points stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getPoints(std::vector<uint32_t> &ids, std::vector<SRef<CloudPoint>>& points) override;
+    FrameworkReturnCode getPoints(const const std::vector<uint32_t> &ids, std::vector<SRef<CloudPoint>>& points) override;
 
 	/// @brief This method allows to get all 3D points stored in the point cloud
 	/// @param[out] the set of 3D point stored in the point cloud
