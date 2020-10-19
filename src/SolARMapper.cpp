@@ -43,6 +43,7 @@ SolARMapper::SolARMapper():ConfigurableBase(xpcf::toUUID<SolARMapper>())
 	declareProperty("covisibilityGraphFileName", m_covisGraphFileName);
 	declareProperty("keyframeRetrieverFileName", m_kfRetrieverFileName);
 	declareProperty("reprojErrorThreshold", m_reprojErrorThres);
+	declareProperty("thresConfidence", m_thresConfidence);
 }
 
 FrameworkReturnCode SolARMapper::setIdentification(SRef<Identification>& identification)
@@ -124,19 +125,26 @@ FrameworkReturnCode SolARMapper::getLocalPointCloud(const SRef<Keyframe>& keyfra
 	m_covisibilityGraph->getNeighbors(keyframe->getId(), minWeightNeighbor, neighKeyframesId);
 	neighKeyframesId.push_back(keyframe->getId());
 	// get all cloud point visibilities from keyframes
-	std::set<uint32_t> tmpIdxLocalMap;
+	std::map<uint32_t, std::map<uint32_t, uint32_t>> tmpIdxLocalMap;
 	for (auto const &it : neighKeyframesId) {
 		SRef<Keyframe> keyframe;
 		m_keyframesManager->getKeyframe(it, keyframe);
 		const std::map<uint32_t, uint32_t> &visibility = keyframe->getVisibility();
 		for (auto const &v : visibility)
-			tmpIdxLocalMap.insert(v.second);
+			tmpIdxLocalMap[v.second][it] = v.first;
 	}
 	// get local point cloud
 	for (auto const &it : tmpIdxLocalMap) {
 		SRef<CloudPoint> point;
-		if (m_pointCloudManager->getPoint(it, point) == FrameworkReturnCode::_SUCCESS)
+		if (m_pointCloudManager->getPoint(it.first, point) == FrameworkReturnCode::_SUCCESS)
 			localPointCloud.push_back(point);
+		else {
+			for (auto const &v : it.second) {
+				SRef<Keyframe> keyframe;
+				m_keyframesManager->getKeyframe(v.first, keyframe);
+				keyframe->removeVisibility(v.second, it.first);
+			}
+		}
 	}
 	return FrameworkReturnCode::_SUCCESS;
 }
@@ -205,7 +213,7 @@ void SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 	// get cloud points
 	std::vector<SRef<CloudPoint>> cloudPointsPruning;
 	if (cloudPoints.size() == 0) {
-		m_pointCloudManager->getAllPoints(cloudPointsPruning);		
+		m_pointCloudManager->getAllPoints(cloudPointsPruning);
 	}
 	else {
 		cloudPointsPruning = cloudPoints;
@@ -214,12 +222,12 @@ void SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 	// check reprojection error to prune cloud points
 	int count(0);
 	for (const auto &it : cloudPointsPruning)
-		if (it->getReprojError() > m_reprojErrorThres) {
+		if ((it->getReprojError() > m_reprojErrorThres) || (it->getConfidence() < m_thresConfidence)) {
 			this->removeCloudPoint(it);
 			count++;
 		}
 
-	LOG_DEBUG("Number pruning cloud points: {}", count);
+	LOG_INFO("Number pruning cloud points: {}", count);
 }
 
 FrameworkReturnCode SolARMapper::saveToFile()

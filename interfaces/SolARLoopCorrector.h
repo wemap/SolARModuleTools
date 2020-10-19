@@ -24,7 +24,6 @@
 #include "api/geom/I3DTransform.h"
 #include "api/features/IDescriptorMatcher.h"
 #include "api/geom/IProject.h"
-#include "api/solver/map/IBundler.h"
 #include "xpcf/component/ConfigurableBase.h"
 #include "SolARToolsAPI.h"
 #include <fstream>
@@ -75,7 +74,6 @@ private:
     SRef<features::IDescriptorMatcher>					m_matcher;
     SRef<geom::I3DTransform>							m_transform3D;  
 	SRef<geom::IProject>								m_projector;
-	SRef<solver::map::IBundler>							m_bundler;
 	CamCalibration										m_camMatrix;
 	CamDistortion										m_camDistortion;
 };

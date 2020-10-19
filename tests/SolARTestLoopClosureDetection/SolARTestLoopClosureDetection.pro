@@ -4,7 +4,7 @@ CONFIG -= qt
 
 ## global defintions : target lib name, version
 TARGET = SolARTestLoopClosureDetection
-VERSION=0.8.0
+VERSION=0.8.1
 
 DEFINES += MYVERSION=$${VERSION}
 CONFIG += c++1z
@@ -64,7 +64,8 @@ win32 {
 }
 
 configfile.path = $${TARGETDEPLOYDIR}/
-configfile.files = $${PWD}/SolARTestLoopClosureDetection_config.xml
+configfile.files = $${PWD}/SolARTestLoopClosureDetection_config.xml \
+					$$files($${PWD}/camera_calibration.yml)
 INSTALLS += configfile
 
 #NOTE : Must be placed at the end of the .pro

@@ -45,6 +45,7 @@ SolARSLAMMapping::SolARSLAMMapping() :ConfigurableBase(xpcf::toUUID<SolARSLAMMap
 	declareInjectable<api::geom::IProject>(m_projector);
 	declareInjectable<api::features::IDescriptorMatcher>(m_matcher, "Matcher-Mapping");
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
+	declareProperty("minTrackedPoints", m_minTrackedPoints);
 }
 
 void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
@@ -69,9 +70,11 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame>& frame, SRef<Key
 				matches.push_back(DescriptorMatch(refKf_it->second, it.first, 0.f));
 		}
 	}
+	//LOG_INFO("Nb matches to reference keyframe: {}", matches.size());
 	// check need new keyframe
-	if (m_keyframeSelector->select(frame, matches))
+	if (m_keyframeSelector->select(frame, matches) || (frame->getVisibility().size() < m_minTrackedPoints))
 	{
+		//LOG_INFO("Pass first condition to need new keyframe");
 		if (!checkNeedNewKeyframeInLocalMap(frame)) {
 			keyframe = m_updatedReferenceKeyframe;
 			return FrameworkReturnCode::_ERROR_;
@@ -79,15 +82,6 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame>& frame, SRef<Key
 		else {
 			// create new keyframe
 			keyframe = processNewKeyframe(frame);
-			// Local bundle adjustment
-			std::vector<uint32_t> bestIdx;
-			m_covisibilityGraph->getNeighbors(keyframe->getId(), m_minWeightNeighbor, bestIdx);
-			bestIdx.push_back(keyframe->getId());
-			double bundleReprojError = m_bundler->bundleAdjustment(m_camMatrix, m_camDistortion, bestIdx);
-			// map pruning
-			std::vector<SRef<CloudPoint>> cloudPointsCheckPruning;
-			m_mapper->getLocalPointCloud(keyframe, m_minWeightNeighbor, cloudPointsCheckPruning);
-			m_mapper->pruning(cloudPointsCheckPruning);
 			return FrameworkReturnCode::_SUCCESS;
 		}
 	}
@@ -111,8 +105,8 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	std::vector<SRef<CloudPoint>> newCloudPoint;
 	findMatchesAndTriangulation(newKeyframe, idxBestNeighborKfs, newCloudPoint);
 	// fuse duplicate points
-	if (newCloudPoint.size() > 0)
-		fuseCloudPoint(newKeyframe, idxBestNeighborKfs, newCloudPoint);
+	//if (newCloudPoint.size() > 0)
+	//	fuseCloudPoint(newKeyframe, idxBestNeighborKfs, newCloudPoint);
 	LOG_DEBUG("Nb of new 3D points: {}", newCloudPoint.size());
 	// add new points to point cloud manager, update visibility map and covisibility graph
 	for (auto const &point : newCloudPoint)
@@ -132,14 +126,14 @@ bool SolARSLAMMapping::checkNeedNewKeyframeInLocalMap(const SRef<Frame>& frame)
 	if (m_keyframeRetriever->retrieve(frame, candidates, ret_keyframesId) == FrameworkReturnCode::_SUCCESS) {
 		if (ret_keyframesId[0] != referenceKeyframe->getId()) {
 			m_keyframesManager->getKeyframe(ret_keyframesId[0], m_updatedReferenceKeyframe);
-			LOG_DEBUG("Update new reference keyframe with id {}", m_updatedReferenceKeyframe->getId());
+			LOG_INFO("Update new reference keyframe with id {}", m_updatedReferenceKeyframe->getId());
 			return false;
 		}
 		else {
-			LOG_DEBUG("Find same reference keyframe with id {}", referenceKeyframe->getId());
+			LOG_INFO("Find same reference keyframe with id {}", referenceKeyframe->getId());
 		}		
 	}
-	LOG_DEBUG("Need to make new keyframe");
+	LOG_INFO("Need to make new keyframe");
 	return true;
 }
 
@@ -186,25 +180,27 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		}
 
 	// Triangulate to neighboring keyframes
-	for (int i = 0; i < idxBestNeighborKfs.size(); ++i) {
+	for (int i = 0; i < idxBestNeighborKfs.size(); ++i) {				
+		// get neighbor keyframe i
+		SRef<Keyframe> tmpKf;
+		m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf);
+		const Transform3Df &tmpKf_pose = tmpKf->getPose();
+
+		// check base line
+		if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() < 0.1)
+			continue;
+
 		// get non map point view keypoints
 		std::vector<int> newKf_indexKeypoints;
 		for (int j = 0; j < checkMatches.size(); ++j)
 			if (!checkMatches[j])
 				newKf_indexKeypoints.push_back(j);
 
-		// get neighbor keyframe i
-		SRef<Keyframe> tmpKf;
-		m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf);
-		const Transform3Df &tmpKf_pose = tmpKf->getPose();
-
 		// Matching based on BoW
 		std::vector < DescriptorMatch> tmpMatches, goodMatches;
 		m_keyframeRetriever->match(newKf_indexKeypoints, newKf_des, tmpKf, tmpMatches);
-
-		// matches filter based epipolar lines
-		m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints(), newKf_pose, tmpKf_pose, m_camMatrix);
-
+		// matches filter based homography matrix
+		m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints());
 		// find info to triangulate				
 		const std::map<unsigned int, unsigned int> & tmpMapVisibility = tmpKf->getVisibility();
 		for (int j = 0; j < tmpMatches.size(); ++j) {
@@ -214,7 +210,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 				goodMatches.push_back(tmpMatches[j]);
 			}
 		}
-
+		
 		// triangulation
 		std::vector<SRef<CloudPoint>> tmpCloudPoint, tmpFilteredCloudPoint;
 		std::vector<int> indexFiltered;
@@ -225,6 +221,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		// filter cloud points
 		if (tmpCloudPoint.size() > 0)
 			m_mapFilter->filter(newKf_pose, tmpKf_pose, tmpCloudPoint, tmpFilteredCloudPoint, indexFiltered);
+		//LOG_INFO("Nb of cloud point: {}", tmpFilteredCloudPoint.size());
 		for (int i = 0; i < indexFiltered.size(); ++i) {
 			checkMatches[goodMatches[indexFiltered[i]].getIndexInDescriptorA()] = true;
 			cloudPoint.push_back(tmpFilteredCloudPoint[i]);
@@ -252,7 +249,7 @@ void SolARSLAMMapping::fuseCloudPoint(const SRef<Keyframe>& keyframe, const std:
 		m_projector->project(newCloudPoint, projected2DPts, neighborKf->getPose());
 
 		std::vector<DescriptorMatch> allMatches;
-		m_matcher->matchInRegion(projected2DPts, desNewCloudPoint, neighborKf, allMatches, 5.f);
+		m_matcher->matchInRegion(projected2DPts, desNewCloudPoint, neighborKf, allMatches, 0);
 
 		for (int j = 0; j < allMatches.size(); ++j) {
 			int idxNewCloudPoint = allMatches[j].getIndexInDescriptorA();

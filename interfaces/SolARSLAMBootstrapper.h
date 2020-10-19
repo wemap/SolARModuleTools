@@ -17,8 +17,6 @@
 #ifndef SOLARSLAMBOOTSTRAPPER_H
 #define SOLARSLAMBOOTSTRAPPER_H
 #include "api/slam/IBootstrapper.h"
-#include "api/solver/pose/IFiducialMarkerPose.h"
-#include "api/input/devices/ICamera.h"
 #include "datastructure/Image.h"
 #include "api/solver/map/IMapper.h"
 #include "api/features/IKeypointDetector.h"
@@ -28,9 +26,7 @@
 #include "api/solver/map/ITriangulator.h"
 #include "api/solver/map/IMapFilter.h"
 #include "api/solver/map/IKeyframeSelector.h"
-#include "api/solver/map/IBundler.h"
 #include "api/display/IMatchesOverlay.h"
-#include "api/display/IImageViewer.h"
 #include "api/solver/pose/I3DTransformFinderFrom2D2D.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
@@ -60,9 +56,12 @@ public:
 	/// @param[in] Camera distorsion parameters.
 	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distorsionParams) override;
 
-	/// @brief This method applies a transformation (4x4 float matrix) to a set of 3D points
+	/// @brief This method uses images to boostrap
+	/// @param[in] image: input image to process
+	/// @param[out] view: output image to visualize
+	/// @param[in] pose: the pose of the input image
 	/// @return FrameworkReturnCode::_SUCCESS_ if initialization succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode run() override;
+	FrameworkReturnCode process(const SRef<Image> &image, SRef<Image> &view, const Transform3Df &pose = Transform3Df::Identity()) override;
 
 	void unloadComponent() override final;
 
@@ -73,13 +72,14 @@ private:
 	FrameworkReturnCode initMarkerLess();
 
 private:
-	int													m_useMarker = 1;
+	int													m_hasPose = 1;
 	int													m_nbMinInitPointCloud = 50;
 	float												m_angleThres = 0.1;
+	bool												m_bootstrapOk = false;
+	bool												m_initKeyframe1 = false;
+	SRef<Keyframe>										m_keyframe1, m_keyframe2;
 	CamCalibration										m_camMatrix;
 	CamDistortion										m_camDistortion;
-	SRef<api::input::devices::ICamera>					m_camera;
-	SRef<api::solver::pose::IFiducialMarkerPose>		m_fiducialMarkerPoseEstimator;
 	SRef<api::solver::map::IMapper>						m_mapper;
 	SRef<api::features::IKeypointDetector>				m_keypointsDetector;
 	SRef<api::features::IDescriptorsExtractor>			m_descriptorExtractor;
@@ -88,10 +88,8 @@ private:
 	SRef<api::solver::map::ITriangulator>				m_triangulator;
 	SRef<api::solver::map::IMapFilter>					m_mapFilter;
 	SRef<api::solver::map::IKeyframeSelector>			m_keyframeSelector;
-	SRef<api::solver::map::IBundler>					m_bundler;
 	SRef<api::solver::pose::I3DTransformFinderFrom2D2D>	m_poseFinderFrom2D2D;
 	SRef<api::display::IMatchesOverlay>					m_matchesOverlay;
-	SRef<api::display::IImageViewer>					m_imageViewer;
 };
 
 }

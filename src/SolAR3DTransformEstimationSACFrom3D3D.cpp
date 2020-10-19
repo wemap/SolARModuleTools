@@ -29,12 +29,19 @@ SolAR3DTransformEstimationSACFrom3D3D::SolAR3DTransformEstimationSACFrom3D3D() :
 {
 	declareInterface<api::solver::pose::I3DTransformSACFinderFrom3D3D>(this);
 	declareInjectable<I3DTransform>(m_transform3D);
+	declareInjectable<IProject>(m_projector);
 	declareProperty("iterationsCount", m_iterationsCount);
 	declareProperty("reprojError", m_reprojError);
+	declareProperty("distanceError", m_distanceError);
 	declareProperty("confidence", m_confidence);
 	declareProperty("minNbInliers", m_NbInliersToValidPose);
 	srand(time(NULL));
 	LOG_DEBUG(" SolAR3DTransformEstimationSACFrom3D3D constructor");
+}
+
+void SolAR3DTransformEstimationSACFrom3D3D::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams)
+{
+	m_projector->setCameraParameters(intrinsicParams, distortionParams);
 }
 
 void randomIndices(int maxIndex, int nbIndices, std::vector<int> &indices) {
@@ -117,6 +124,13 @@ void getInliers(const std::vector<Point3Df> &firstPoints3DTrans, const std::vect
 			inliers.push_back(i);
 }
 
+void getInliersByProject(const std::vector<Point2Df> &firstProjected2DPts, const std::vector<Point2Df> &keypoints2, const std::vector<Point2Df> &secondProjected2DPts, const std::vector<Point2Df> &keypoints1, const float &thres, std::vector<int> &inliers)
+{
+	for (int i = 0; i < firstProjected2DPts.size(); ++i)
+		if (((firstProjected2DPts[i] - keypoints2[i]).norm() < thres) && ((secondProjected2DPts[i] - keypoints1[i]).norm() < thres))
+			inliers.push_back(i);
+}
+
 FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const std::vector<Point3Df> & firstPoints3D,
 																	const std::vector<Point3Df> & secondPoints3D,
 																	Transform3Df & pose,
@@ -149,7 +163,7 @@ FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const std::v
 		m_transform3D->transform(firstPoints3D, tmpPose, firstPoints3DTrans);
 		// get inliers
 		std::vector<int> tmpInliers;
-		getInliers(firstPoints3DTrans, secondPoints3D, m_reprojError, tmpInliers);
+		getInliers(firstPoints3DTrans, secondPoints3D, m_distanceError, tmpInliers);
 		if (tmpInliers.size() > bestInliers.size()) {
 			bestPose = tmpPose;
 			bestInliers.swap(tmpInliers);
@@ -174,6 +188,90 @@ FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const std::v
 	}
 	// compute the best pose
 	if (!find(points3D1, points3D2, pose)) 
+		return FrameworkReturnCode::_ERROR_;
+	inliers.swap(bestInliers);
+
+	return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const SRef<Keyframe>& firstKeyframe, 
+																	const SRef<Keyframe>& secondKeyframe, 
+																	const std::vector<DescriptorMatch>& matches, 
+																	const std::vector<Point3Df>& firstPoints3D, 
+																	const std::vector<Point3Df>& secondPoints3D, 
+																	Transform3Df & pose, 
+																	std::vector<int>& inliers)
+{
+	if ((firstPoints3D.size() != secondPoints3D.size()) || (matches.size() != firstPoints3D.size()) || (firstPoints3D.size() < 3))
+		return FrameworkReturnCode::_ERROR_;
+
+	// get poses
+	const Transform3Df &pose1 = firstKeyframe->getPose();
+	const Transform3Df &pose2 = secondKeyframe->getPose();
+	// get keypoints
+	std::vector<Point2Df> keypoints1, keypoints2;
+	for (const auto &it : matches) {
+		const Keypoint kp1 = firstKeyframe->getKeypoint(it.getIndexInDescriptorA());
+		const Keypoint kp2 = secondKeyframe->getKeypoint(it.getIndexInDescriptorB());
+		keypoints1.push_back(Point2Df(kp1.getX(), kp1.getY()));
+		keypoints2.push_back(Point2Df(kp2.getX(), kp2.getY()));
+	}
+	
+	int iterations = m_iterationsCount;
+	std::vector<int> bestInliers;
+	Transform3Df bestPose;
+
+	while (iterations != 0) {
+		// get 3 random indices
+		std::vector<int> indices;
+		randomIndices(firstPoints3D.size(), 3, indices);
+		// get 3 correspondences
+		std::vector<Point3Df> points3D1, points3D2;
+		for (auto &it : indices) {
+			points3D1.push_back(firstPoints3D[it]);
+			points3D2.push_back(secondPoints3D[it]);
+		}
+		// compute pose
+		Transform3Df tmpPose;
+		if (!find(points3D1, points3D2, tmpPose)) {
+			iterations--;
+			continue;
+		}
+		// transform 3D points using the estimated pose
+		std::vector<Point3Df> firstPoints3DTrans, secondPoints3DTrans;
+		m_transform3D->transform(firstPoints3D, tmpPose, firstPoints3DTrans);
+		m_transform3D->transform(secondPoints3D, tmpPose.inverse(), secondPoints3DTrans);
+		// project the 3D tranformed points on the image
+		std::vector< Point2Df > firstProjected2DPts, secondProjected2DPts;
+		m_projector->project(firstPoints3DTrans, firstProjected2DPts, pose2);
+		m_projector->project(secondPoints3DTrans, secondProjected2DPts, pose1);
+		// get inliers
+		std::vector<int> tmpInliers;
+		getInliersByProject(firstProjected2DPts, keypoints2, secondProjected2DPts, keypoints1, m_reprojError, tmpInliers);
+		if (tmpInliers.size() > bestInliers.size()) {
+			bestPose = tmpPose;
+			bestInliers.swap(tmpInliers);
+		}
+		// check confidence
+		if ((float)(bestInliers.size()) / firstPoints3D.size() > m_confidence)
+			break;
+
+		iterations--;
+	}
+
+	if (bestInliers.size() < m_NbInliersToValidPose) {
+		LOG_WARNING("Number of inliers points must be valid ( equal and > to {}): {} inliers for {} input points", m_NbInliersToValidPose, bestInliers.size(), firstPoints3D.size());
+		return FrameworkReturnCode::_ERROR_;
+	}
+
+	// find the best pose on all inliers
+	std::vector<Point3Df> points3D1, points3D2;
+	for (auto &it : bestInliers) {
+		points3D1.push_back(firstPoints3D[it]);
+		points3D2.push_back(secondPoints3D[it]);
+	}
+	// compute the best pose
+	if (!find(points3D1, points3D2, pose))
 		return FrameworkReturnCode::_ERROR_;
 	inliers.swap(bestInliers);
 

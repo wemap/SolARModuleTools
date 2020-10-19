@@ -27,7 +27,7 @@ using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 /**
- * @class SolARPointCloudStorageSet
+ * @class SolARPointCloudManager
  * @brief A storage component to store a persistent cloud of 3D points, based on a std::set.
  */
 class SOLAR_TOOLS_EXPORT_API SolARPointCloudManager : public org::bcom::xpcf::ComponentBase,

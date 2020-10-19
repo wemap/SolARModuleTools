@@ -72,8 +72,7 @@ public:
     int m_minNbMatchesIsKeyframe = 50;
 
     // Minimum mean distance for a frame to be a keyframe
-    float m_minMeanDistanceIsKeyframe = 20.0;
-
+    float m_minMeanDistanceIsKeyframe = 20.0;	
 };
 
 }

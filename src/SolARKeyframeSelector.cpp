@@ -29,7 +29,7 @@ SolARKeyframeSelector::SolARKeyframeSelector():ConfigurableBase(xpcf::toUUID<Sol
 {
    declareInterface<api::solver::map::IKeyframeSelector>(this);
    declareProperty("minNbMatchesIsKeyframe", m_minNbMatchesIsKeyframe);
-   declareProperty("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);
+   declareProperty("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);   
 }
 
 

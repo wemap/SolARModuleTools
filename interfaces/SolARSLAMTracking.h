@@ -75,7 +75,6 @@ private:
 
 private:
 	SRef<Keyframe>										m_referenceKeyframe;
-	SRef<Frame>											m_frameToTrack;
 	Transform3Df										m_lastPose;
 	std::vector<SRef<CloudPoint>>						m_localMap;
 	bool												m_isLostTrack = false;
