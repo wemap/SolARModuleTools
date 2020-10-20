@@ -57,6 +57,42 @@ FrameworkReturnCode SolAR3DTransform::transform(const std::vector<Point3Df> & in
     return FrameworkReturnCode::_SUCCESS;
 }
 
+FrameworkReturnCode SolAR3DTransform::transform(const Transform3Df & transformation, SRef<IMapper>& map)
+{
+	// get cloud points and keyframes
+	SRef<IPointCloudManager> pointcloudManager;
+	map->getPointCloudManager(pointcloudManager);
+	SRef<IKeyframesManager> keyframeMananger;
+	map->getKeyframesManager(keyframeMananger);
+	std::vector<SRef<CloudPoint>> cloudPoints;
+	pointcloudManager->getAllPoints(cloudPoints);
+	std::vector<SRef<Keyframe>> keyframes;
+	keyframeMananger->getAllKeyframes(keyframes);
+	
+	// apply transformation to point cloud
+	for (auto &cp : cloudPoints) {
+		Vector4f inputVector4f(cp->getX(), cp->getY(), cp->getZ(), 1);
+		Vector4f outputVector4f = transformation * inputVector4f;
+		if (outputVector4f[3] != 0) {
+			cp->setX(outputVector4f[0] / outputVector4f[3]);
+			cp->setY(outputVector4f[1] / outputVector4f[3]);
+			cp->setZ(outputVector4f[2] / outputVector4f[3]);
+		}
+		else {
+			cp->setX(0);
+			cp->setY(0);
+			cp->setZ(0);
+		}
+	}
+
+	// apply transformation to keyframes
+	for (auto &kf : keyframes) {
+		kf->setPose(transformation * kf->getPose());
+	}
+
+	return FrameworkReturnCode::_SUCCESS;
+}
+
 FrameworkReturnCode SolAR3DTransform::transformInPlace(SRef<PointCloud> inputPointCloud, const Transform3Df transformation) const
 {
 	Vector4f outputVector4f;
