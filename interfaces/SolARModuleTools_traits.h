@@ -48,10 +48,12 @@ class SolAR3D3DCorrespondencesFinder;
 class SolAR3DTransformEstimationSACFrom3D3D;
 class SolARLoopClosureDetector;
 class SolARLoopCorrector;
+class SolAROverlapDetector;
 class SolARFiducialMarkerPoseEstimator;
 class SolARSLAMBootstrapper;
 class SolARSLAMTracking;
 class SolARSLAMMapping;
+
 }
 }
 }
@@ -152,10 +154,15 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopClosureDetector,
                             "SolARLoopClosingDetector",
                             "Detect a loop closure from a given keyframe..")
 
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAROverlapDetector,
+                            "58087630-1376-11eb-adc1-0242ac120002",
+                            "SolAROverlapDetector",
+                            "Detects overlaps between different maps.")
+
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopCorrector,
-                            "1007b588-c1f2-11ea-b3de-0242ac130004",
-                            "SolARLoopCorrector",
-                            "Corrects a loop of camera poses and updates associated geometry.")
+							"1007b588-c1f2-11ea-b3de-0242ac130004",
+							"SolARLoopCorrector",
+							"Corrects a loop of camera poses and updates associated geometry.")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARFiducialMarkerPoseEstimator,
 							"cddd23c4-da4e-4c5c-b3f9-7d095d097c97",
