@@ -32,8 +32,14 @@ SolAR3D3DCorrespondencesFinder::SolAR3D3DCorrespondencesFinder() :ComponentBase(
 	LOG_DEBUG("SolAR3D3DCorrespondencesFinder constructor");
 }
 
-FrameworkReturnCode SolAR3D3DCorrespondencesFinder::find(const SRef<Keyframe> firstKeyframe, const SRef<Keyframe> secondKeyframe, const std::vector<DescriptorMatch>& current_matches, std::vector<SRef<CloudPoint>>& firstCloudPoints, std::vector<SRef<CloudPoint>>& secondCloudPoints, std::vector<DescriptorMatch>& found_matches, std::vector<DescriptorMatch>& remaining_matches)
-{
+FrameworkReturnCode SolAR3D3DCorrespondencesFinder::find(const SRef<Keyframe> firstKeyframe, 
+														 const SRef<Keyframe> secondKeyframe,
+														 const std::vector<DescriptorMatch>& current_matches,
+													 	 std::vector<SRef<CloudPoint>>& firstCloudPoints, 
+														 std::vector<SRef<CloudPoint>>& secondCloudPoints,
+														 std::vector<DescriptorMatch>& found_matches,
+														 std::vector<DescriptorMatch>& remaining_matches){
+
 	const std::map<uint32_t, uint32_t> &mapVisibility1 = firstKeyframe->getVisibility();
 	const std::map<uint32_t, uint32_t> &mapVisibility2 = secondKeyframe->getVisibility();
 	for (int i = 0; i < current_matches.size(); ++i) {
@@ -46,9 +52,30 @@ FrameworkReturnCode SolAR3D3DCorrespondencesFinder::find(const SRef<Keyframe> fi
 			secondCloudPoints.push_back(cloudPoint2);
 			found_matches.push_back(current_matches[i]);
 		}
+
+
 		else {
 			remaining_matches.push_back(current_matches[i]);
 		}
+	}
+	return FrameworkReturnCode::_SUCCESS;
+}
+
+
+FrameworkReturnCode SolAR3D3DCorrespondencesFinder::find(const SRef<Keyframe> firstKeyframe,
+														const SRef<Keyframe> secondKeyframe,
+														const std::vector<DescriptorMatch> & current_matches,
+														std::vector<uint32_t> & firstCloudPointsIndices,
+														std::vector<uint32_t> & secondCloudPointsIndices) {
+
+	const std::map<uint32_t, uint32_t> &mapVisibility1 = firstKeyframe->getVisibility();
+	const std::map<uint32_t, uint32_t> &mapVisibility2 = secondKeyframe->getVisibility();
+	for (int i = 0; i < current_matches.size(); ++i) {
+		SRef<CloudPoint> cloudPoint1, cloudPoint2;
+		std::map<unsigned int, unsigned int>::const_iterator it_cp1 = mapVisibility1.find(current_matches[i].getIndexInDescriptorA());
+		std::map<unsigned int, unsigned int>::const_iterator it_cp2 = mapVisibility2.find(current_matches[i].getIndexInDescriptorB());
+		firstCloudPointsIndices.push_back(it_cp1->second);
+		secondCloudPointsIndices.push_back(it_cp2->second);
 	}
 	return FrameworkReturnCode::_SUCCESS;
 }

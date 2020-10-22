@@ -43,9 +43,18 @@ public:
 							std::vector<DescriptorMatch> & found_matches,
 							std::vector<DescriptorMatch> & remaining_matches) override;
 
+
+	FrameworkReturnCode find(const SRef<Keyframe> firstKeyframe,
+							const SRef<Keyframe> secondKeyframe,
+							const std::vector<DescriptorMatch> & current_matches,
+							std::vector<uint32_t> & firstCloudPointsIndices,
+							std::vector<uint32_t> & secondCloudPointsIndices) override;
+
+
 	void unloadComponent() override final;
 
 private:
+	SRef<IPointCloudManager> m_pointCloudManagerG;
 	SRef<IPointCloudManager> m_pointCloudManager;
 };
 }
