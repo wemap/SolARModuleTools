@@ -119,7 +119,8 @@ FrameworkReturnCode SolARMapper::getKeyframeRetriever(SRef<IKeyframeRetriever>& 
 }
 
 FrameworkReturnCode SolARMapper::getLocalPointCloud(const SRef<Keyframe>& keyframe, float minWeightNeighbor, std::vector<SRef<CloudPoint>>& localPointCloud)
-{
+{	
+	std::unique_lock<std::mutex> lock(m_mutex);
 	// get neighbor keyframes of the keyframe
 	std::vector<uint32_t> neighKeyframesId;
 	m_covisibilityGraph->getNeighbors(keyframe->getId(), minWeightNeighbor, neighKeyframesId);
@@ -210,6 +211,7 @@ FrameworkReturnCode SolARMapper::removeKeyframe(const SRef<Keyframe>& keyframe)
 
 void SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 {
+	std::unique_lock<std::mutex> lock(m_mutex);
 	// get cloud points
 	std::vector<SRef<CloudPoint>> cloudPointsPruning;
 	if (cloudPoints.size() == 0) {

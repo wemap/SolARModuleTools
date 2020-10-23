@@ -71,11 +71,9 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame>& frame, SRef<Key
 				matches.push_back(DescriptorMatch(refKf_it->second, it.first, 0.f));
 		}
 	}
-	//LOG_INFO("Nb matches to reference keyframe: {}", matches.size());
 	// check need new keyframe
 	if (m_keyframeSelector->select(frame, matches) || (frame->getVisibility().size() < m_minTrackedPoints))
 	{
-		//LOG_INFO("Pass first condition to need new keyframe");
 		if (!checkNeedNewKeyframeInLocalMap(frame)) {
 			keyframe = m_updatedReferenceKeyframe;
 			return FrameworkReturnCode::_ERROR_;
@@ -236,7 +234,6 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		// filter cloud points
 		if (tmpCloudPoint.size() > 0)
 			m_mapFilter->filter(newKf_pose, tmpKf_pose, tmpCloudPoint, tmpFilteredCloudPoint, indexFiltered);
-		//LOG_INFO("Nb of cloud point: {}", tmpFilteredCloudPoint.size());
 		for (int i = 0; i < indexFiltered.size(); ++i) {
 			checkMatches[goodMatches[indexFiltered[i]].getIndexInDescriptorA()] = true;
 			cloudPoint.push_back(tmpFilteredCloudPoint[i]);

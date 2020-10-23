@@ -66,8 +66,9 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	Transform3Df framePose;
 
 	// update local map
-	if (m_isUpdateReferenceKeyframe)
+	if (m_isUpdateReferenceKeyframe) {
 		updateLocalMap();
+	}
 
 	// set reference keyframe for new frame
 	frame->setReferenceKeyframe(m_referenceKeyframe);
@@ -75,14 +76,13 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	// matching feature
 	m_matcher->match(m_referenceKeyframe->getDescriptors(), frame->getDescriptors(), matches);
 	m_matchesFilter->filter(matches, matches, m_referenceKeyframe->getKeypoints(), frame->getKeypoints());
-	//LOG_INFO("Nb of matches: {}", matches.size());
 	float maxMatchDistance = -FLT_MAX;
 	for (const auto &it : matches) {
 		float score = it.getMatchingScore();
 		if (score > maxMatchDistance)
 			maxMatchDistance = score;
 	}
-	//LOG_INFO("Max distance matches: {} / {}", maxMatchDistance);
+
 	// find 2D-3D point correspondences
 	std::vector<Point2Df> pt2d;
 	std::vector<Point3Df> pt3d;
@@ -132,33 +132,35 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 		for (auto &it_cp : m_localMap)
 			if (idxCPSeen.find(it_cp->getId()) == idxCPSeen.end())
 				localMapUnseen.push_back(it_cp);
-		//  projection points
-		std::vector< Point2Df > projected2DPts;
-		m_projector->project(localMapUnseen, projected2DPts, frame->getPose());		
-		// find more inlier matches
-		std::vector<SRef<DescriptorBuffer>> desAllLocalMapUnseen;
-		for (auto &it_cp : localMapUnseen) {
-			desAllLocalMapUnseen.push_back(it_cp->getDescriptor());
-		}
-		std::vector<DescriptorMatch> allMatches;
-		m_matcher->matchInRegion(projected2DPts, desAllLocalMapUnseen, frame, allMatches, 0, maxMatchDistance);
-		// find visibility of new frame				
-		for (auto &it_match : allMatches) {
-			int idx_2d = it_match.getIndexInDescriptorB();
-			int idx_3d = it_match.getIndexInDescriptorA();
-			auto it2d = newMapVisibility.find(idx_2d);
-			if (it2d == newMapVisibility.end()) {
-				pts2dInliers.push_back(Point2Df(keypoints[idx_2d].getX(), keypoints[idx_2d].getY()));
-				pts3dInliers.push_back(Point3Df(localMapUnseen[idx_3d]->getX(), localMapUnseen[idx_3d]->getY(), localMapUnseen[idx_3d]->getZ()));
-				newMapVisibility[idx_2d] = localMapUnseen[idx_3d]->getId();
-			}			
+
+		if (localMapUnseen.size() > 0) {
+			//  projection points
+			std::vector< Point2Df > projected2DPts;
+			m_projector->project(localMapUnseen, projected2DPts, frame->getPose());
+			// find more inlier matches
+			std::vector<SRef<DescriptorBuffer>> desAllLocalMapUnseen;
+			for (auto &it_cp : localMapUnseen) {
+				desAllLocalMapUnseen.push_back(it_cp->getDescriptor());
+			}
+			std::vector<DescriptorMatch> allMatches;
+			m_matcher->matchInRegion(projected2DPts, desAllLocalMapUnseen, frame, allMatches, 0, maxMatchDistance);
+			// find visibility of new frame				
+			for (auto &it_match : allMatches) {
+				int idx_2d = it_match.getIndexInDescriptorB();
+				int idx_3d = it_match.getIndexInDescriptorA();
+				auto it2d = newMapVisibility.find(idx_2d);
+				if (it2d == newMapVisibility.end()) {
+					pts2dInliers.push_back(Point2Df(keypoints[idx_2d].getX(), keypoints[idx_2d].getY()));
+					pts3dInliers.push_back(Point3Df(localMapUnseen[idx_3d]->getX(), localMapUnseen[idx_3d]->getY(), localMapUnseen[idx_3d]->getZ()));
+					newMapVisibility[idx_2d] = localMapUnseen[idx_3d]->getId();
+				}
+			}
 		}
 
 		// pnp optimization
 		Transform3Df refinedPose;
 		m_pnp->estimate(pts2dInliers, pts3dInliers, refinedPose, frame->getPose());
 		frame->setPose(refinedPose);
-
 		// update map visibility of current frame
 		frame->addVisibilities(newMapVisibility);
 		LOG_DEBUG("Nb of map visibilities of frame: {}", newMapVisibility.size());
