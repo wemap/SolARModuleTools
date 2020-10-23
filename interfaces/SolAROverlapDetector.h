@@ -64,7 +64,18 @@ public:
 	/// @param[in] floating mapper as the map to merge.
 	/// @param[out] sim3Transform : 3D similarity transformation (Sim(3)) from query keyframe from the floating map to the detected overlaped keyframe in global map.
 	/// @return FrameworkReturnCode::_SUCCESS if detect a loop closure, else FrameworkReturnCode::_ERROR_
-	 FrameworkReturnCode detect(SRef<api::solver::map::IMapper> &globalMap, const SRef<api::solver::map::IMapper> &floatingMap, Transform3Df &sim3Transform)  override;
+	 FrameworkReturnCode detect(SRef<api::solver::map::IMapper> &globalMap,
+								const SRef<api::solver::map::IMapper> &floatingMap,
+								Transform3Df &sim3Transform,
+								Transform3Df&bestGlobalPose,
+								Transform3Df&bestFloatinglPose)  override;
+
+	 FrameworkReturnCode detect(SRef<api::solver::map::IMapper> &globalMap,
+								 const SRef<api::solver::map::IMapper> &floatingMap,
+								 std::vector<Transform3Df> &sim3Transform,
+								 std::vector<std::pair<uint32_t, uint32_t>>&overlapIndices,
+								 std::vector<double>&scores) override;
+
 
 	void unloadComponent () override final;
 
@@ -72,6 +83,7 @@ public:
 	SRef<IKeyframesManager>								m_keyframesManager;
 	SRef<ICovisibilityGraph>							m_covisibilityGraph;
 	SRef<reloc::IKeyframeRetriever>						m_keyframeRetriever;
+	SRef<IPointCloudManager>							m_pointCloudManager;
 	SRef<solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
 	SRef<features::IDescriptorMatcher>					m_matcher;
 	SRef<features::IMatchesFilter>						m_matchesFilter;
