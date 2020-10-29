@@ -133,6 +133,10 @@ public:
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
 	FrameworkReturnCode loadFromFile() override;
 
+	/// @brief Set the mapper data from floating mapper
+  /// @return FrameworkReturnCode::_SUCCESS_ if all data structures successfully setted, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode set(const SRef<IMapper> &floating_mapper) override;
+
     void unloadComponent () override final;	
 
 private:
