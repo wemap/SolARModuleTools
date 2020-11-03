@@ -38,7 +38,8 @@ FrameworkReturnCode SolAR3D3DCorrespondencesFinder::find(const SRef<Keyframe> fi
 													 	 std::vector<SRef<CloudPoint>>& firstCloudPoints, 
 														 std::vector<SRef<CloudPoint>>& secondCloudPoints,
 														 std::vector<DescriptorMatch>& found_matches,
-														 std::vector<DescriptorMatch>& remaining_matches){
+														 std::vector<DescriptorMatch>& remaining_matches)
+{
 
 	const std::map<uint32_t, uint32_t> &mapVisibility1 = firstKeyframe->getVisibility();
 	const std::map<uint32_t, uint32_t> &mapVisibility2 = secondKeyframe->getVisibility();
@@ -66,7 +67,9 @@ FrameworkReturnCode SolAR3D3DCorrespondencesFinder::find(const SRef<Keyframe> fi
 														const SRef<Keyframe> secondKeyframe,
 														const std::vector<DescriptorMatch> & current_matches,
 														std::vector<uint32_t> & firstCloudPointsIndices,
-														std::vector<uint32_t> & secondCloudPointsIndices) {
+														std::vector<uint32_t> & secondCloudPointsIndices,
+														std::vector<DescriptorMatch> & found_matches) 
+{
 
 	const std::map<uint32_t, uint32_t> &mapVisibility1 = firstKeyframe->getVisibility();
 	const std::map<uint32_t, uint32_t> &mapVisibility2 = secondKeyframe->getVisibility();
@@ -74,8 +77,11 @@ FrameworkReturnCode SolAR3D3DCorrespondencesFinder::find(const SRef<Keyframe> fi
 		SRef<CloudPoint> cloudPoint1, cloudPoint2;
 		std::map<unsigned int, unsigned int>::const_iterator it_cp1 = mapVisibility1.find(current_matches[i].getIndexInDescriptorA());
 		std::map<unsigned int, unsigned int>::const_iterator it_cp2 = mapVisibility2.find(current_matches[i].getIndexInDescriptorB());
-		firstCloudPointsIndices.push_back(it_cp1->second);
-		secondCloudPointsIndices.push_back(it_cp2->second);
+		if ((it_cp1 != mapVisibility1.end()) && (it_cp2 != mapVisibility2.end())) {
+			firstCloudPointsIndices.push_back(it_cp1->second);
+			secondCloudPointsIndices.push_back(it_cp2->second);
+			found_matches.push_back(current_matches[i]);
+		}		
 	}
 	return FrameworkReturnCode::_SUCCESS;
 }

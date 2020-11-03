@@ -28,13 +28,13 @@ public:
 	~SolAR3D3DCorrespondencesFinder()  override = default;
 
 	/// @brief Define 3D-3D point correspondences of two keyframes based on keypoint matches.
-		/// @param[in] firstKeyframe: The first keyframe.
-		/// @param[in] secondKeyframe: The second keyframe.
-		/// @param[in] currentMatches: The 2D matches between the current keyframe and its reference keyframe.
-		/// @param[out] firstCloudPoints: The cloud points seen from the first keyframe.
-		/// @param[out] secondCloudPoints: The cloud points seen from the second keyframe.
-		/// @param[out] found_matches: The matches allow to define 3D-3D correspondences.
-		/// @param[out] remaining_matches: The remaining matches.
+	/// @param[in] firstKeyframe: The first keyframe.
+	/// @param[in] secondKeyframe: The second keyframe.
+	/// @param[in] currentMatches: The 2D matches between the current keyframe and its reference keyframe.
+	/// @param[out] firstCloudPoints: The cloud points seen from the first keyframe.
+	/// @param[out] secondCloudPoints: The cloud points seen from the second keyframe.
+	/// @param[out] found_matches: The matches allow to define 3D-3D correspondences.
+	/// @param[out] remaining_matches: The remaining matches.
 	FrameworkReturnCode find(const SRef<Keyframe> firstKeyframe,
 							const SRef<Keyframe> secondKeyframe,
 							const std::vector<DescriptorMatch> & current_matches,
@@ -44,11 +44,19 @@ public:
 							std::vector<DescriptorMatch> & remaining_matches) override;
 
 
+	/// @brief Define 3D-3D point correspondences of two keyframes based on keypoint matches between different maps.
+	/// @param[in] firstKeyframe: The first keyframe.
+	/// @param[in] secondKeyframe: The second keyframe.
+	/// @param[in] currentMatches: The 2D matches between the current keyframe and its reference keyframe.
+	/// @param[out] firstCloudPointsIndices: The cloud points indices seen from the first keyframe.
+	/// @param[out] secondCloudPointsIndices: The cloud points indices seen from the second keyframe.
+	/// @param[out] found_matches: The matches allow to define 3D-3D correspondences.
 	FrameworkReturnCode find(const SRef<Keyframe> firstKeyframe,
 							const SRef<Keyframe> secondKeyframe,
 							const std::vector<DescriptorMatch> & current_matches,
 							std::vector<uint32_t> & firstCloudPointsIndices,
-							std::vector<uint32_t> & secondCloudPointsIndices) override;
+							std::vector<uint32_t> & secondCloudPointsIndices,
+							std::vector<DescriptorMatch> & found_matches) override;
 
 
 	void unloadComponent() override final;

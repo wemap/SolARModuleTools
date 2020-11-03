@@ -30,11 +30,8 @@ namespace TOOLS {
 SolAROverlapDetector::SolAROverlapDetector():ConfigurableBase(xpcf::toUUID<SolAROverlapDetector>())
 {
     addInterface<api::loop::IOverlapDetector>(this);
-	declareInjectable<IKeyframesManager>(m_keyframesManager);
-	declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
-	declareInjectable<reloc::IKeyframeRetriever>(m_keyframeRetriever);
 	declareInjectable<solver::pose::I3DTransformSACFinderFrom3D3D>(m_estimator3D);
-	declareInjectable<features::IDescriptorMatcher>(m_matcher, "Matcher-Loop");
+	declareInjectable<features::IDescriptorMatcher>(m_matcher);
 	declareInjectable<features::IMatchesFilter>(m_matchesFilter);
 	declareInjectable<solver::pose::I3D3DCorrespondencesFinder>(m_corr3D3DFinder);
 	declareInjectable<geom::I3DTransform>(m_transform3D);
@@ -45,67 +42,42 @@ void SolAROverlapDetector::setCameraParameters(const CamCalibration & intrinsicP
 	m_estimator3D->setCameraParameters(intrinsicParams, distortionParams);
 }
 
-FrameworkReturnCode SolAROverlapDetector::setGlobalMapper(const SRef<api::solver::map::IMapper>& map){
-	LOG_INFO("<Set global mapper for overlapDetector:>")
-	map->getKeyframesManager(m_keyframesManager);
-	LOG_INFO("	-> Setting global keyframesManager");
-	map->getCovisibilityGraph(m_covisibilityGraph);
-	LOG_INFO("	-> Setting global keyframesRetriever");
-	map->getKeyframeRetriever(m_keyframeRetriever);
-	LOG_INFO("	-> Setting global pointCloudManager");
-	map->getPointCloudManager(m_pointCloudManager);
-	return FrameworkReturnCode::_SUCCESS;
-}
-
-FrameworkReturnCode SolAROverlapDetector::detect(SRef<api::solver::map::IMapper> &globalMap, 
-												const SRef<api::solver::map::IMapper> &floatingMap,
-												Transform3Df &sim3Transform,
-												Transform3Df&bestGlobalPose,
-												Transform3Df&bestFloatinglPose) {
-	
-
-	// get floating mapper information
-	SRef<IPointCloudManager> floatingPointCloudManager;
-	SRef<IKeyframesManager> floatingKeyframesManager;
-
+FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IMapper>& globalMap, const SRef<api::solver::map::IMapper>& floatingMap, Transform3Df & sim3Transform, std::vector<std::pair<uint32_t, uint32_t>>& cpOverlapIndices)
+{
+	SRef<IPointCloudManager> floatingPointCloudManager, globalPointCloudManager;
+	SRef<IKeyframesManager> floatingKeyframesManager, globalKeyframesManager;
+	SRef<IKeyframeRetriever> globalKeyframeRetriever;
 	std::vector<SRef<Keyframe>> allFloatingKeyframes;
 	std::vector<SRef<CloudPoint>> floatingPointCloud, globalPointCloud;
 
+	// get floating mapper information
 	floatingMap->getKeyframesManager(floatingKeyframesManager);
 	floatingMap->getPointCloudManager(floatingPointCloudManager);
-
-	floatingKeyframesManager->getAllKeyframes(allFloatingKeyframes);
 	floatingPointCloudManager->getAllPoints(floatingPointCloud);
+	floatingKeyframesManager->getAllKeyframes(allFloatingKeyframes);
 
-	// get global point cloud
-	m_pointCloudManager->getAllPoints(globalPointCloud);
+	// get global mapper information
+	globalMap->getPointCloudManager(globalPointCloudManager);
+	globalMap->getKeyframeRetriever(globalKeyframeRetriever);
+	globalMap->getKeyframesManager(globalKeyframesManager);
+	globalPointCloudManager->getAllPoints(globalPointCloud);
 
-
-	LOG_INFO("floating keyframes no: {}", allFloatingKeyframes.size());
-	LOG_INFO("floating cloud point: {}", floatingPointCloud.size());
-	LOG_INFO("floating keyframes retriever loaded correctly");
-	SRef<Keyframe> bestDetectedQueryKeyframe;
-	int idx_search = 0;
+	// find 3D-3D correspondences
+	std::set<uint32_t> foundIdFloatCPs, foundIdGlobalCPs;
+	std::vector<Point3Df> ptsFloating, ptsGlobal;
+	std::vector<std::pair<uint32_t, uint32_t>> duplicatedPointsIndices;
 	for (const auto & queryKeyframe : allFloatingKeyframes) {
 		uint32_t queryKeyframeId = queryKeyframe->getId();
-		std::vector<uint32_t> retKeyframesIndex;
 		std::vector<uint32_t> candidatesId;
 		// get candidate keyframes using BoW and covisibility graph
-		m_keyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), retKeyframesIndex);
-
-		for (auto &it : retKeyframesIndex) {
-			std::vector<uint32_t> paths;
-			m_covisibilityGraph->getShortestPath(queryKeyframeId, it, paths);
-			if (paths.size() > 3)
-				candidatesId.push_back(it);
-		}
+        globalKeyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), candidatesId);
+		if (candidatesId.size() == 0)
+			continue;
 		std::vector<SRef<Keyframe>> candidateKeyframes;
-		std::vector<Transform3Df> candidateKeyframePoses;
 		for (auto &it : candidatesId) {
 			SRef<Keyframe> keyframe;
-			m_keyframesManager->getKeyframe(it, keyframe);
+			globalKeyframesManager->getKeyframe(it, keyframe);
 			candidateKeyframes.push_back(keyframe);
-			candidateKeyframePoses.push_back(keyframe->getPose());
 		}
 		// find best candidate loop detection
 		Transform3Df bestTransform;
@@ -113,15 +85,15 @@ FrameworkReturnCode SolAROverlapDetector::detect(SRef<api::solver::map::IMapper>
 		std::vector<SRef<CloudPoint>> bestFirstCloudPoints, bestSecondCloudPoints;
 		std::vector<int> bestInliers;
 		for (const auto &it : candidateKeyframes) {
-			std::vector<DescriptorMatch> matches;
+			std::vector<DescriptorMatch> matches, foundMatches;
 			std::vector<SRef<CloudPoint>> floatingCloudPoints, globalCloudPoints;
 			std::vector<uint32_t>floatingCloudPointsIndices, globalCloudPointsIndices;
 			m_matcher->match(queryKeyframe->getDescriptors(), it->getDescriptors(), matches);
 			m_matchesFilter->filter(matches, matches, queryKeyframe->getKeypoints(), it->getKeypoints());
-			m_corr3D3DFinder->find(queryKeyframe, it, matches, floatingCloudPointsIndices, globalCloudPointsIndices);
+			m_corr3D3DFinder->find(queryKeyframe, it, matches, floatingCloudPointsIndices, globalCloudPointsIndices, foundMatches);
 
 			floatingPointCloudManager->getPoints(floatingCloudPointsIndices, floatingCloudPoints);
-			m_pointCloudManager->getPoints(globalCloudPointsIndices, globalCloudPoints);
+			globalPointCloudManager->getPoints(globalCloudPointsIndices, globalCloudPoints);
 
 			std::vector<Point3Df> pts1, pts2;
 			pts1.resize(floatingCloudPoints.size());
@@ -132,84 +104,81 @@ FrameworkReturnCode SolAROverlapDetector::detect(SRef<api::solver::map::IMapper>
 			}
 			Transform3Df pose;
 			std::vector<int> inliers;
-			
+
 			if (m_estimator3D->estimate(pts1, pts2, pose, inliers) == FrameworkReturnCode::_SUCCESS) {
 				if (inliers.size() > bestInliers.size()) {
 					bestTransform = pose;
 					bestDetectedLoopKeyframe = it;
-					bestDetectedQueryKeyframe = queryKeyframe;
 					bestFirstCloudPoints.swap(floatingCloudPoints);
 					bestSecondCloudPoints.swap(globalCloudPoints);
 					bestInliers.swap(inliers);
 				}
 			}
-			
+
 		}
+		// get 3D-3D correspondences
 		if (bestInliers.size() >= m_NbMinInliers) {
-			sim3Transform = bestTransform;
-			bestGlobalPose = bestDetectedLoopKeyframe->getPose();
-			bestFloatinglPose = bestDetectedQueryKeyframe->getPose();
-			LOG_INFO("global pose -->: \n {}", bestGlobalPose.matrix());
-			LOG_INFO("floating pose -->: \n {}", bestFloatinglPose.matrix());
+			for (const auto &it : bestInliers) {
+				uint32_t idFloatCP = bestFirstCloudPoints[it]->getId();
+				uint32_t idGlobalCP = bestSecondCloudPoints[it]->getId();
+				if ((foundIdFloatCPs.find(idFloatCP) == foundIdFloatCPs.end()) && (foundIdGlobalCPs.find(idGlobalCP) == foundIdGlobalCPs.end())) {
+					foundIdFloatCPs.insert(idFloatCP);
+					foundIdGlobalCPs.insert(idGlobalCP);
+					duplicatedPointsIndices.push_back(std::make_pair(idFloatCP, idGlobalCP));
+					ptsFloating.push_back(std::move(Point3Df(bestFirstCloudPoints[it]->getX(), bestFirstCloudPoints[it]->getY(), bestFirstCloudPoints[it]->getZ())));
+					ptsGlobal.push_back(std::move(Point3Df(bestSecondCloudPoints[it]->getX(), bestSecondCloudPoints[it]->getY(), bestSecondCloudPoints[it]->getZ())));
+				}				
+			}				
+		}
+	}
+
+	std::vector<int> inliers;
+	if (m_estimator3D->estimate(ptsFloating, ptsGlobal, sim3Transform, inliers) == FrameworkReturnCode::_SUCCESS) {
+		if (inliers.size() > m_NbMinInliers) {
+			for (const auto &it : inliers)
+				cpOverlapIndices.push_back(duplicatedPointsIndices[it]);
 			return FrameworkReturnCode::_SUCCESS;
 		}
-		else {
-			LOG_INFO("bad qury fame! keep searching");
-			if (idx_search >= allFloatingKeyframes.size() - 1)
-				return FrameworkReturnCode::_ERROR_;
-		}
-		++idx_search;
 	}
-	return FrameworkReturnCode::_SUCCESS;
-
+	return FrameworkReturnCode::_ERROR_;
 }
 
-
-FrameworkReturnCode SolAROverlapDetector::detect(SRef<api::solver::map::IMapper> &globalMap,
+FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IMapper> &globalMap,
 												const SRef<api::solver::map::IMapper> &floatingMap,
 												std::vector<Transform3Df> &sim3Transform,
 												std::vector<std::pair<uint32_t, uint32_t>>&overlapIndices,
-												std::vector<double>&scores) {
-	// get floating mapper information
-	SRef<IPointCloudManager> floatingPointCloudManager;
-	SRef<IKeyframesManager> floatingKeyframesManager;
-
+												std::vector<double>&scores) 
+{	
+	SRef<IPointCloudManager> floatingPointCloudManager, globalPointCloudManager;
+	SRef<IKeyframesManager> floatingKeyframesManager, globalKeyframesManager;
+	SRef<IKeyframeRetriever> globalKeyframeRetriever;
 	std::vector<SRef<Keyframe>> allFloatingKeyframes;
 	std::vector<SRef<CloudPoint>> floatingPointCloud, globalPointCloud;
 
+	// get floating mapper information
 	floatingMap->getKeyframesManager(floatingKeyframesManager);
 	floatingMap->getPointCloudManager(floatingPointCloudManager);
-
 	floatingPointCloudManager->getAllPoints(floatingPointCloud);
-	m_pointCloudManager->getAllPoints(globalPointCloud);
+	floatingKeyframesManager->getAllKeyframes(allFloatingKeyframes);	
 
-	floatingKeyframesManager->getAllKeyframes(allFloatingKeyframes);
+	// get global mapper information
+	globalMap->getPointCloudManager(globalPointCloudManager);
+	globalMap->getKeyframeRetriever(globalKeyframeRetriever);
+	globalMap->getKeyframesManager(globalKeyframesManager);
+	globalPointCloudManager->getAllPoints(globalPointCloud);
 
-	LOG_INFO("floating keyframes no: {}", allFloatingKeyframes.size());
-	LOG_INFO("floating cloud point: {}", floatingPointCloud.size());
-	LOG_INFO("floating keyframes retriever loaded correctly");
-	SRef<Keyframe> bestDetectedQueryKeyframe;
-	int idx_search = 0;
 	for (const auto & queryKeyframe : allFloatingKeyframes) {
 		uint32_t queryKeyframeId = queryKeyframe->getId();
-		std::vector<uint32_t> retKeyframesIndex;
 		std::vector<uint32_t> candidatesId;
 		// get candidate keyframes using BoW and covisibility graph
-		m_keyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), retKeyframesIndex);
-
-		for (auto &it : retKeyframesIndex) {
-			std::vector<uint32_t> paths;
-			m_covisibilityGraph->getShortestPath(queryKeyframeId, it, paths);
-			if (paths.size() > 3)
-				candidatesId.push_back(it);
-		}
+		globalKeyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), candidatesId);
+		if (candidatesId.size() == 0)
+			continue;
 		std::vector<SRef<Keyframe>> candidateKeyframes;
-		std::vector<Transform3Df> candidateKeyframePoses;
 		for (auto &it : candidatesId) {
 			SRef<Keyframe> keyframe;
-			m_keyframesManager->getKeyframe(it, keyframe);
+			globalKeyframesManager->getKeyframe(it, keyframe);
 			candidateKeyframes.push_back(keyframe);
-			candidateKeyframePoses.push_back(keyframe->getPose());
 		}
 		// find best candidate loop detection
 		Transform3Df bestTransform;
@@ -217,15 +186,15 @@ FrameworkReturnCode SolAROverlapDetector::detect(SRef<api::solver::map::IMapper>
 		std::vector<SRef<CloudPoint>> bestFirstCloudPoints, bestSecondCloudPoints;
 		std::vector<int> bestInliers;
 		for (const auto &it : candidateKeyframes) {
-			std::vector<DescriptorMatch> matches;
+			std::vector<DescriptorMatch> matches, foundMatches;
 			std::vector<SRef<CloudPoint>> floatingCloudPoints, globalCloudPoints;
 			std::vector<uint32_t>floatingCloudPointsIndices, globalCloudPointsIndices;
 			m_matcher->match(queryKeyframe->getDescriptors(), it->getDescriptors(), matches);
 			m_matchesFilter->filter(matches, matches, queryKeyframe->getKeypoints(), it->getKeypoints());
-			m_corr3D3DFinder->find(queryKeyframe, it, matches, floatingCloudPointsIndices, globalCloudPointsIndices);
+			m_corr3D3DFinder->find(queryKeyframe, it, matches, floatingCloudPointsIndices, globalCloudPointsIndices, foundMatches);
 
 			floatingPointCloudManager->getPoints(floatingCloudPointsIndices, floatingCloudPoints);
-			m_pointCloudManager->getPoints(globalCloudPointsIndices, globalCloudPoints);
+			globalPointCloudManager->getPoints(globalCloudPointsIndices, globalCloudPoints);
 
 			std::vector<Point3Df> pts1, pts2;
 			pts1.resize(floatingCloudPoints.size());
@@ -241,7 +210,6 @@ FrameworkReturnCode SolAROverlapDetector::detect(SRef<api::solver::map::IMapper>
 				if (inliers.size() > bestInliers.size()) {
 					bestTransform = pose;
 					bestDetectedLoopKeyframe = it;
-					bestDetectedQueryKeyframe = queryKeyframe;
 					bestFirstCloudPoints.swap(floatingCloudPoints);
 					bestSecondCloudPoints.swap(globalCloudPoints);
 					bestInliers.swap(inliers);
@@ -252,14 +220,17 @@ FrameworkReturnCode SolAROverlapDetector::detect(SRef<api::solver::map::IMapper>
 		if (bestInliers.size() >= m_NbMinInliers) {
 			sim3Transform.push_back(bestTransform);
 			uint32_t idxGlobalKeyframe = bestDetectedLoopKeyframe->getId();
-			uint32_t idxFloatingKeyframe = bestDetectedQueryKeyframe->getId();
+			uint32_t idxFloatingKeyframe = queryKeyframe->getId();
 			overlapIndices.push_back(std::make_pair(idxFloatingKeyframe, idxGlobalKeyframe));
 			scores.push_back(double(bestInliers.size()));
-			LOG_INFO("#OVERLAP detection between: floatingKeyframe {} and globalKeyframe {} with {} inliers", idxFloatingKeyframe, idxGlobalKeyframe,bestInliers.size());
+			LOG_DEBUG("#OVERLAP detection between: floatingKeyframe {} and globalKeyframe {} with {} inliers", idxFloatingKeyframe, idxGlobalKeyframe,bestInliers.size());
 
 		}
 	}
-	return FrameworkReturnCode::_SUCCESS;
+	if (sim3Transform.size() > 0)
+		return FrameworkReturnCode::_SUCCESS;
+	else
+		return FrameworkReturnCode::_ERROR_;
 }
 
 }
