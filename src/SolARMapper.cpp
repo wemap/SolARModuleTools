@@ -295,8 +295,6 @@ FrameworkReturnCode SolARMapper::loadFromFile()
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-/// @brief Set the mapper data from floating mapper
-/// @return FrameworkReturnCode::_SUCCESS_ if all data structures successfully setted, else FrameworkReturnCode::_ERROR.
 FrameworkReturnCode SolARMapper::set(const SRef<IMapper> &floating_mapper) {
 	floating_mapper->getKeyframesManager(m_keyframesManager);
 	floating_mapper->getKeyframeRetriever(m_keyframeRetriever);

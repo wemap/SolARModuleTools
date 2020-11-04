@@ -84,7 +84,7 @@
 	</module> 
 	<factory>
 		<bindings>
-			<bind interface="IDescriptorMatcher" to="SolARDescriptorMatcherKNNOpencv" name="Matcher-Loop"/>
+			<bind interface="IDescriptorMatcher" to="SolARDescriptorMatcherKNNOpencv"/>
 			<bind interface="IPointCloudManager" to="SolARPointCloudManager" scope="Singleton"/>
 			<bind interface="IKeyframesManager" to="SolARKeyframesManager" scope="Singleton"/>
 			<bind interface="ICovisibilityGraph" to="SolARCovisibilityGraph" scope="Singleton"/>
@@ -165,8 +165,8 @@
 			<property name="drawSceneAxis" type="UnsignedInteger" value="1"/>
 			<property name="drawWorldAxis" type="UnsignedInteger" value="1"/>
 			<property name="axisScale" type="Float" value="1.0"/>
-			<property name="pointSize" type="Float" value="3.0"/>
-			<property name="cameraScale" type="Float" value="1.0"/>
+			<property name="pointSize" type="Float" value="1.0"/>
+			<property name="cameraScale" type="Float" value="0.1"/>
 			<property name="keyframeAsCamera" type="UnsignedInteger" value="1"/>
 			<property name="framesColor" type="UnsignedInteger">
 				<value>255</value>

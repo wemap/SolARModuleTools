@@ -38,7 +38,7 @@ SolARFiducialMarkerPoseEstimator::SolARFiducialMarkerPoseEstimator():Configurabl
 	declareInjectable<api::features::IContoursFilter>(m_contoursFilter);
 	declareInjectable<api::image::IPerspectiveController>(m_perspectiveController);
 	declareInjectable<api::features::IDescriptorsExtractorSBPattern>(m_patternDescriptorExtractor);
-	declareInjectable<api::features::IDescriptorMatcher>(m_patternMatcher, "Matcher-Fiducial");
+	declareInjectable<api::features::IDescriptorMatcher>(m_patternMatcher);
 	declareInjectable<api::features::ISBPatternReIndexer>(m_patternReIndexer);
 	declareInjectable<api::geom::IImage2WorldMapper>(m_img2worldMapper);
 	declareInjectable<api::solver::pose::I3DTransformFinderFrom2D3D>(m_pnp);

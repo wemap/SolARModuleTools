@@ -33,7 +33,7 @@ SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMT
 	addInterface<api::slam::ITracking>(this);
 	declareInjectable<api::solver::map::IMapper>(m_mapper);
 	declareInjectable<api::storage::IKeyframesManager>(m_keyframesManager);
-	declareInjectable<api::features::IDescriptorMatcher>(m_matcher, "Matcher-Tracking");
+	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
 	declareInjectable<api::features::IMatchesFilter>(m_matchesFilter);
 	declareInjectable<api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
 	declareInjectable<api::solver::pose::I3DTransformFinderFrom2D3D>(m_pnp);
