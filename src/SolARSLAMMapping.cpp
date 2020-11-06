@@ -53,7 +53,7 @@ void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParam
 	m_camMatrix = intrinsicParams;
 	m_camDistortion = distortionParams;
 	m_triangulator->setCameraParameters(m_camMatrix, m_camDistortion);
-	m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
+    m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
 }
 
 FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame>& frame, SRef<Keyframe>& keyframe)
@@ -97,6 +97,8 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	m_keyframeRetriever->addKeyframe(newKeyframe);
 	// Update keypoint visibility, descriptor in cloud point and connections between new keyframe with other keyframes
 	updateAssociateCloudPoint(newKeyframe);
+	// Map point culling
+	cloudPointsCulling(newKeyframe);
 	// get best neighbor keyframes
 	std::vector<uint32_t> idxBestNeighborKfs;
 	m_covisibilityGraph->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor, idxBestNeighborKfs);
@@ -106,10 +108,12 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	// fuse duplicate points
 	//if (newCloudPoint.size() > 0)
 	//	fuseCloudPoint(newKeyframe, idxBestNeighborKfs, newCloudPoint);
-	LOG_DEBUG("Nb of new 3D points: {}", newCloudPoint.size());
+	LOG_INFO("Nb of new 3D points: {}", newCloudPoint.size());
 	// add new points to point cloud manager, update visibility map and covisibility graph
-	for (auto const &point : newCloudPoint)
+	for (auto const &point : newCloudPoint) {
 		m_mapper->addCloudPoint(point);
+		m_recentAddedCloudPoints[point->getId()] = std::make_pair(point, newKeyframe->getId());
+	}
 	return newKeyframe;
 }
 
@@ -321,6 +325,30 @@ void SolARSLAMMapping::fuseCloudPoint(const SRef<Keyframe>& keyframe, const std:
 		if (checkMatches[i])
 			tmpNewCloudPoint.push_back(newCloudPoint[i]);
 	tmpNewCloudPoint.swap(newCloudPoint);
+}
+
+void SolARSLAMMapping::cloudPointsCulling(const SRef<Keyframe>& keyframe)
+{
+	uint32_t currentKfId = keyframe->getId();
+	int nbRemove(0);
+	std::vector<uint32_t> toRemove;
+	for (const auto &it : m_recentAddedCloudPoints) {
+		const SRef<CloudPoint>& cp = it.second.first;
+		const uint32_t& cpIdKf = it.second.second;
+		if (((currentKfId - cpIdKf) >= 2) && (cp->getVisibility().size() < 3)) {
+			//std::cout << "Erase point: " << it.first << " " << cp->getId() << std::endl;
+			m_mapper->removeCloudPoint(cp);
+			toRemove.push_back(it.first);
+			nbRemove++;
+		}
+		else if ((currentKfId - cpIdKf) > 2)
+			toRemove.push_back(it.first);
+	}
+	for (const auto& it : toRemove)
+		m_recentAddedCloudPoints.erase(it);
+	
+	LOG_INFO("Nb of culling points: {}", nbRemove);
+	LOG_INFO("Nb of good points: {}", toRemove.size() - nbRemove);
 }
 
 }
