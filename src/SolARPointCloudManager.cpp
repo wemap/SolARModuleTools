@@ -84,7 +84,7 @@ FrameworkReturnCode SolARPointCloudManager::getPoint(uint32_t id, SRef<CloudPoin
 		return FrameworkReturnCode::_SUCCESS;
 	}
 	else {
-		LOG_ERROR("Cannot find cloud point with id {} to get", id);
+		LOG_DEBUG("Cannot find cloud point with id {} to get", id);
 		return FrameworkReturnCode::_ERROR_;
 	}
 }
@@ -95,7 +95,7 @@ FrameworkReturnCode SolARPointCloudManager::getPoints(std::vector<uint32_t>& ids
 	for (auto &it : ids) {
 		std::map< uint32_t, SRef<CloudPoint>>::iterator pointIt = m_pointCloud.find(it);
 		if (pointIt == m_pointCloud.end()) {
-			LOG_ERROR("Cannot find cloud point with id {} to get", it);
+			LOG_DEBUG("Cannot find cloud point with id {} to get", it);
 			return FrameworkReturnCode::_ERROR_;
 		}
 		points.push_back(pointIt->second);
@@ -120,7 +120,7 @@ FrameworkReturnCode SolARPointCloudManager::suppressPoint(uint32_t id)
 		return FrameworkReturnCode::_SUCCESS;
 	}
 	else {
-		LOG_ERROR("Cannot find cloud point with id {} to suppress", id);
+		LOG_DEBUG("Cannot find cloud point with id {} to suppress", id);
 		return FrameworkReturnCode::_ERROR_;
 	}
 }
@@ -131,7 +131,7 @@ FrameworkReturnCode SolARPointCloudManager::suppressPoints(std::vector<uint32_t>
 	for (auto &it : ids) {
 		std::map< uint32_t, SRef<CloudPoint>>::iterator pointIt = m_pointCloud.find(it);
 		if (pointIt == m_pointCloud.end()) {
-			LOG_ERROR("Cannot find cloud point with id {} to suppress", it);
+			LOG_DEBUG("Cannot find cloud point with id {} to suppress", it);
 			return FrameworkReturnCode::_ERROR_;
 		}
 		m_pointCloud.erase(pointIt);

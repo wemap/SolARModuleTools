@@ -42,6 +42,7 @@ SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMT
 	declareInjectable<api::reloc::IKeyframeRetriever>(m_keyframeRetriever);
 	declareInjectable<api::display::I2DOverlay>(m_overlay2D);
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
+	declareProperty("thresAngleViewDirection", m_thresAngleViewDirection);
 	declareProperty("displayTrackedPoints", m_displayTrackedPoints);
 }
 
@@ -96,10 +97,18 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	// init image to display
 	displayImage = frame->getView()->copy();
 
+	// get cosine view direction angle 
+	auto cosineViewDirectionAngle = [](const SRef<Frame>& frame, const SRef<CloudPoint>& cp) {
+		const Transform3Df &pose = frame->getPose();
+		Vector3f frameViewDir(pose(0, 3) - cp->getX(), pose(1, 3) - cp->getY(), pose(2, 3) - cp->getZ());
+		const Vector3f& cpViewDir = cp->getViewDirection();
+		return cpViewDir.dot(frameViewDir.normalized());
+	};
+
 	// run pnp ransac
 	std::vector<uint32_t> inliers;
 	if (m_pnpRansac->estimate(pt2d, pt3d, inliers, framePose, m_lastPose) == FrameworkReturnCode::_SUCCESS) {
-		LOG_DEBUG(" pnp inliers size: {} / {}", inliers.size(), pt3d.size());
+		LOG_DEBUG("Inliers / Nb of correspondences: {} / {}", inliers.size(), pt3d.size());
 		LOG_DEBUG("Estimated pose: \n {}", framePose.matrix());
 		// Set the pose of the new frame
 		frame->setPose(framePose);
@@ -130,30 +139,52 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 		// find other visiblities from local map
 		std::vector<SRef<CloudPoint>> localMapUnseen;
 		for (auto &it_cp : m_localMap)
-			if (idxCPSeen.find(it_cp->getId()) == idxCPSeen.end())
-				localMapUnseen.push_back(it_cp);
+			if ((idxCPSeen.find(it_cp->getId()) == idxCPSeen.end()) && (cosineViewDirectionAngle(frame, it_cp) > m_thresAngleViewDirection))	
+				localMapUnseen.push_back(it_cp);		
 
+		std::vector<SRef<CloudPoint>> localMapUnseenCandidates;
+		std::vector< Point2Df > projected2DPtsCandidates;
+		//  projection points and filter point out of frame
 		if (localMapUnseen.size() > 0) {
-			//  projection points
 			std::vector< Point2Df > projected2DPts;
 			m_projector->project(localMapUnseen, projected2DPts, frame->getPose());
+			uint32_t imgWidth = frame->getView()->getWidth();
+			uint32_t imgHeight = frame->getView()->getHeight();
+			for (int idx = 0; idx < projected2DPts.size(); idx++)
+				if ((projected2DPts[idx].getX() > 0) && (projected2DPts[idx].getX() < imgWidth) && (projected2DPts[idx].getY() > 0) && (projected2DPts[idx].getY() < imgHeight)) {
+					projected2DPtsCandidates.push_back(std::move(projected2DPts[idx]));
+					localMapUnseenCandidates.push_back(std::move(localMapUnseen[idx]));
+				}
+		}
+		LOG_DEBUG("Nb of filtered local map : {}", localMapUnseenCandidates.size());
+
+		if (localMapUnseenCandidates.size() > 0) {
 			// find more inlier matches
 			std::vector<SRef<DescriptorBuffer>> desAllLocalMapUnseen;
-			for (auto &it_cp : localMapUnseen) {
+			for (auto &it_cp : localMapUnseenCandidates) {
 				desAllLocalMapUnseen.push_back(it_cp->getDescriptor());
 			}
 			std::vector<DescriptorMatch> allMatches;
-			m_matcher->matchInRegion(projected2DPts, desAllLocalMapUnseen, frame, allMatches, 0, maxMatchDistance);
-			// find visibility of new frame				
+			m_matcher->matchInRegion(projected2DPtsCandidates, desAllLocalMapUnseen, frame, allMatches, 0, maxMatchDistance);
+			// find visibility of new frame
+			int nbMatchesLocalMap(0);
+			std::vector<bool> checkLocalMapInOut(localMapUnseenCandidates.size(), false);
 			for (auto &it_match : allMatches) {
 				int idx_2d = it_match.getIndexInDescriptorB();
 				int idx_3d = it_match.getIndexInDescriptorA();
-				auto it2d = newMapVisibility.find(idx_2d);
-				if (it2d == newMapVisibility.end()) {
+				checkLocalMapInOut[idx_3d] = true;
+				if (newMapVisibility.find(idx_2d) == newMapVisibility.end()) {
 					pts2dInliers.push_back(Point2Df(keypoints[idx_2d].getX(), keypoints[idx_2d].getY()));
-					pts3dInliers.push_back(Point3Df(localMapUnseen[idx_3d]->getX(), localMapUnseen[idx_3d]->getY(), localMapUnseen[idx_3d]->getZ()));
-					newMapVisibility[idx_2d] = localMapUnseen[idx_3d]->getId();
+					pts3dInliers.push_back(Point3Df(localMapUnseenCandidates[idx_3d]->getX(), localMapUnseenCandidates[idx_3d]->getY(), localMapUnseenCandidates[idx_3d]->getZ()));
+					newMapVisibility[idx_2d] = localMapUnseenCandidates[idx_3d]->getId();
+					nbMatchesLocalMap++;
 				}
+			}
+			LOG_DEBUG("Nb of matched local map: {}", nbMatchesLocalMap);
+			// update confidence score of matched cloud points
+			for (int i = 0; i < localMapUnseenCandidates.size(); ++i) {
+				if (checkLocalMapInOut[i])
+					localMapUnseenCandidates[i]->updateConfidence(true);
 			}
 		}
 
@@ -163,7 +194,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 		frame->setPose(refinedPose);
 		// update map visibility of current frame
 		frame->addVisibilities(newMapVisibility);
-		LOG_DEBUG("Nb of map visibilities of frame: {}", newMapVisibility.size());
+		LOG_DEBUG("Nb of map visibilities of current frame: {}", newMapVisibility.size());
 
 		// display tracked points
 		if (m_displayTrackedPoints)
@@ -174,23 +205,21 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 
 		// tracking is good
 		m_isLostTrack = false;	
-
 	}
 	else {
-		LOG_INFO("Pose estimation has failed");
+		LOG_DEBUG("Pose estimation has failed");
 		// lost tracking
 		m_isLostTrack = true;		
 		// reloc
 		std::vector < uint32_t> retKeyframesId;
 		if (m_keyframeRetriever->retrieve(frame, retKeyframesId) == FrameworkReturnCode::_SUCCESS) {
-			LOG_DEBUG("Retrieval Success");
-			LOG_INFO("Update reference keyframe to the best retrieval keyframe id {}", retKeyframesId[0]);
+			LOG_DEBUG("Successful relocalization. Update reference keyframe id: {}", retKeyframesId[0]);
 			SRef<Keyframe> bestRetKeyframe;
 			m_keyframesManager->getKeyframe(retKeyframesId[0], bestRetKeyframe);
 			updateReferenceKeyframe(bestRetKeyframe);		
 		}
 		else
-			LOG_DEBUG("Retrieval Failed");
+			LOG_DEBUG("Relocalization Failed");
 	}
 	if (m_isLostTrack)
 		return FrameworkReturnCode::_ERROR_;

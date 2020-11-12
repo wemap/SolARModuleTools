@@ -229,7 +229,7 @@ void SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 			count++;
 		}
 
-	LOG_INFO("Number pruning cloud points: {}", count);
+	LOG_DEBUG("Number pruning cloud points: {}", count);
 }
 
 FrameworkReturnCode SolARMapper::saveToFile()
