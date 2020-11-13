@@ -60,7 +60,7 @@ public:
 	/// @param[in] a vector of ids of the keyframes to get
 	/// @param[out] a vector of keyframes stored in the keyframe manager
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getKeyframes(std::vector<uint32_t> &ids, std::vector<SRef<Keyframe>>& keyframes) override;
+    FrameworkReturnCode getKeyframes(const std::vector<uint32_t> &ids, std::vector<SRef<Keyframe>>& keyframes) override;
 
 	/// @brief This method allows to get all keyframes
 	/// @param[out] the set of keyframes
@@ -90,14 +90,14 @@ public:
 	int getNbKeyframes() override;
 
 	/// @brief This method allows to save the keyframes to the external file
-	/// @param[out] the file name
+	/// @param[in] file the file name
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode saveToFile(std::string file) override;
+	FrameworkReturnCode saveToFile(const std::string& file) override;
 
 	/// @brief This method allows to load the keyframes from the external file
 	/// @param[in] the file name
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode loadFromFile(std::string file) override;
+	FrameworkReturnCode loadFromFile(const std::string& file) override;
 
     void unloadComponent () override final;
 

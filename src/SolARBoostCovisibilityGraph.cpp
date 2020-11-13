@@ -396,7 +396,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::display()
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(std::string file)
+FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(const std::string& file)
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -442,7 +442,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(std::string file)
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(std::string file)
+FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(const std::string& file)
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
     clear();
