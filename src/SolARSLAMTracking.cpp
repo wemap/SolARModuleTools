@@ -63,19 +63,35 @@ void SolARSLAMTracking::updateReferenceKeyframe(const SRef<Keyframe>& refKeyfram
 
 FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Image> &displayImage)
 {
+	// init image to display
+	displayImage = frame->getView()->copy();
 	std::vector<DescriptorMatch> matches;
 	Transform3Df framePose;
-
+	if (m_isLostTrack) {
+		LOG_DEBUG("Pose estimation has failed");		
+		// reloc
+		std::vector < uint32_t> retKeyframesId;
+		if (m_keyframeRetriever->retrieve(frame, retKeyframesId) == FrameworkReturnCode::_SUCCESS) {
+			LOG_DEBUG("Successful relocalization. Update reference keyframe id: {}", retKeyframesId[0]);
+			SRef<Keyframe> bestRetKeyframe;
+			m_keyframesManager->getKeyframe(retKeyframesId[0], bestRetKeyframe);
+			updateReferenceKeyframe(bestRetKeyframe);
+		}
+		else
+			LOG_DEBUG("Relocalization Failed");
+	}
 	// update local map
 	if (m_isUpdateReferenceKeyframe) {
 		updateLocalMap();
 	}
 
 	// set reference keyframe for new frame
-	frame->setReferenceKeyframe(m_referenceKeyframe);
-
+	frame->setReferenceKeyframe(m_referenceKeyframe);	
 	// matching feature
+	m_isLostTrack = true;
 	m_matcher->match(m_referenceKeyframe->getDescriptors(), frame->getDescriptors(), matches);
+	if (matches.size() < 10)
+		return FrameworkReturnCode::_ERROR_;
 	m_matchesFilter->filter(matches, matches, m_referenceKeyframe->getKeypoints(), frame->getKeypoints());
 	float maxMatchDistance = -FLT_MAX;
 	for (const auto &it : matches) {
@@ -83,7 +99,6 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 		if (score > maxMatchDistance)
 			maxMatchDistance = score;
 	}
-
 	// find 2D-3D point correspondences
 	std::vector<Point2Df> pt2d;
 	std::vector<Point3Df> pt3d;
@@ -92,10 +107,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	std::vector<DescriptorMatch> remainingMatches;
 	std::vector < std::pair<uint32_t, SRef<CloudPoint>>> corres2D3D;
 	m_corr2D3DFinder->find(m_referenceKeyframe, frame, matches, pt3d, pt2d, corres2D3D, foundMatches, remainingMatches);
-	LOG_DEBUG("Nb of 2D-3D correspondences: {}", pt2d.size());
-
-	// init image to display
-	displayImage = frame->getView()->copy();
+	LOG_DEBUG("Nb of 2D-3D correspondences: {}", pt2d.size());	
 
 	// get cosine view direction angle 
 	auto cosineViewDirectionAngle = [](const SRef<Frame>& frame, const SRef<CloudPoint>& cp) {
@@ -205,26 +217,10 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 
 		// tracking is good
 		m_isLostTrack = false;	
-	}
-	else {
-		LOG_DEBUG("Pose estimation has failed");
-		// lost tracking
-		m_isLostTrack = true;		
-		// reloc
-		std::vector < uint32_t> retKeyframesId;
-		if (m_keyframeRetriever->retrieve(frame, retKeyframesId) == FrameworkReturnCode::_SUCCESS) {
-			LOG_DEBUG("Successful relocalization. Update reference keyframe id: {}", retKeyframesId[0]);
-			SRef<Keyframe> bestRetKeyframe;
-			m_keyframesManager->getKeyframe(retKeyframesId[0], bestRetKeyframe);
-			updateReferenceKeyframe(bestRetKeyframe);		
-		}
-		else
-			LOG_DEBUG("Relocalization Failed");
-	}
-	if (m_isLostTrack)
-		return FrameworkReturnCode::_ERROR_;
-	else
 		return FrameworkReturnCode::_SUCCESS;
+	}
+	
+	return FrameworkReturnCode::_ERROR_;		
 }
 
 void SolARSLAMTracking::updateLocalMap()
