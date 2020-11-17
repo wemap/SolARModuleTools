@@ -53,10 +53,10 @@ private:
     int m_cheiralityCheck = 1;
 
 	//@brief min angle between rays
-	float m_minTriangulationAngle = 0.03;
+    float m_minTriangulationAngle = 0.03f;
 
 	//@brief max angle between rays
-	float m_maxTriangulationAngle = 0.2;
+    float m_maxTriangulationAngle = 0.2f;
 };
 }
 }

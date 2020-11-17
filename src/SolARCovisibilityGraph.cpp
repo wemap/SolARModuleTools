@@ -294,7 +294,7 @@ FrameworkReturnCode SolARCovisibilityGraph::getShortestPath(uint32_t node1_id, u
 		for (auto neigh : m_edges[tn.node]) {
 			if (!visited[neigh]) {
 				visited[neigh] = true;
-				trees.push_back(TreeNode(neigh, curNode));
+                trees.push_back(TreeNode(neigh, static_cast<uint32_t>(curNode)));
 				if (neigh == node2_id) {
 					found = true; 
 					break;
@@ -307,7 +307,7 @@ FrameworkReturnCode SolARCovisibilityGraph::getShortestPath(uint32_t node1_id, u
 		return FrameworkReturnCode::_ERROR_;
 
 	//else ,reconstruct the path in inverse order
-	int cnode = trees.size() - 1;
+    int cnode = static_cast<int>(trees.size()) - 1;
 	while (cnode != 0) {
 		path.push_back(trees[cnode].node);
 		cnode = trees[cnode].parent;

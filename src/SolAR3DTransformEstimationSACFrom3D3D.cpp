@@ -145,7 +145,7 @@ FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const std::v
 	while (iterations != 0) {
 		// get 3 random indices
 		std::vector<int> indices;
-		randomIndices(firstPoints3D.size(), 3, indices);
+        randomIndices(static_cast<int>(firstPoints3D.size()), 3, indices);
 		// get 3 correspondences
 		std::vector<Point3Df> points3D1, points3D2;
 		for (auto &it : indices) {
@@ -224,7 +224,7 @@ FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const SRef<K
 	while (iterations != 0) {
 		// get 3 random indices
 		std::vector<int> indices;
-		randomIndices(firstPoints3D.size(), 3, indices);
+        randomIndices(static_cast<int>(firstPoints3D.size()), 3, indices);
 		// get 3 correspondences
 		std::vector<Point3Df> points3D1, points3D2;
 		for (auto &it : indices) {

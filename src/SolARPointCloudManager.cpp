@@ -164,7 +164,7 @@ bool SolARPointCloudManager::isExistPoint(uint32_t id)
 int SolARPointCloudManager::getNbPoints()
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	return m_pointCloud.size();
+    return static_cast<int>(m_pointCloud.size());
 }
 
 FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)

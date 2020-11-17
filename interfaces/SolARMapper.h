@@ -152,8 +152,8 @@ private:
 	std::string					m_covisGraphFileName;
 	std::string					m_kfRetrieverFileName;
 
-	float						m_reprojErrorThres = 3.0;
-	float						m_thresConfidence = 0.3;
+    float						m_reprojErrorThres = 3.0f;
+    float						m_thresConfidence = 0.3f;
 };
 }
 }

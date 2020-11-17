@@ -229,7 +229,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 	}
 }
 
-void SolARSLAMMapping::fuseCloudPoint(const SRef<Keyframe>& keyframe, const std::vector<uint32_t>& idxNeigborKfs, std::vector<SRef<CloudPoint>>& newCloudPoint)
+void SolARSLAMMapping::fuseCloudPoint([[maybe_unused]] const SRef<Keyframe>& keyframe, const std::vector<uint32_t>& idxNeigborKfs, std::vector<SRef<CloudPoint>>& newCloudPoint)
 {
 	std::vector<bool> checkMatches(newCloudPoint.size(), true);
 	std::vector<SRef<DescriptorBuffer>> desNewCloudPoint;

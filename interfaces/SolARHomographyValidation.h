@@ -57,7 +57,7 @@ private:
 
     /// @brief the maximum of the dot product of the two opposite and normalized sides of the reprojected squared marker
     /// Here, we check is the opposite reprojected sides of the squared marker are not to perpendicular. If the dot product is close to 1, it means that the opposite side are perpendicular and so that the homography is not good.
-    float m_maxOppositeDotProduct = 0.9;
+    float m_maxOppositeDotProduct = 0.9f;
 };
 
 }
