@@ -46,6 +46,7 @@ SolARSLAMMapping::SolARSLAMMapping() :ConfigurableBase(xpcf::toUUID<SolARSLAMMap
 	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
 	declareInjectable<api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
+	declareProperty("maxNbNeighborKfs", m_maxNbNeighborKfs);
 	declareProperty("minTrackedPoints", m_minTrackedPoints);
 }
 
@@ -100,10 +101,15 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	// Map point culling
 	cloudPointsCulling(newKeyframe);
 	// get best neighbor keyframes
-	std::vector<uint32_t> idxBestNeighborKfs;
-	m_covisibilityGraph->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor, idxBestNeighborKfs);
+	std::vector<uint32_t> idxNeighborKfs, idxBestNeighborKfs;
+	m_covisibilityGraph->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor, idxNeighborKfs);
+	if (idxNeighborKfs.size() < m_maxNbNeighborKfs)
+		idxBestNeighborKfs.swap(idxNeighborKfs);
+	else
+		idxBestNeighborKfs.insert(idxBestNeighborKfs.begin(), idxNeighborKfs.begin(), idxNeighborKfs.begin() + m_maxNbNeighborKfs);
 	// find matches between unmatching keypoints in the new keyframe and the best neighboring keyframes
 	std::vector<SRef<CloudPoint>> newCloudPoint;
+	LOG_DEBUG("Nb of neighbors for mapping: {}", idxBestNeighborKfs.size());
 	findMatchesAndTriangulation(newKeyframe, idxBestNeighborKfs, newCloudPoint);
 	LOG_DEBUG("Nb of new triangulated 3D cloud points: {}", newCloudPoint.size());
 	// add new points to point cloud manager, update visibility map and covisibility graph

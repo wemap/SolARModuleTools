@@ -76,8 +76,9 @@ private:
 	void cloudPointsCulling(const SRef<Keyframe> &keyframe);
 
 private:
-	float												m_minWeightNeighbor = 10.f;
+	float												m_minWeightNeighbor = 1.f;
 	int													m_minTrackedPoints = 100;
+	int													m_maxNbNeighborKfs = 5;
 	SRef<Keyframe>										m_updatedReferenceKeyframe;
 	CamCalibration										m_camMatrix;
 	CamDistortion										m_camDistortion;
