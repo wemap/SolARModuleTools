@@ -74,7 +74,7 @@ private:
 private:
 	int													m_hasPose = 1;
 	int													m_nbMinInitPointCloud = 50;
-	float												m_angleThres = 0.1;
+    float												m_angleThres = 0.1f;
 	bool												m_bootstrapOk = false;
 	bool												m_initKeyframe1 = false;
 	SRef<Keyframe>										m_keyframe1, m_keyframe2;

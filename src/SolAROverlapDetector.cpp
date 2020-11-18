@@ -67,7 +67,6 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 	std::vector<Point3Df> ptsFloating, ptsGlobal;
 	std::vector<std::pair<uint32_t, uint32_t>> duplicatedPointsIndices;
 	for (const auto & queryKeyframe : allFloatingKeyframes) {
-		uint32_t queryKeyframeId = queryKeyframe->getId();
 		std::vector<uint32_t> candidatesId;
 		// get candidate keyframes using BoW and covisibility graph
         globalKeyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), candidatesId);
@@ -168,7 +167,6 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 	globalPointCloudManager->getAllPoints(globalPointCloud);
 
 	for (const auto & queryKeyframe : allFloatingKeyframes) {
-		uint32_t queryKeyframeId = queryKeyframe->getId();
 		std::vector<uint32_t> candidatesId;
 		// get candidate keyframes using BoW and covisibility graph
 		globalKeyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), candidatesId);

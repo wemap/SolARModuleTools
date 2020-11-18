@@ -46,8 +46,8 @@ bool sortMatchByDistance(const std::pair<int,float> &lhs, const std::pair<int,fl
 // filter matches : keep the best match in case of multiple matches per keypoint
 void SolARBasicMatchesFilter::filter(const std::vector<DescriptorMatch> & inputMatches,
                                      std::vector<DescriptorMatch> & outputMatches,
-                                     const std::vector<Keypoint> & inputKeyPointsA,
-                                     const std::vector<Keypoint> & inputKeyPointsB)
+                                     [[maybe_unused]] const std::vector<Keypoint> & inputKeyPointsA,
+                                     [[maybe_unused]] const std::vector<Keypoint> & inputKeyPointsB)
 {
     std::map<int,std::vector<std::pair<int,float>>> matchesMap;
 

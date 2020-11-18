@@ -193,7 +193,6 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 			// update covisibility graph
 			for (const auto &vi2 : visibilities2) {
 				uint32_t id_kf2 = vi2.first;
-				uint32_t id_kp2 = vi2.second;
 				m_covisibilityGraph->increaseEdge(id_kf1, id_kf2, 1.0);
 			}			
 		}

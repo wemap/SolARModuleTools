@@ -127,7 +127,7 @@ bool SolARKeyframesManager::isExistKeyframe(uint32_t id)
 int SolARKeyframesManager::getNbKeyframes()
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	return m_keyframes.size();
+    return static_cast<int>(m_keyframes.size());
 }
 
 FrameworkReturnCode SolARKeyframesManager::saveToFile(const std::string& file)

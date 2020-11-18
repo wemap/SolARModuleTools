@@ -60,7 +60,7 @@ bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::vector<
 }
 
 
-bool SolARKeyframeSelector::select(const SRef<Frame> & frame)
+bool SolARKeyframeSelector::select([[maybe_unused]] const SRef<Frame> & frame)
 {
     // NOT IMPLEMENTED : NEEDS AVAILABLE STORAGE COMPONENTS
     return false;

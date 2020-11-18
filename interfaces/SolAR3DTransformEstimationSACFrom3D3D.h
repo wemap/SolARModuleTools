@@ -85,10 +85,10 @@ private:
 	int m_iterationsCount = 500;
 
 	/// @brief Inlier threshold value used by the RANSAC procedure. The parameter value is the maximum allowed distance between the observed and computed point projections to consider it an inlier.
-	float m_reprojError = 4.0;
+    float m_reprojError = 4.0f;
 
 	/// @brief Inlier threshold value based on 3d distance error
-	float m_distanceError = 0.1;
+    float m_distanceError = 0.1f;
 
 	/// @brief The probability that the algorithm produces a useful result.
 	float m_confidence = 0.99f;
