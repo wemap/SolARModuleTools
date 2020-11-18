@@ -268,29 +268,47 @@ FrameworkReturnCode SolARMapper::loadFromFile()
 	LOG_DEBUG("Load identification");
 	std::ifstream ifs_iden(m_directory + "/" + m_identificationFileName, std::ios::binary);
 	if (!ifs_iden.is_open())
+    {
+        LOG_WARNING("Cannot load map identification file with url: {}", m_directory + "/" + m_identificationFileName);
 		return FrameworkReturnCode::_ERROR_;
+    }
 	InputArchive ia_iden(ifs_iden);
 	ia_iden >> m_identification;
 	ifs_iden.close();
 	LOG_DEBUG("Load coordinate system");
 	std::ifstream ifs_coor(m_directory + "/" + m_coordinateFileName, std::ios::binary);
 	if (!ifs_coor.is_open())
+    {
+        LOG_WARNING("Cannot load map coordinate file with url: {}", m_directory + "/" + m_coordinateFileName);
 		return FrameworkReturnCode::_ERROR_;
-	InputArchive ia_coor(ifs_coor);
+    }
+    InputArchive ia_coor(ifs_coor);
 	ia_coor >> m_coordinateSystem;
 	ifs_coor.close();
 	LOG_DEBUG("Load point cloud manager");
 	if (m_pointCloudManager->loadFromFile(m_directory + "/" + m_pcManagerFileName) == FrameworkReturnCode::_ERROR_)
-		return FrameworkReturnCode::_ERROR_;
+    {
+        LOG_WARNING("Cannot load map point cloud manager file with url: {}", m_directory + "/" + m_pcManagerFileName);
+        return FrameworkReturnCode::_ERROR_;
+    }
 	LOG_DEBUG("Load keyframes manager");
 	if (m_keyframesManager->loadFromFile(m_directory + "/" + m_kfManagerFileName) == FrameworkReturnCode::_ERROR_)
-		return FrameworkReturnCode::_ERROR_;
+    {
+        LOG_WARNING("Cannot load map keyframe manager file with url: {}", m_directory + "/" + m_kfManagerFileName);
+        return FrameworkReturnCode::_ERROR_;
+    }
 	LOG_DEBUG("Load covisibility graph");
 	if (m_covisibilityGraph->loadFromFile(m_directory + "/" + m_covisGraphFileName) == FrameworkReturnCode::_ERROR_)
+    {
+        LOG_WARNING("Cannot load map covisibility graph file with url: {}", m_directory + "/" + m_covisGraphFileName);
 		return FrameworkReturnCode::_ERROR_;
+    }
 	LOG_DEBUG("Load keyframe retriever");
 	if (m_keyframeRetriever->loadFromFile(m_directory + "/" + m_kfRetrieverFileName) == FrameworkReturnCode::_ERROR_)
-		return FrameworkReturnCode::_ERROR_;
+    {
+        LOG_WARNING("Cannot load map keyframe retriever file with url: {}", m_directory + "/" + m_kfRetrieverFileName);
+        return FrameworkReturnCode::_ERROR_;
+    }
 	LOG_INFO("Load done!");
 	return FrameworkReturnCode::_SUCCESS;
 }
