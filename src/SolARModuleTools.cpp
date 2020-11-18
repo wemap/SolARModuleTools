@@ -36,6 +36,7 @@
 #include "SolARFiducialMarkerPoseEstimator.h"
 #include "SolARSLAMBootstrapper.h"
 #include "SolARSLAMTracking.h"
+#include "SolAROverlapDetector.h"
 #include "SolARSLAMMapping.h"
 #include <iostream>
 
@@ -139,6 +140,10 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
 	{
 		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARSLAMMapping>(componentUUID, interfaceRef);
 	}
+	if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+	{
+		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAROverlapDetector>(componentUUID, interfaceRef);
+	}
     return errCode;
 }
 
@@ -168,6 +173,7 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARFiducialMarkerPoseEstimator)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSLAMBootstrapper)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSLAMTracking)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSLAMMapping)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAROverlapDetector)
 
 XPCF_END_COMPONENTS_DECLARATION
 

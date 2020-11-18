@@ -34,11 +34,11 @@ SolARSLAMBootstrapper::SolARSLAMBootstrapper() :ConfigurableBase(xpcf::toUUID<So
 	declareInjectable<api::solver::map::IMapper>(m_mapper);
 	declareInjectable<api::features::IKeypointDetector>(m_keypointsDetector);
 	declareInjectable<api::features::IDescriptorsExtractor>(m_descriptorExtractor);
-	declareInjectable<api::features::IDescriptorMatcher>(m_matcher, "Bootstrap");
+	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
 	declareInjectable<api::features::IMatchesFilter>(m_matchesFilter);
 	declareInjectable<api::solver::map::ITriangulator>(m_triangulator);
 	declareInjectable<api::solver::map::IMapFilter>(m_mapFilter);
-	declareInjectable<api::solver::map::IKeyframeSelector>(m_keyframeSelector, "Bootstrap");
+	declareInjectable<api::solver::map::IKeyframeSelector>(m_keyframeSelector);
 	declareInjectable<api::solver::pose::I3DTransformFinderFrom2D2D>(m_poseFinderFrom2D2D);
 	declareInjectable<api::display::IMatchesOverlay>(m_matchesOverlay);
 	declareProperty("hasPose", m_hasPose);

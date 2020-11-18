@@ -67,7 +67,7 @@ public:
 	/// @param[in] a vector of ids of the points to get
 	/// @param[out] a vector of 3D points stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getPoints(std::vector<uint32_t> &ids, std::vector<SRef<CloudPoint>>& points) override;
+    FrameworkReturnCode getPoints(const const std::vector<uint32_t> &ids, std::vector<SRef<CloudPoint>>& points) override;
 
 	/// @brief This method allows to get all 3D points stored in the point cloud
 	/// @param[out] the set of 3D point stored in the point cloud
@@ -80,9 +80,9 @@ public:
 	FrameworkReturnCode suppressPoint(uint32_t id) override;
 
 	/// @brief This method allow to suppress a vector of points stored in the point cloud by their ids
-	/// @param[in] the vector of ids of the point to suppress
+	/// @param[in] ids the vector of ids of the point to suppress
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode suppressPoints(std::vector<uint32_t> &ids) override;
+	FrameworkReturnCode suppressPoints(const std::vector<uint32_t> &ids) override;
 
 	/// @brief This method allows to get the descriptor type used to extract descriptor for each cloud point
 	/// @return Descriptor type
@@ -102,14 +102,14 @@ public:
 	int getNbPoints() override;
 
 	/// @brief This method allows to save the point cloud to the external file
-	/// @param[out] the file name
+	/// @param[in] file the file name
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode saveToFile(std::string file) override;
+	FrameworkReturnCode saveToFile(const std::string& file) override;
 
 	/// @brief This method allows to load the point cloud from the external file
-	/// @param[in] the file name
+	/// @param[in] file the file name
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode loadFromFile(std::string file) override;
+	FrameworkReturnCode loadFromFile(const std::string& file) override;
 
 	void unloadComponent () override final;
 

@@ -28,6 +28,7 @@
 #include "api/geom/IImage2WorldMapper.h"
 #include "api/solver/pose/I3DTransformFinderFrom2D3D.h"
 #include "datastructure/Image.h"
+#include "datastructure/FiducialMarker.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
 
@@ -50,13 +51,21 @@ public:
 	///@brief SolAR3DTransformEstimationFrom3D3D constructor;
 	SolARFiducialMarkerPoseEstimator();
 	///@brief SolAR3DTransformEstimationFrom3D3D destructor;
-	~SolARFiducialMarkerPoseEstimator() = default;
+    ~SolARFiducialMarkerPoseEstimator() = default;
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
-		/// @param[in] Camera calibration matrix parameters.
-		/// @param[in] Camera distorsion parameters.
+        /// @param[in] Camera calibration matrix parameters.
+        /// @param[in] Camera distorsion parameters.
 	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distorsionParams) override;
 
-	/// @brief Estimates camera pose based on a fiducial marker.
+    /// @brief this method is used to set the fiducial marker
+    /// @param[in] Fiducial marker.
+    void setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> & marker) override;
+
+    /// @brief this method is used to set the fiducial marker
+    /// @param[in] Fiducial marker.
+    void setMarker(const SRef<datastructure::FiducialMarker> & marker) override;
+
+    /// @brief Estimates camera pose based on a fiducial marker.
 	/// @param[in] image: input image.
 	/// @param[out] pose: camera pose.
 	/// @return FrameworkReturnCode::_SUCCESS if the estimation succeed, else FrameworkReturnCode::_ERROR_

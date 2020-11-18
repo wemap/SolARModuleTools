@@ -84,18 +84,18 @@ FrameworkReturnCode SolARPointCloudManager::getPoint(uint32_t id, SRef<CloudPoin
 		return FrameworkReturnCode::_SUCCESS;
 	}
 	else {
-		LOG_ERROR("Cannot find cloud point with id {} to get", id);
+		LOG_DEBUG("Cannot find cloud point with id {} to get", id);
 		return FrameworkReturnCode::_ERROR_;
 	}
 }
 
-FrameworkReturnCode SolARPointCloudManager::getPoints(std::vector<uint32_t>& ids, std::vector<SRef<CloudPoint>>& points)
+FrameworkReturnCode SolARPointCloudManager::getPoints(const std::vector<uint32_t>& ids, std::vector<SRef<CloudPoint>>& points)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : ids) {
 		std::map< uint32_t, SRef<CloudPoint>>::iterator pointIt = m_pointCloud.find(it);
 		if (pointIt == m_pointCloud.end()) {
-			LOG_ERROR("Cannot find cloud point with id {} to get", it);
+			LOG_DEBUG("Cannot find cloud point with id {} to get", it);
 			return FrameworkReturnCode::_ERROR_;
 		}
 		points.push_back(pointIt->second);
@@ -120,18 +120,18 @@ FrameworkReturnCode SolARPointCloudManager::suppressPoint(uint32_t id)
 		return FrameworkReturnCode::_SUCCESS;
 	}
 	else {
-		LOG_ERROR("Cannot find cloud point with id {} to suppress", id);
+		LOG_DEBUG("Cannot find cloud point with id {} to suppress", id);
 		return FrameworkReturnCode::_ERROR_;
 	}
 }
 
-FrameworkReturnCode SolARPointCloudManager::suppressPoints(std::vector<uint32_t>& ids)
+FrameworkReturnCode SolARPointCloudManager::suppressPoints(const std::vector<uint32_t>& ids)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : ids) {
 		std::map< uint32_t, SRef<CloudPoint>>::iterator pointIt = m_pointCloud.find(it);
 		if (pointIt == m_pointCloud.end()) {
-			LOG_ERROR("Cannot find cloud point with id {} to suppress", it);
+			LOG_DEBUG("Cannot find cloud point with id {} to suppress", it);
 			return FrameworkReturnCode::_ERROR_;
 		}
 		m_pointCloud.erase(pointIt);
@@ -167,7 +167,7 @@ int SolARPointCloudManager::getNbPoints()
     return static_cast<int>(m_pointCloud.size());
 }
 
-FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)
+FrameworkReturnCode SolARPointCloudManager::saveToFile(const std::string& file)
 {
 	std::ofstream ofs(file, std::ios::binary);
 	OutputArchive oa(ofs);
@@ -178,7 +178,7 @@ FrameworkReturnCode SolARPointCloudManager::saveToFile(std::string file)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::loadFromFile(std::string file)
+FrameworkReturnCode SolARPointCloudManager::loadFromFile(const std::string& file)
 {
 	std::ifstream ifs(file, std::ios::binary);
 	if (!ifs.is_open())

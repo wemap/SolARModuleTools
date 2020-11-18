@@ -29,6 +29,7 @@
 #include "api/solver/map/IMapFilter.h"
 #include "api/geom/IProject.h"
 #include "api/features/IDescriptorMatcher.h"
+#include "api/solver/pose/I2D3DCorrespondencesFinder.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
 
@@ -72,6 +73,7 @@ private:
 	void updateAssociateCloudPoint(const SRef<Keyframe> &keyframe);
 	void findMatchesAndTriangulation(const SRef<Keyframe> & keyframe, const std::vector<uint32_t> &idxBestNeighborKfs, std::vector<SRef<CloudPoint>> &cloudPoint);
 	void fuseCloudPoint(const SRef<Keyframe> &keyframe, const std::vector<uint32_t> &idxNeigborKfs, std::vector<SRef<CloudPoint>> &newCloudPoint);
+	void cloudPointsCulling(const SRef<Keyframe> &keyframe);
 
 private:
 	float												m_minWeightNeighbor = 10.f;
@@ -91,6 +93,8 @@ private:
 	SRef<api::solver::map::IMapFilter>					m_mapFilter;
 	SRef<api::geom::IProject>							m_projector;
 	SRef<api::features::IDescriptorMatcher>				m_matcher;
+	SRef<api::solver::pose::I2D3DCorrespondencesFinder>	m_corr2D3DFinder;
+	std::map<uint32_t, std::pair<SRef<CloudPoint>, uint32_t>>m_recentAddedCloudPoints;
 };
 
 }

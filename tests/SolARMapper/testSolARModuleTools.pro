@@ -1,5 +1,5 @@
 TARGET = testSolARModuleTools
-VERSION=0.8.1
+VERSION=0.9.0
 
 CONFIG += c++1z
 CONFIG += console

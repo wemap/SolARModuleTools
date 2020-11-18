@@ -111,14 +111,14 @@ public:
 	FrameworkReturnCode display() override;
 
 	/// @brief This method allows to save the graph to the external file
-	/// @param[out] the file name
+	/// @param[in] file the file name
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode saveToFile(std::string file) override;
+	FrameworkReturnCode saveToFile(const std::string& file) override;
 
 	/// @brief This method allows to load the graph from the external file
-	/// @param[in] the file name
+	/// @param[in] file the file name
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode loadFromFile(std::string file) override;
+	FrameworkReturnCode loadFromFile(const std::string& file) override;
     
 	void unloadComponent () override final;
 

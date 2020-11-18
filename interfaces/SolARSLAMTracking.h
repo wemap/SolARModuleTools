@@ -75,10 +75,11 @@ private:
 
 private:
 	SRef<Keyframe>										m_referenceKeyframe;
-	Transform3Df										m_lastPose;
+	Transform3Df										m_lastPose = Transform3Df::Identity();
 	std::vector<SRef<CloudPoint>>						m_localMap;
 	bool												m_isLostTrack = false;
 	float												m_minWeightNeighbor = 10.f;
+	float												m_thresAngleViewDirection = 0.7f;
 	int													m_displayTrackedPoints = 1;
 	bool												m_isUpdateReferenceKeyframe = false;
 	std::mutex											m_refKeyframeMutex;
