@@ -45,52 +45,50 @@ xpcf::XPCFErrorCode KeyFrameRetrieverMock::onConfigured()
 
 FrameworkReturnCode KeyFrameRetrieverMock::addKeyframe(const SRef<Keyframe>& keyframe)
 {
-
-
-    return FrameworkReturnCode::_SUCCESS;
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
 }
 
 FrameworkReturnCode KeyFrameRetrieverMock::suppressKeyframe(uint32_t keyframe_id)
 {
 
 
-    return FrameworkReturnCode::_SUCCESS;
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
 }
 
 FrameworkReturnCode KeyFrameRetrieverMock::retrieve(const SRef<Frame>& frame, std::vector<uint32_t> &retKeyframes_id)
 {
 
 
-    return FrameworkReturnCode::_SUCCESS;
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
 }
 
 FrameworkReturnCode KeyFrameRetrieverMock::retrieve(const SRef<Frame>& frame, std::set<unsigned int> &canKeyframes_id, std::vector<uint32_t> & retKeyframes_id)
 {
 
-    return FrameworkReturnCode::_SUCCESS;
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
 }
 
-FrameworkReturnCode KeyFrameRetrieverMock::saveToFile(std::string file)
+FrameworkReturnCode KeyFrameRetrieverMock::saveToFile(const std::string& file)
 {
     LOG_WARNING("Coming soon!");
-    return FrameworkReturnCode::_SUCCESS;
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
 }
 
-FrameworkReturnCode KeyFrameRetrieverMock::loadFromFile(std::string file)
+FrameworkReturnCode KeyFrameRetrieverMock::loadFromFile(const std::string& file)
 {
     LOG_WARNING("Coming soon!");
-    return FrameworkReturnCode::_SUCCESS;
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
 }
 
 FrameworkReturnCode KeyFrameRetrieverMock::match(const SRef<Frame>& frame, const SRef<Keyframe>& keyframe, std::vector<DescriptorMatch> &matches)
 {
 
-    return FrameworkReturnCode::_SUCCESS;
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
 }
 FrameworkReturnCode KeyFrameRetrieverMock::match(const std::vector<int> &indexDescriptors, const SRef<DescriptorBuffer> &descriptors, const SRef<Keyframe> &keyframe, std::vector<DescriptorMatch> &matches)
 {
 
-    return FrameworkReturnCode::_SUCCESS;
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
 }
 
 
