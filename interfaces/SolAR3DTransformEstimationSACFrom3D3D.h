@@ -22,6 +22,7 @@
 #include "api/geom/I3DTransform.h"
 #include "api/geom/IProject.h"
 #include "datastructure/Image.h"
+#include "api/solver/map/IBundler.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
 
@@ -83,24 +84,26 @@ public:
 private:
 	/// @brief Number of iterations
 	int m_iterationsCount = 500;
-
 	/// @brief Inlier threshold value used by the RANSAC procedure. The parameter value is the maximum allowed distance between the observed and computed point projections to consider it an inlier.
     float m_reprojError = 4.0f;
-
 	/// @brief Inlier threshold value based on 3d distance error
     float m_distanceError = 0.1f;
-
 	/// @brief The probability that the algorithm produces a useful result.
 	float m_confidence = 0.99f;
-
 	/// @brief The minimum of number of inliers to valid a good pose estimation
-	int m_NbInliersToValidPose = 10;
-
+	int m_NbInliersToValidPose = 10;	
+	/// @brief Does optimize sim3 using graph optimization
+	int m_optimizeSim3 = 0;	
 	/// @brief Transform 3D
 	SRef<I3DTransform> m_transform3D;
-
 	/// @brief Projector
 	SRef<api::geom::IProject> m_projector;
+	/// @brief Bundler
+	SRef<api::solver::map::IBundler> m_bundler;
+	/// @brief intrinsic parameters
+	CamCalibration m_intrinsicParams;
+	/// @brief distortion parameters
+	CamDistortion m_distortionParams;
 };
 
 }

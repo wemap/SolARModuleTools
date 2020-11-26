@@ -30,17 +30,21 @@ SolAR3DTransformEstimationSACFrom3D3D::SolAR3DTransformEstimationSACFrom3D3D() :
 	declareInterface<api::solver::pose::I3DTransformSACFinderFrom3D3D>(this);
 	declareInjectable<I3DTransform>(m_transform3D);
 	declareInjectable<IProject>(m_projector);
+	declareInjectable<IBundler>(m_bundler);
 	declareProperty("iterationsCount", m_iterationsCount);
 	declareProperty("reprojError", m_reprojError);
 	declareProperty("distanceError", m_distanceError);
 	declareProperty("confidence", m_confidence);
 	declareProperty("minNbInliers", m_NbInliersToValidPose);
+	declareProperty("optimizeSim3", m_optimizeSim3);
 	srand(time(NULL));
 	LOG_DEBUG(" SolAR3DTransformEstimationSACFrom3D3D constructor");
 }
 
 void SolAR3DTransformEstimationSACFrom3D3D::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams)
 {
+	m_intrinsicParams = intrinsicParams;
+	m_distortionParams = distortionParams;
 	m_projector->setCameraParameters(intrinsicParams, distortionParams);
 }
 
@@ -265,16 +269,19 @@ FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const SRef<K
 	}
 
 	// find the best pose on all inliers
-	std::vector<Point3Df> points3D1, points3D2;
+	std::vector<Point3Df> bestPts3D1, bestPts3D2;
+	std::vector<DescriptorMatch> bestMatches;
 	for (auto &it : bestInliers) {
-		points3D1.push_back(firstPoints3D[it]);
-		points3D2.push_back(secondPoints3D[it]);
+		bestPts3D1.push_back(firstPoints3D[it]);
+		bestPts3D2.push_back(secondPoints3D[it]);
+		bestMatches.push_back(matches[it]);
 	}
 	// compute the best pose
-	if (!find(points3D1, points3D2, pose))
+	if (!find(bestPts3D1, bestPts3D2, pose))
 		return FrameworkReturnCode::_ERROR_;
 	inliers.swap(bestInliers);
-
+	if (m_optimizeSim3)
+		m_bundler->optimizeSim3(m_intrinsicParams, m_intrinsicParams, firstKeyframe, secondKeyframe, bestMatches, bestPts3D1, bestPts3D2, pose);
 	return FrameworkReturnCode::_SUCCESS;
 }
 
