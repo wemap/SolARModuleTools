@@ -88,7 +88,7 @@ private:
 	SRef<api::solver::map::IMapper>						m_mapper;
 	SRef<api::features::IDescriptorMatcher>				m_matcher;
 	SRef<api::features::IMatchesFilter>					m_matchesFilter;
-	SRef<api::display::I2DOverlay>						m_overlay2D;
+	SRef<api::display::I2DOverlay>						m_overlay2DGreen, m_overlay2DRed;
 	SRef<api::solver::pose::I2D3DCorrespondencesFinder>	m_corr2D3DFinder;
 	SRef<api::solver::pose::I3DTransformSACFinderFrom2D3D>	m_pnpRansac;
 	SRef<api::solver::pose::I3DTransformFinderFrom2D3D>	m_pnp;

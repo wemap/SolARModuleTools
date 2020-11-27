@@ -209,7 +209,7 @@ FrameworkReturnCode SolARMapper::removeKeyframe(const SRef<Keyframe>& keyframe)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-void SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
+int SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	// get cloud points
@@ -229,7 +229,7 @@ void SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 			count++;
 		}
 
-	LOG_DEBUG("Number pruning cloud points: {}", count);
+	return count;
 }
 
 FrameworkReturnCode SolARMapper::saveToFile()

@@ -21,7 +21,7 @@
 namespace xpcf = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARSLAMTracking);
-
+#define BORDER_IMAGE 50
 
 namespace SolAR {
 namespace MODULES {
@@ -40,7 +40,8 @@ SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMT
 	declareInjectable<api::solver::pose::I3DTransformSACFinderFrom2D3D>(m_pnpRansac);
 	declareInjectable<api::geom::IProject>(m_projector);
 	declareInjectable<api::reloc::IKeyframeRetriever>(m_keyframeRetriever);
-	declareInjectable<api::display::I2DOverlay>(m_overlay2D);
+	declareInjectable<api::display::I2DOverlay>(m_overlay2DGreen, "Green");
+	declareInjectable<api::display::I2DOverlay>(m_overlay2DRed, "Red");
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
 	declareProperty("thresAngleViewDirection", m_thresAngleViewDirection);
 	declareProperty("displayTrackedPoints", m_displayTrackedPoints);
@@ -126,7 +127,8 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 		frame->setPose(framePose);
 		// refine pose and update map visibility of frame
 		std::map<uint32_t, uint32_t> newMapVisibility;
-		std::vector<Point2Df> pts2dInliers;
+		std::vector<Point2Df> pts2dInliers, pts2dOutliers;
+		std::vector<SRef<CloudPoint>> cloudPointsOutlier;
 		std::vector<Point3Df> pts3dInliers;
 		const std::vector<Keypoint> &keypoints = frame->getKeypoints();
 		// find visibilities from inliers and update confidence score of cloud points
@@ -145,6 +147,8 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 			}
 			else { // Outliers
 				corr2D3D.second->updateConfidence(false);
+				cloudPointsOutlier.push_back(corr2D3D.second);
+				pts2dOutliers.push_back(Point2Df(keypoints[corr2D3D.first].getX(), keypoints[corr2D3D.first].getY()));
 			}
 		}
 
@@ -163,7 +167,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 			uint32_t imgWidth = frame->getView()->getWidth();
 			uint32_t imgHeight = frame->getView()->getHeight();
 			for (int idx = 0; idx < projected2DPts.size(); idx++)
-				if ((projected2DPts[idx].getX() > 0) && (projected2DPts[idx].getX() < imgWidth) && (projected2DPts[idx].getY() > 0) && (projected2DPts[idx].getY() < imgHeight)) {
+				if ((projected2DPts[idx].getX() > BORDER_IMAGE) && (projected2DPts[idx].getX() < imgWidth - BORDER_IMAGE) && (projected2DPts[idx].getY() > BORDER_IMAGE) && (projected2DPts[idx].getY() < imgHeight - BORDER_IMAGE)) {
 					projected2DPtsCandidates.push_back(std::move(projected2DPts[idx]));
 					localMapUnseenCandidates.push_back(std::move(localMapUnseen[idx]));
 				}
@@ -195,8 +199,14 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 			LOG_DEBUG("Nb of matched local map: {}", nbMatchesLocalMap);
 			// update confidence score of matched cloud points
 			for (int i = 0; i < localMapUnseenCandidates.size(); ++i) {
-				if (checkLocalMapInOut[i])
+				if (checkLocalMapInOut[i]) {
 					localMapUnseenCandidates[i]->updateConfidence(true);
+				}
+				else {
+					localMapUnseenCandidates[i]->updateConfidence(false);
+					cloudPointsOutlier.push_back(localMapUnseenCandidates[i]);
+					pts2dOutliers.push_back(projected2DPtsCandidates[i]);
+				}
 			}
 		}
 
@@ -209,14 +219,21 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 		LOG_DEBUG("Nb of map visibilities of current frame: {}", newMapVisibility.size());
 
 		// display tracked points
-		if (m_displayTrackedPoints)
-			m_overlay2D->drawCircles(pts2dInliers, displayImage);
+		if (m_displayTrackedPoints) {
+			m_overlay2DRed->drawCircles(pts2dOutliers, displayImage);
+			m_overlay2DGreen->drawCircles(pts2dInliers, displayImage);
+		}
 
 		LOG_DEBUG("Refined pose: \n {}", frame->getPose().matrix());
 		m_lastPose = frame->getPose();
 
 		// tracking is good
 		m_isLostTrack = false;	
+
+		// check to need map pruning
+		if (m_mapper->pruning(cloudPointsOutlier) > 0)
+			updateLocalMap();
+
 		return FrameworkReturnCode::_SUCCESS;
 	}
 	
