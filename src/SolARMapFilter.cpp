@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#define _USE_MATH_DEFINES
 #include "SolARMapFilter.h"
 #include "datastructure/Keyframe.h"
 #include "core/Log.h"
-#include <corecrt_math_defines.h>
+#include <cmath>
 
 namespace xpcf  = org::bcom::xpcf;
 
