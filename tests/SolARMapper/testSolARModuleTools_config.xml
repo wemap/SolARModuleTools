@@ -38,11 +38,11 @@
     </factory>
     <properties>
         <configure component="SolARKeyframeRetrieverFBOW">
-                <property name="VOCpath" type="String" value="akaze.fbow"/>
-                <property name="threshold" type="Float" value="0.02"/>
-                <property name="level" type="Integer" value="3"/>
-                <property name="matchingDistanceRatio" type="Float" value="0.7"/>
-                <property name="matchingDistanceMax" type="Float" value="100"/>
+                <property name="VOCpath" type="string" value="akaze.fbow"/>
+                <property name="threshold" type="float" value="0.02"/>
+                <property name="level" type="int" value="3"/>
+                <property name="matchingDistanceRatio" type="float" value="0.7"/>
+                <property name="matchingDistanceMax" type="float" value="100"/>
         </configure>
     </properties>
 </xpcf-registry>
