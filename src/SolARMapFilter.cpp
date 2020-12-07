@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define _USE_MATH_DEFINES
+
 #include "SolARMapFilter.h"
 #include "datastructure/Keyframe.h"
 #include "core/Log.h"
+
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 namespace xpcf  = org::bcom::xpcf;
@@ -37,9 +39,9 @@ SolARMapFilter::SolARMapFilter():ConfigurableBase(xpcf::toUUID<SolARMapFilter>()
     declareProperty("maxTriangulationAngle", m_maxTriangulationAngle);
 }
 
-float calculateTriangulationAngle(const Eigen::Vector3f& center1,
-								const Eigen::Vector3f& center2,
-								const Eigen::Vector3f& point3D) {
+float calculateTriangulationAngle(const Vector3f& center1,
+                                const Vector3f& center2,
+                                const Vector3f& point3D) {
 	float baselineLengthSquared = (center1 - center2).squaredNorm();
 	float ray1LengthSquared = (point3D - center1).squaredNorm();
 	float ray2lengthSquared = (point3D - center2).squaredNorm();
@@ -81,14 +83,10 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
 	{
 		// Check for cheirality (if the point is in front of the camera)
 
-		// BUG patch To correct, Vector4f should but is not accepted with windows !
-#if (_WIN64) || (_WIN32)
-		Vector3f point(input[i]->getX(), input[i]->getY(), input[i]->getZ());
+        // BUG patch To correct, Vector4f should but is not accepted with windows !
+        Vector3f point(input[i]->getX(), input[i]->getY(), input[i]->getZ());
 		Vector3f pointInCam1Ref, pointInCam2Ref;
-#else
-        Vector4f point(input[i]->getX(), input[i]->getY(), input[i]->getZ(), 1);
-		Vector4f pointInCam1Ref, pointInCam2Ref;
-#endif
+
 		pointInCam1Ref = invPose1 * point;
 		pointInCam2Ref = invPose2 * point;
 
@@ -96,8 +94,8 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
 		{
 			// if the reprojection error is less than the threshold
 			if (input[i]->getReprojError() < m_reprojErrorThreshold) {
-				// if the angle is greater than the threshold
-				float angle = calculateTriangulationAngle(pose1.translation(), pose2.translation(), point);
+                // if the angle is greater than the threshold
+                float angle = calculateTriangulationAngle(pose1.translation(), pose2.translation(), point);
 				if ((angle > m_minTriangulationAngle) && (angle < m_maxTriangulationAngle)) {
 					index.push_back(i);
 					output.push_back(input[i]);
@@ -105,7 +103,6 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
 			}
 		}
 	}
-
 }
 
 }
