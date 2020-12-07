@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 {
     SRef<xpcf::IComponentManager> cmpMgr = xpcf::getComponentManagerInstance();
     cmpMgr->load("testSolARModuleTools_config.xml");
-    cmpMgr->bindLocal<SolAR::api::reloc::IKeyframeRetriever,SolAR::MODULES::TOOLS::KeyFrameRetrieverMock,xpcf::IComponentManager::Singleton>();
+    cmpMgr->bindLocal<SolAR::api::reloc::IKeyframeRetriever,SolAR::MODULES::TOOLS::KeyFrameRetrieverMock,xpcf::Singleton>();
     auto mapper = cmpMgr->resolve<SolAR::api::solver::map::IMapper>();
     auto otherMapper = cmpMgr->resolve<SolAR::api::solver::map::IMapper>();
     SRef<SolAR::api::storage::IKeyframesManager> keyFramesMgr, otherKeyFramesMgr;

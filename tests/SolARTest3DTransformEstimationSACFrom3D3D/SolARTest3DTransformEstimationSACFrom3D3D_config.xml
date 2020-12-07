@@ -12,10 +12,10 @@
     </module>
 	<properties>
 		<configure component="SolAR3DTransformEstimationSACFrom3D3D">
-			<property name="iterationsCount" type="Integer" value="500"/>
-			<property name="reprojError" type="Float" value="0.1"/>
-			<property name="confidence" type="Float" value="0.9"/>
-			<property name="minNbInliers" type="Integer" value="5"/>
+            <property name="iterationsCount" type="int" value="500"/>
+            <property name="reprojError" type="float" value="0.1"/>
+            <property name="confidence" type="float" value="0.9"/>
+            <property name="minNbInliers" type="int" value="5"/>
 		</configure>
 	</properties>
 </xpcf-registry>

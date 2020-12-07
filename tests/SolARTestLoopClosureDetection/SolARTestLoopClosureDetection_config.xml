@@ -84,7 +84,7 @@
 	<properties>
 		<configure component="SolARCameraOpencv">
 			<property name="calibrationFile" type="string" value="camera_calibration.yml"/>
-			<property name="deviceID" type="UnsignedInteger" value="0"/>
+            <property name="deviceID" type="uint" value="0"/>
 		</configure>
 		<configure component="SolARMapper">
 			<property name="directory" type="string" value="map"/>
@@ -96,78 +96,78 @@
 			<property name="keyframeRetrieverFileName" type="string" value="keyframe_retriever.bin"/>
 		</configure>
 		<configure component="SolARLoopClosureDetector">
-			<property name="minNbInliers" type="Integer" value="10"/>
+            <property name="minNbInliers" type="int" value="10"/>
 		</configure>
 		<configure component="SolARDescriptorMatcherKNNOpencv">
-			<property name="distanceRatio" type="Float" value="0.7"/>
+            <property name="distanceRatio" type="float" value="0.7"/>
 		</configure>
 		<configure component="SolARGeometricMatchesFilterOpencv">
-			<property name="confidence" type="Float" value="0.99"/>
-			<property name="outlierDistanceRatio" type="Float" value="0.005"/>
-			<property name="epilinesDistance" type="Float" value="1.0"/>
+            <property name="confidence" type="float" value="0.99"/>
+            <property name="outlierDistanceRatio" type="float" value="0.005"/>
+            <property name="epilinesDistance" type="float" value="1.0"/>
 		</configure>
 		<configure component="SolARKeyframeRetrieverFBOW">
 			<property name="VOCpath" type="String" value="akaze.fbow"/>
-			<property name="threshold" type="Float" value="0.01"/>
-			<property name="level" type="Integer" value="3"/>
-			<property name="matchingDistanceRatio" type="Float" value="0.7"/>
-			<property name="matchingDistanceMax" type="Float" value="100"/>
+            <property name="threshold" type="float" value="0.01"/>
+            <property name="level" type="int" value="3"/>
+            <property name="matchingDistanceRatio" type="float" value="0.7"/>
+            <property name="matchingDistanceMax" type="float" value="100"/>
 		</configure>
 		<configure component="SolAR3DTransformEstimationSACFrom3D3D">
-			<property name="iterationsCount" type="Integer" value="100"/>
-			<property name="reprojError" type="Float" value="3.0"/>
-			<property name="confidence" type="Float" value="0.9"/>
-			<property name="minNbInliers" type="Integer" value="5"/>
+            <property name="iterationsCount" type="int" value="100"/>
+            <property name="reprojError" type="float" value="3.0"/>
+            <property name="confidence" type="float" value="0.9"/>
+            <property name="minNbInliers" type="int" value="5"/>
 		</configure>
 		<configure component="SolAR3DPointsViewerOpengl">
             <property name="title" type="string" value="Keyframe - White = query, Red = detected loop; Point - Green = origin, Red = transform local map of query (Press esc to exit)"/>
-			<property name="width" type="UnsignedInteger" value="1280"/>
-			<property name="height" type="UnsignedInteger" value="960"/>
-			<property name="backgroundColor" type="UnsignedInteger">
+            <property name="width" type="uint" value="1280"/>
+            <property name="height" type="uint" value="960"/>
+            <property name="backgroundColor" type="uint">
 				<value>0</value>
 				<value>0</value>
 				<value>0</value>
 			</property>
-			<property name="fixedPointsColor" type="UnsignedInteger" value="1"/>
-			<property name="pointsColor" type="UnsignedInteger">
+            <property name="fixedPointsColor" type="uint" value="1"/>
+            <property name="pointsColor" type="uint">
                 <value>255</value>
                 <value>0</value>
 				<value>0</value>
 			</property>
-            <property name="points2Color" type="UnsignedInteger">
-                <value>0</value>
-                <value>255</value>
-                <value>0</value>
-            </property>
-			<property name="cameraColor" type="UnsignedInteger">
-				<value>255</value>
-				<value>255</value>
-				<value>255</value>
-			</property>
-			<property name="drawCameraAxis" type="UnsignedInteger" value="1"/>
-			<property name="drawSceneAxis" type="UnsignedInteger" value="1"/>
-			<property name="drawWorldAxis" type="UnsignedInteger" value="1"/>
-			<property name="axisScale" type="Float" value="1.0"/>
-			<property name="pointSize" type="Float" value="1.0"/>
-			<property name="cameraScale" type="Float" value="0.1"/>
-			<property name="keyframeAsCamera" type="UnsignedInteger" value="1"/>
-			<property name="framesColor" type="UnsignedInteger">
-				<value>255</value>
-				<value>0</value>
-				<value>0</value>
-			</property>
-			<property name="keyframesColor" type="UnsignedInteger">
-                <value>255</value>
-				<value>0</value>
-                <value>0</value>
-			</property>
-            <property name="keyframes2Color" type="UnsignedInteger">
+            <property name="points2Color" type="uint">
                 <value>0</value>
                 <value>255</value>
                 <value>0</value>
             </property>
-			<property name="zoomSensitivity" type="Float" value="10.0"/>
-			<property name="exitKey" type="Integer" value="27"/>
+            <property name="cameraColor" type="uint">
+				<value>255</value>
+				<value>255</value>
+				<value>255</value>
+			</property>
+            <property name="drawCameraAxis" type="uint" value="1"/>
+            <property name="drawSceneAxis" type="uint" value="1"/>
+            <property name="drawWorldAxis" type="uint" value="1"/>
+            <property name="axisScale" type="float" value="1.0"/>
+            <property name="pointSize" type="float" value="1.0"/>
+            <property name="cameraScale" type="float" value="0.1"/>
+            <property name="keyframeAsCamera" type="uint" value="1"/>
+            <property name="framesColor" type="uint">
+				<value>255</value>
+				<value>0</value>
+				<value>0</value>
+			</property>
+            <property name="keyframesColor" type="uint">
+                <value>255</value>
+				<value>0</value>
+                <value>0</value>
+			</property>
+            <property name="keyframes2Color" type="uint">
+                <value>0</value>
+                <value>255</value>
+                <value>0</value>
+            </property>
+            <property name="zoomSensitivity" type="float" value="10.0"/>
+            <property name="exitKey" type="int" value="27"/>
         </configure>
 	</properties>
 </xpcf-registry>
