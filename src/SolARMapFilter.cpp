@@ -15,11 +15,9 @@
  */
 
 #include "SolARMapFilter.h"
-#include "datastructure/Keyframe.h"
 #include "core/Log.h"
-
-#define _USE_MATH_DEFINES
-#include <cmath>
+#include "datastructure/Keyframe.h"
+#include "datastructure/MathDefinitions.h"
 
 namespace xpcf  = org::bcom::xpcf;
 
@@ -57,7 +55,7 @@ float calculateTriangulationAngle(const Vector3f& center1,
 	// Triangulation is unstable for acute angles (far away points) and
 	// obtuse angles (close points), so always compute the minimum angle
 	// between the two intersecting rays.	
-	return (angle < M_PI - angle ? angle : M_PI - angle);
+    return (angle < SOLAR_PI - angle ? angle : SOLAR_PI - angle);
 }
 
 void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<SRef<CloudPoint>>& input,  std::vector<SRef<CloudPoint>>& output)
