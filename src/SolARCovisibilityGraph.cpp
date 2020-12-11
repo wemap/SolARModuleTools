@@ -173,6 +173,7 @@ FrameworkReturnCode SolARCovisibilityGraph::getNeighbors(uint32_t node_id, float
 
 FrameworkReturnCode SolARCovisibilityGraph::minimalSpanningTree(std::vector<std::tuple<uint32_t, uint32_t, float>> &edges_weights, float &minTotalWeights)
 {
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_nodes.size() == 0)
 		return FrameworkReturnCode::_ERROR_;
 
@@ -223,6 +224,7 @@ FrameworkReturnCode SolARCovisibilityGraph::minimalSpanningTree(std::vector<std:
 
 FrameworkReturnCode SolARCovisibilityGraph::maximalSpanningTree(std::vector<std::tuple<uint32_t, uint32_t, float>> &edges_weights, float &maxTotalWeights)
 {
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_nodes.size() == 0)
 		return FrameworkReturnCode::_ERROR_;
 
@@ -273,6 +275,7 @@ FrameworkReturnCode SolARCovisibilityGraph::maximalSpanningTree(std::vector<std:
 
 FrameworkReturnCode SolARCovisibilityGraph::getShortestPath(uint32_t node1_id, uint32_t node2_id, std::vector<uint32_t> &path)
 {
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (node1_id == node2_id)
 		return FrameworkReturnCode::_ERROR_;
 	//just need to start

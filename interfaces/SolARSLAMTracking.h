@@ -53,6 +53,8 @@ public:
 	///@brief SolARSLAMTracking destructor;
 	~SolARSLAMTracking() = default;
 
+	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
+
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] Camera calibration matrix parameters.
 	/// @param[in] Camera distorsion parameters.
@@ -81,6 +83,8 @@ private:
 	float												m_minWeightNeighbor = 10.f;
 	float												m_thresAngleViewDirection = 0.7f;
 	int													m_displayTrackedPoints = 1;
+	int													m_reprojErrorThreshold;
+	int													m_estimatedPose = 0;
 	bool												m_isUpdateReferenceKeyframe = false;
 	std::mutex											m_refKeyframeMutex;
 	CamCalibration										m_camMatrix;

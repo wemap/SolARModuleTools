@@ -62,7 +62,8 @@ FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe>& query
 	std::vector<Transform3Df> candidateKeyframePoses;
 	for (auto &it : candidatesId) {
 		SRef<Keyframe> keyframe;
-		m_keyframesManager->getKeyframe(it, keyframe);
+		if (m_keyframesManager->getKeyframe(it, keyframe) != FrameworkReturnCode::_SUCCESS)
+			continue;
 		candidateKeyframes.push_back(keyframe);
 		candidateKeyframePoses.push_back(keyframe->getPose());
 	}

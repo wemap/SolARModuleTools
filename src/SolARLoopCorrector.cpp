@@ -190,7 +190,8 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 			uint32_t id_kp1 = vi1.second;
 			SRef<Keyframe> kf1;
 			// update visibility of keyframes seen cp1
-			m_keyframesManager->getKeyframe(id_kf1, kf1);
+			if (m_keyframesManager->getKeyframe(id_kf1, kf1) != FrameworkReturnCode::_SUCCESS)
+				continue;
 			kf1->addVisibility(id_kp1, cp2->getId());
 			// move visibility of cp1 to cp2
 			cp2->addVisibility(id_kf1, id_kp1);

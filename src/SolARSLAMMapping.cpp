@@ -132,7 +132,8 @@ bool SolARSLAMMapping::checkNeedNewKeyframeInLocalMap(const SRef<Frame>& frame)
 	if (m_keyframeRetriever->retrieve(frame, candidates, ret_keyframesId) == FrameworkReturnCode::_SUCCESS) {
 		if (ret_keyframesId[0] != referenceKeyframe->getId()) {
 			SRef<Keyframe> bestRetKeyframe;
-			m_keyframesManager->getKeyframe(ret_keyframesId[0], bestRetKeyframe);
+			if (m_keyframesManager->getKeyframe(ret_keyframesId[0], bestRetKeyframe) != FrameworkReturnCode::_SUCCESS)
+				return true;
 			// Check find enough matches to best ret keyframe
 			std::vector<DescriptorMatch> matches;
 			m_matcher->match(bestRetKeyframe->getDescriptors(), frame->getDescriptors(), matches);
@@ -201,7 +202,8 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 	for (int i = 0; i < idxBestNeighborKfs.size(); ++i) {				
 		// get neighbor keyframe i
 		SRef<Keyframe> tmpKf;
-		m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf);
+		if (m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf) != FrameworkReturnCode::_SUCCESS)
+			continue;
 		const Transform3Df &tmpKf_pose = tmpKf->getPose();
 		// check base line
 		if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() < 0.1)

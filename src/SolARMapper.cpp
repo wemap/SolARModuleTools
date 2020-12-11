@@ -44,6 +44,7 @@ SolARMapper::SolARMapper():ConfigurableBase(xpcf::toUUID<SolARMapper>())
 	declareProperty("keyframeRetrieverFileName", m_kfRetrieverFileName);
 	declareProperty("reprojErrorThreshold", m_reprojErrorThres);
 	declareProperty("thresConfidence", m_thresConfidence);
+	declareProperty("ratioRedundantObs", m_ratioRedundantObs);
 }
 
 FrameworkReturnCode SolARMapper::setIdentification(SRef<Identification>& identification)
@@ -204,12 +205,14 @@ FrameworkReturnCode SolARMapper::removeKeyframe(const SRef<Keyframe>& keyframe)
 	}
 	// remove covisibility graph
 	m_covisibilityGraph->suppressNode(keyframe->getId());
+	// remove keyframe retriever
+	m_keyframeRetriever->suppressKeyframe(keyframe->getId());
 	// remove keyframe
 	m_keyframesManager->suppressKeyframe(keyframe->getId());
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-int SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
+int SolARMapper::pointCloudPruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	// get cloud points
@@ -230,6 +233,42 @@ int SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 		}
 
 	return count;
+}
+
+int SolARMapper::keyframePruning(const std::vector<SRef<Keyframe>>& keyframes)
+{
+	std::unique_lock<std::mutex> lock(m_mutex);
+	std::vector<SRef<Keyframe>> keyframesPruning;
+	if (keyframes.size() == 0) {
+		m_keyframesManager->getAllKeyframes(keyframesPruning);
+	}
+	else {
+		keyframesPruning = keyframes;
+	}
+
+	int nbRemovedKfs(0);
+	for (const auto &itKf : keyframesPruning) {
+		const std::map<uint32_t, uint32_t>& pcVisibility = itKf->getVisibility();
+		int nbRedundantObs(0);
+		bool isPCTwoViews(true);
+		for (const auto &itPC : pcVisibility) {
+			uint32_t idxPC = itPC.second;
+			SRef<CloudPoint> cloudPoint;
+			if (m_pointCloudManager->getPoint(idxPC, cloudPoint) == FrameworkReturnCode::_SUCCESS) {
+				if (cloudPoint->getVisibility().size() >= 4)
+					nbRedundantObs++;
+				else if (cloudPoint->getVisibility().size() < 3) {
+					isPCTwoViews = false;
+					break;
+				}
+			}
+		}
+		if (isPCTwoViews && (nbRedundantObs > m_ratioRedundantObs * pcVisibility.size())) {
+			this->removeKeyframe(itKf);
+			nbRemovedKfs++;
+		}
+	}
+	return nbRemovedKfs;
 }
 
 FrameworkReturnCode SolARMapper::saveToFile()
