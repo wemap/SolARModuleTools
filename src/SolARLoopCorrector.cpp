@@ -82,7 +82,8 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 
 	for (const auto &it : kfCurrentNeighborsIds) {
 		SRef<Keyframe> keyframe;
-		m_keyframesManager->getKeyframe(it, keyframe);
+		if (m_keyframesManager->getKeyframe(it, keyframe) != FrameworkReturnCode::_SUCCESS)
+			continue;
 		currentConnectedKfs[it] = keyframe;
 		KfSim_i_wc[it] = keyframe->getPose().inverse();
 		KfSim_wl_i[it] = S_wl_wc * keyframe->getPose();
@@ -127,10 +128,11 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 	std::set<uint32_t> checkCurrentlocalMapPoints;
 	for (const auto &it : duplicatedPointsIndices) {
 		SRef<CloudPoint> cp1, cp2;
-		m_pointCloudManager->getPoint(it.first, cp1);
-		m_pointCloudManager->getPoint(it.second, cp2);
-		duplicatedCPs.push_back(std::make_pair(cp1, cp2));
-		checkCurrentlocalMapPoints.insert(it.first);
+		if ((m_pointCloudManager->getPoint(it.first, cp1) == FrameworkReturnCode::_SUCCESS) &&
+			(m_pointCloudManager->getPoint(it.second, cp2) == FrameworkReturnCode::_SUCCESS)) {
+			duplicatedCPs.push_back(std::make_pair(cp1, cp2));
+			checkCurrentlocalMapPoints.insert(it.first);
+		}		
 	}
 
 	// Search duplicated points between the local map point of the query keyframe and one of the loop keyframe
@@ -141,7 +143,8 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 	for (const auto &it : kfLoopNeighborsIds) {
 		// get a connected loop keyframe
 		SRef<Keyframe> keyframe;
-		m_keyframesManager->getKeyframe(it, keyframe);
+		if (m_keyframesManager->getKeyframe(it, keyframe) != FrameworkReturnCode::_SUCCESS)
+			continue;
 		// get visibility's keyframe
 		std::map<uint32_t, uint32_t> cpVisibilities = keyframe->getVisibility();
 		// get uncheck current local map and their features
@@ -166,7 +169,8 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 			if (kpIt != cpVisibilities.end()) {
 				uint32_t idCPLoop = kpIt->second;
 				SRef<CloudPoint> cpLoop;
-				m_pointCloudManager->getPoint(idCPLoop, cpLoop);
+				if (m_pointCloudManager->getPoint(idCPLoop, cpLoop) != FrameworkReturnCode::_SUCCESS)
+					continue;
 				duplicatedCPs.push_back(std::make_pair(uncheckCurrentlocalCPs[idxCPCurrent], cpLoop));
 				checkCurrentlocalMapPoints.insert(uncheckCurrentlocalCPs[idxCPCurrent]->getId());
 			}
@@ -181,8 +185,8 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyf
 	for (const auto &dup : duplicatedCPs) {
 		SRef<CloudPoint> cp1 = dup.first;
 		SRef<CloudPoint> cp2 = dup.second;
-		std::map<uint32_t, uint32_t> visibilities1 = cp1->getVisibility();
-		std::map<uint32_t, uint32_t> visibilities2 = cp2->getVisibility();
+		const std::map<uint32_t, uint32_t>& visibilities1 = cp1->getVisibility();
+		const std::map<uint32_t, uint32_t>& visibilities2 = cp2->getVisibility();
 		for (const auto &vi1 : visibilities1) {
 			uint32_t id_kf1 = vi1.first;
 			uint32_t id_kp1 = vi1.second;
