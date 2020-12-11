@@ -32,7 +32,6 @@
 #include "xpcf/component/ConfigurableBase.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -54,14 +53,14 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] Camera calibration matrix parameters.
 	/// @param[in] Camera distorsion parameters.
-	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distorsionParams) override;
+	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;
 
 	/// @brief This method uses images to boostrap
 	/// @param[in] image: input image to process
 	/// @param[out] view: output image to visualize
 	/// @param[in] pose: the pose of the input image
 	/// @return FrameworkReturnCode::_SUCCESS_ if initialization succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode process(const SRef<Image> &image, SRef<Image> &view, const Transform3Df &pose = Transform3Df::Identity()) override;
+	FrameworkReturnCode process(const SRef<datastructure::Image> &image, SRef<datastructure::Image> &view, const datastructure::Transform3Df &pose = datastructure::Transform3Df::Identity()) override;
 
 	void unloadComponent() override final;
 
@@ -77,9 +76,9 @@ private:
     float												m_angleThres = 0.1f;
 	bool												m_bootstrapOk = false;
 	bool												m_initKeyframe1 = false;
-	SRef<Keyframe>										m_keyframe1, m_keyframe2;
-	CamCalibration										m_camMatrix;
-	CamDistortion										m_camDistortion;
+	SRef<datastructure::Keyframe>										m_keyframe1, m_keyframe2;
+	datastructure::CamCalibration										m_camMatrix;
+	datastructure::CamDistortion										m_camDistortion;
 	SRef<api::solver::map::IMapper>						m_mapper;
 	SRef<api::features::IKeypointDetector>				m_keypointsDetector;
 	SRef<api::features::IDescriptorsExtractor>			m_descriptorExtractor;

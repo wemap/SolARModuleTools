@@ -22,6 +22,8 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAR3DTransform);
 
 namespace SolAR {
 using namespace datastructure;
+using namespace api::storage;
+using namespace api::solver::map;
 namespace MODULES {
 namespace TOOLS {
 

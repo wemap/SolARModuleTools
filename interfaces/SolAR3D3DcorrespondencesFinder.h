@@ -8,8 +8,6 @@
 #include "xpcf/component/ComponentBase.h"
 
 namespace SolAR {
-using namespace datastructure;
-using namespace api::storage;
 namespace MODULES {
 namespace TOOLS {
 /**
@@ -35,13 +33,13 @@ public:
 	/// @param[out] secondCloudPoints: The cloud points seen from the second keyframe.
 	/// @param[out] found_matches: The matches allow to define 3D-3D correspondences.
 	/// @param[out] remaining_matches: The remaining matches.
-	FrameworkReturnCode find(const SRef<Keyframe> firstKeyframe,
-							const SRef<Keyframe> secondKeyframe,
-							const std::vector<DescriptorMatch> & current_matches,
-							std::vector<SRef<CloudPoint>> & firstCloudPoints,
-							std::vector<SRef<CloudPoint>> & secondCloudPoints,
-							std::vector<DescriptorMatch> & found_matches,
-							std::vector<DescriptorMatch> & remaining_matches) override;
+	FrameworkReturnCode find(const SRef<datastructure::Keyframe> firstKeyframe,
+							const SRef<datastructure::Keyframe> secondKeyframe,
+							const std::vector<datastructure::DescriptorMatch> & current_matches,
+							std::vector<SRef<datastructure::CloudPoint>> & firstCloudPoints,
+							std::vector<SRef<datastructure::CloudPoint>> & secondCloudPoints,
+							std::vector<datastructure::DescriptorMatch> & found_matches,
+							std::vector<datastructure::DescriptorMatch> & remaining_matches) override;
 
 
 	/// @brief Define 3D-3D point correspondences of two keyframes based on keypoint matches between different maps.
@@ -51,19 +49,19 @@ public:
 	/// @param[out] firstCloudPointsIndices: The cloud points indices seen from the first keyframe.
 	/// @param[out] secondCloudPointsIndices: The cloud points indices seen from the second keyframe.
 	/// @param[out] found_matches: The matches allow to define 3D-3D correspondences.
-	FrameworkReturnCode find(const SRef<Keyframe> firstKeyframe,
-							const SRef<Keyframe> secondKeyframe,
-							const std::vector<DescriptorMatch> & current_matches,
+	FrameworkReturnCode find(const SRef<datastructure::Keyframe> firstKeyframe,
+							const SRef<datastructure::Keyframe> secondKeyframe,
+							const std::vector<datastructure::DescriptorMatch> & current_matches,
 							std::vector<uint32_t> & firstCloudPointsIndices,
 							std::vector<uint32_t> & secondCloudPointsIndices,
-							std::vector<DescriptorMatch> & found_matches) override;
+							std::vector<datastructure::DescriptorMatch> & found_matches) override;
 
 
 	void unloadComponent() override final;
 
 private:
-	SRef<IPointCloudManager> m_pointCloudManagerG;
-	SRef<IPointCloudManager> m_pointCloudManager;
+	SRef<api::storage::IPointCloudManager> m_pointCloudManagerG;
+	SRef<api::storage::IPointCloudManager> m_pointCloudManager;
 };
 }
 }

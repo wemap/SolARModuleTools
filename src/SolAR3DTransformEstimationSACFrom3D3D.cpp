@@ -22,6 +22,7 @@ namespace xpcf  = org::bcom::xpcf;
 
 namespace SolAR {
 using namespace datastructure;
+using namespace api::geom;
 namespace MODULES {
 namespace TOOLS {
 

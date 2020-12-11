@@ -24,7 +24,6 @@
 #include <vector>
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -47,7 +46,7 @@ public:
     /// @param[in] transformation The 2D transform to apply to the set of 2D points.
     /// @param[out] outputPoints The resulting 2D points after application of the 2D transform.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode transform(const std::vector<Point2Df> & inputPoints, const Transform2Df & transformation, std::vector<Point2Df> & outputPoints) override;
+    FrameworkReturnCode transform(const std::vector<datastructure::Point2Df> & inputPoints, const datastructure::Transform2Df & transformation, std::vector<datastructure::Point2Df> & outputPoints) override;
     
     void unloadComponent () override final;
 

@@ -24,6 +24,10 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAROverlapDetector)
 
 
 namespace SolAR {
+using namespace datastructure;
+using namespace api;
+using namespace api::storage;
+using namespace api::reloc;
 namespace MODULES {
 namespace TOOLS {
 

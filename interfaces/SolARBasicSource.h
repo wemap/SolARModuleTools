@@ -24,8 +24,6 @@
 #include <mutex>
 
 namespace SolAR {
-using namespace datastructure;
-using namespace api::source;
 namespace MODULES {
 namespace TOOLS {
 
@@ -48,17 +46,17 @@ public:
     /// @param [in] width of the image coming from the third party like Unity
     /// @param [in] height of the image coming from the third party like Unity
     /// @return SourceReturnCode::_SUCCESS if a new pose and image have been updated, otherwise frameworkReturnCode::_ERROR_
-    SourceReturnCode setInputTexture(const void* sourceTexturehandle,const int width,const int height ) override;
+    api::source::SourceReturnCode setInputTexture(const void* sourceTexturehandle,const int width,const int height ) override;
 
     /// @brief Get a pointer to the texture buffer to update it with the new image when required.
     /// @param[in,out] image
     /// @return SourceReturnCode::_SUCCESS if a new pose and image have been updated, otherwise frameworkReturnCode::_ERROR_
-    SourceReturnCode getNextImage(SRef<Image> & image) override;
+    api::source::SourceReturnCode getNextImage(SRef<datastructure::Image> & image) override;
 
     void unloadComponent () override final;
 
 private:
-    SRef<Image> m_image;
+    SRef<datastructure::Image> m_image;
 
     bool m_newImage;
 

@@ -22,7 +22,6 @@
 #include "SolARToolsAPI.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -45,10 +44,10 @@ public:
     /// @param[out] patternPoints The 2D corners of the squared binary marker in the coordinate system of the marker.
     /// @param[out] imagePoints The 2D corners of the squared binary marker in the coordinate system of the current image.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode reindex(const std::vector<Contour2Df> & candidateContours,
-                                const std::vector<DescriptorMatch> & matches,
-                                std::vector<Point2Df> & patternPoints,
-                                std::vector<Point2Df> & imagePoints) override;
+    FrameworkReturnCode reindex(const std::vector<datastructure::Contour2Df> & candidateContours,
+                                const std::vector<datastructure::DescriptorMatch> & matches,
+                                std::vector<datastructure::Point2Df> & patternPoints,
+                                std::vector<datastructure::Point2Df> & imagePoints) override;
 
     void unloadComponent () override final;
 

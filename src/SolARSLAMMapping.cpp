@@ -25,6 +25,7 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARSLAMMapping);
 
 
 namespace SolAR {
+using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 

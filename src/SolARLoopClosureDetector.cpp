@@ -24,6 +24,9 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARLoopClosureDetec
 
 
 namespace SolAR {
+using namespace SolAR::datastructure;
+using namespace SolAR::api;
+using namespace SolAR::api::storage;
 namespace MODULES {
 namespace TOOLS {
 

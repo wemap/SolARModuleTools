@@ -24,6 +24,8 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARLoopCorrector);
 
 
 namespace SolAR {
+using namespace datastructure;
+using namespace api;
 namespace MODULES {
 namespace TOOLS {
 

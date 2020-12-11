@@ -24,6 +24,8 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARMapper)
 
 namespace SolAR {
 using namespace datastructure;
+using namespace api::storage;
+using namespace api::reloc;
 namespace MODULES {
 namespace TOOLS {
 

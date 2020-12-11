@@ -24,7 +24,6 @@
 #include <vector>
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -45,7 +44,7 @@ public:
     /// @param[in] digitalPoints The 2D points defined in pixels in the 2D coordinate system of the marker .
     /// @param[in] worldPoints The 3D correspondences of the 2D points defined in the  world coordinate system.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode map(const std::vector<Point2Df> & digitalPoints, std::vector<Point3Df> & worldPoints) override;
+    FrameworkReturnCode map(const std::vector<datastructure::Point2Df> & digitalPoints, std::vector<datastructure::Point3Df> & worldPoints) override;
 
     void unloadComponent () override final;
 

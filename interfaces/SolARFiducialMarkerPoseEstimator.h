@@ -33,7 +33,6 @@
 #include "xpcf/component/ConfigurableBase.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -55,7 +54,7 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
         /// @param[in] Camera calibration matrix parameters.
         /// @param[in] Camera distorsion parameters.
-	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distorsionParams) override;
+	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;
 
     /// @brief this method is used to set the fiducial marker
     /// @param[in] Fiducial marker.
@@ -69,13 +68,13 @@ public:
 	/// @param[in] image: input image.
 	/// @param[out] pose: camera pose.
 	/// @return FrameworkReturnCode::_SUCCESS if the estimation succeed, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode estimate(const SRef<Image> &image, Transform3Df & pose) override;
+	FrameworkReturnCode estimate(const SRef<datastructure::Image> &image, datastructure::Transform3Df & pose) override;
 
 	void unloadComponent() override final;
 
 private:
-	CamCalibration										m_camMatrix;
-	CamDistortion										m_camDistortion;
+	datastructure::CamCalibration										m_camMatrix;
+	datastructure::CamDistortion										m_camDistortion;
 	SRef<api::input::files::IMarker2DSquaredBinary>		m_binaryMarker;
 	SRef<api::image::IImageFilter>						m_imageFilterBinary;
 	SRef<api::image::IImageConvertor>					m_imageConvertor;
@@ -87,7 +86,7 @@ private:
 	SRef<api::features::ISBPatternReIndexer>			m_patternReIndexer;
 	SRef<api::geom::IImage2WorldMapper>					m_img2worldMapper;
 	SRef<api::solver::pose::I3DTransformFinderFrom2D3D>	m_pnp;
-	SRef<DescriptorBuffer>								m_markerPatternDescriptor;
+	SRef<datastructure::DescriptorBuffer>				m_markerPatternDescriptor;
 	int													m_nbThreshold = 3;
 	int													m_minThreshold = -1;
 	int													m_maxThreshold = 220;

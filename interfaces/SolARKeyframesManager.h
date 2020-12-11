@@ -23,7 +23,6 @@
 #include <core/SerializationDefinitions.h>
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 /**
@@ -43,29 +42,29 @@ public:
 	/// @brief This method allow to add a frame to the keyframe manager component
 	/// @param[in] frame the frame to add to the set of persistent keyframes
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addKeyframe(const SRef<Keyframe>& keyframe) override;
+	FrameworkReturnCode addKeyframe(const SRef<datastructure::Keyframe>& keyframe) override;
 
 	/// @brief This method allow to add a frame to the key frame manager component
 	/// @param[in] frame the frame to add to the set of persistent keyframes
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode addKeyframe(const Keyframe &keyframe) override;
+    FrameworkReturnCode addKeyframe(const datastructure::Keyframe &keyframe) override;
 
 	/// @brief This method allows to get a keyframe by its id
 	/// @param[in] id of the keyframe to get
 	/// @param[out] a keyframe stored in the keyframes manager
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getKeyframe(uint32_t id, SRef<Keyframe>& keyframe) override;
+	FrameworkReturnCode getKeyframe(uint32_t id, SRef<datastructure::Keyframe>& keyframe) override;
 
 	/// @brief This method allows to get a set of keyframes by their ids
 	/// @param[in] a vector of ids of the keyframes to get
 	/// @param[out] a vector of keyframes stored in the keyframe manager
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getKeyframes(const std::vector<uint32_t> &ids, std::vector<SRef<Keyframe>>& keyframes) override;
+    FrameworkReturnCode getKeyframes(const std::vector<uint32_t> &ids, std::vector<SRef<datastructure::Keyframe>>& keyframes) override;
 
 	/// @brief This method allows to get all keyframes
 	/// @param[out] the set of keyframes
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getAllKeyframes(std::vector<SRef<Keyframe>>& keyframes) override;
+	FrameworkReturnCode getAllKeyframes(std::vector<SRef<datastructure::Keyframe>>& keyframes) override;
 
 	/// @brief This method allow to suppress a keyframe by its id
 	/// @param[in] id of the keyframe to suppress
@@ -74,11 +73,11 @@ public:
 
 	/// @brief This method allows to get the descriptor type used to extract descriptor for each keyframe
 	/// @return Descriptor type
-	DescriptorType getDescriptorType() override;
+	datastructure::DescriptorType getDescriptorType() override;
 
 	/// @brief This method allows to set the descriptor type used to extract descriptor for each keyframe
 	/// @return Descriptor type
-	FrameworkReturnCode setDescriptorType(DescriptorType type) override;
+	FrameworkReturnCode setDescriptorType(datastructure::DescriptorType type) override;
 
 	/// @brief This method allows to know if a keyframe is already stored in the component
 	/// @param[in] Id of this keyframe
@@ -103,8 +102,8 @@ public:
 
 
  private:
-	 std::map<uint32_t, SRef<Keyframe>>		m_keyframes;
-	 DescriptorType							m_descriptorType;
+	 std::map<uint32_t, SRef<datastructure::Keyframe>>		m_keyframes;
+	 datastructure::DescriptorType							m_descriptorType;
 	 uint32_t								m_id;
 	 std::mutex								m_mutex;
 };

@@ -24,7 +24,6 @@
 #include <core/SerializationDefinitions.h>
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 /**

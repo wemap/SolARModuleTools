@@ -26,8 +26,6 @@
 #include "xpcf/component/ConfigurableBase.h"
 
 namespace SolAR {
-using namespace datastructure;
-using namespace api::geom;
 namespace MODULES {
 namespace TOOLS {
 
@@ -50,16 +48,16 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] intrinsicParams: Camera calibration matrix parameters.
 	/// @param[in] distortionParams: Camera distortion parameters.
-	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) override;
+	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distortionParams) override;
 
 	/// @brief Estimates camera pose from a set of 3D-3D point correspondences.
 	/// @param[in] firstPoints3D: first set of 3D points.
 	/// @param[in] secondPoints3D: second set of 3D points.
 	/// @param[out] pose: 3D transformation maps the first set of 3D points to the second one.
 	/// @param[out] inliers: indices of inlier correspondences.
-	FrameworkReturnCode estimate(const std::vector<Point3Df> & firstPoints3D,
-								const std::vector<Point3Df> & secondPoints3D,
-								Transform3Df & pose,
+	FrameworkReturnCode estimate(const std::vector<datastructure::Point3Df> & firstPoints3D,
+								const std::vector<datastructure::Point3Df> & secondPoints3D,
+								datastructure::Transform3Df & pose,
 								std::vector<int> &inliers) override;
 
 	/// @brief Estimates camera pose from a set of 3D-3D point correspondences.
@@ -70,12 +68,12 @@ public:
 	/// @param[in] secondPoints3D: second set of 3D points.
 	/// @param[out] pose: 3D transformation maps the first set of 3D points to the second one.
 	/// @param[out] inliers: indices of inlier correspondences.
-	FrameworkReturnCode estimate(const SRef<Keyframe> &firstKeyframe,
-								const SRef<Keyframe> &secondKeyframe,
-								const std::vector<DescriptorMatch> &matches,
-								const std::vector<Point3Df> & firstPoints3D,
-								const std::vector<Point3Df> & secondPoints3D,
-								Transform3Df & pose,
+	FrameworkReturnCode estimate(const SRef<datastructure::Keyframe> &firstKeyframe,
+								const SRef<datastructure::Keyframe> &secondKeyframe,
+								const std::vector<datastructure::DescriptorMatch> &matches,
+								const std::vector<datastructure::Point3Df> & firstPoints3D,
+								const std::vector<datastructure::Point3Df> & secondPoints3D,
+								datastructure::Transform3Df & pose,
 								std::vector<int> &inliers) override;
 
     void unloadComponent () override final;
@@ -97,7 +95,7 @@ private:
 	int m_NbInliersToValidPose = 10;
 
 	/// @brief Transform 3D
-	SRef<I3DTransform> m_transform3D;
+	SRef<api::geom::I3DTransform> m_transform3D;
 
 	/// @brief Projector
 	SRef<api::geom::IProject> m_projector;

@@ -22,7 +22,6 @@
 #include "SolARToolsAPI.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -44,7 +43,7 @@ public:
     /// @param[in] ref2DSquaredMarkerCorners The 4 corners of a marker in pixels.
     /// @param[in] projected2DSquaredMarkerCorners The 4 corners of a marker in the current image captured by a camera in pixels.
     /// @return true if the homography is valid, otherwise false
-    bool isValid(const std::vector<Point2Df> & ref2DSquaredMarkerCorners, const std::vector<Point2Df> & projected2DSquaredMarkerCorners) override;
+    bool isValid(const std::vector<datastructure::Point2Df> & ref2DSquaredMarkerCorners, const std::vector<datastructure::Point2Df> & projected2DSquaredMarkerCorners) override;
 
     void unloadComponent () override final;
 

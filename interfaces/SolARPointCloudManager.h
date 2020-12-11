@@ -23,7 +23,6 @@
 #include <core/SerializationDefinitions.h>
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 /**
@@ -40,39 +39,39 @@ public:
 	/// @brief This method allow to add a 3D point to the point cloud
 	/// @param[in] point the 3D point to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoint(const SRef<CloudPoint>& point) override;
+	FrameworkReturnCode addPoint(const SRef<datastructure::CloudPoint>& point) override;
 
 	/// @brief This method allow to add a vector of 3D points to the point cloud
 	/// @param[in] a vector of the 3D points to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoints(const std::vector<SRef<CloudPoint>>& points) override;
+	FrameworkReturnCode addPoints(const std::vector<SRef<datastructure::CloudPoint>>& points) override;
 
 	/// @brief This method allow to add a 3D point to the point cloud
 	/// @param[in] point the 3D point to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoint(const CloudPoint &point) override;
+	FrameworkReturnCode addPoint(const datastructure::CloudPoint &point) override;
 
 	/// @brief This method allow to add a vector of 3D points to the point cloud
 	/// @param[in] a vector of the 3D points to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoints(const std::vector<CloudPoint> &points) override;
+	FrameworkReturnCode addPoints(const std::vector<datastructure::CloudPoint> &points) override;
 
 	/// @brief This method allows to get a 3D point stored in the point cloud by its id
 	/// @param[in] id of the point to get
 	/// @param[out] a 3D point stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getPoint(uint32_t id, SRef<CloudPoint>& point) override;
+	FrameworkReturnCode getPoint(uint32_t id, SRef<datastructure::CloudPoint>& point) override;
 
 	/// @brief This method allows to get a set of 3D points stored in the point cloud by their ids
 	/// @param[in] a vector of ids of the points to get
 	/// @param[out] a vector of 3D points stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getPoints(const std::vector<uint32_t> &ids, std::vector<SRef<CloudPoint>>& points) override;
+    FrameworkReturnCode getPoints(const std::vector<uint32_t> &ids, std::vector<SRef<datastructure::CloudPoint>>& points) override;
 
 	/// @brief This method allows to get all 3D points stored in the point cloud
 	/// @param[out] the set of 3D point stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getAllPoints(std::vector<SRef<CloudPoint>>& points) override;
+	FrameworkReturnCode getAllPoints(std::vector<SRef<datastructure::CloudPoint>>& points) override;
 
 	/// @brief This method allow to suppress a point stored in the point cloud by its id
 	/// @param[in] id of the point to suppress
@@ -86,11 +85,11 @@ public:
 
 	/// @brief This method allows to get the descriptor type used to extract descriptor for each cloud point
 	/// @return Descriptor type
-	DescriptorType getDescriptorType() override;
+	datastructure::DescriptorType getDescriptorType() override;
 
 	/// @brief This method allows to set the descriptor type used to extract descriptor for each cloud point
 	/// @return Descriptor type
-	FrameworkReturnCode setDescriptorType(DescriptorType type) override;
+	FrameworkReturnCode setDescriptorType(datastructure::DescriptorType type) override;
 
 	/// @brief This method allows to know if a point is already stored in the component
 	/// @param[in] Id of this point
@@ -115,10 +114,10 @@ public:
 
 
  private:
-	std::map<uint32_t, SRef<CloudPoint>>	m_pointCloud;
-	DescriptorType							m_descriptorType;
-	uint32_t								m_id;
-	std::mutex								m_mutex;
+	std::map<uint32_t, SRef<datastructure::CloudPoint>>	m_pointCloud;
+	datastructure::DescriptorType						m_descriptorType;
+	uint32_t											m_id;
+	std::mutex											m_mutex;
 };
 
 }

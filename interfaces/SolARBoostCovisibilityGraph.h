@@ -30,11 +30,9 @@
 #include <mutex>
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
-using namespace boost;
 
 
 /**
@@ -174,20 +172,20 @@ public:
     };
 
     // Internal boost graph representation
-    typedef adjacency_list <
-            listS,
-            listS,                      // an optimize version should use lists as internal representations to avoid allocation lag. In this version of boost library, a bug avoid a robust use of labeled_graph with listS, listS
-            undirectedS,                     // covisibility is an undirected graph weight(a,b) = weight(b,a)
+    typedef boost::adjacency_list <
+            boost::listS,
+            boost::listS,                      // an optimize version should use lists as internal representations to avoid allocation lag. In this version of boost library, a bug avoid a robust use of labeled_graph with listS, listS
+            boost::undirectedS,                     // covisibility is an undirected graph weight(a,b) = weight(b,a)
             VertexProperties,
             EdgeProperties // use bundle properties for futur evolutions
     > CoGraph;
 
     // Defines internal types
-    typedef graph_traits<CoGraph>::vertex_descriptor vertex_t;
-    typedef graph_traits<CoGraph>::edge_descriptor   edge_t;
-    typedef graph_traits<CoGraph>::vertex_iterator   vertex_iterator_t;
-    typedef graph_traits<CoGraph>::edge_iterator     edge_iterator_t;
-    typedef graph_traits<CoGraph>::in_edge_iterator  in_edge_iterator_t;
+    typedef boost::graph_traits<CoGraph>::vertex_descriptor vertex_t;
+    typedef boost::graph_traits<CoGraph>::edge_descriptor   edge_t;
+    typedef boost::graph_traits<CoGraph>::vertex_iterator   vertex_iterator_t;
+    typedef boost::graph_traits<CoGraph>::edge_iterator     edge_iterator_t;
+    typedef boost::graph_traits<CoGraph>::in_edge_iterator  in_edge_iterator_t;
     typedef std::unordered_map<uint32_t, vertex_t>   CoMap;
     typedef std::map<vertex_t, vertex_t>             PredecessorMap;
     typedef std::map<vertex_t, int>                  IndexMap; // this map should be defined in [0, #V[
