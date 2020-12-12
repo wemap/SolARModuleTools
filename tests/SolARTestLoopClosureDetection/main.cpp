@@ -54,10 +54,10 @@ int main(int argc,char** argv)
 	LOG_INFO("Start creating components");
 
 	// storage components
-	auto pointCloudManager = xpcfComponentManager->resolve<IPointCloudManager>();
-	auto keyframesManager = xpcfComponentManager->resolve<IKeyframesManager>();
-	auto covisibilityGraph = xpcfComponentManager->resolve<ICovisibilityGraph>();
-	auto keyframeRetriever = xpcfComponentManager->resolve<IKeyframeRetriever>();
+    auto pointCloudManager = xpcfComponentManager->resolve<storage::IPointCloudManager>();
+    auto keyframesManager = xpcfComponentManager->resolve<storage::IKeyframesManager>();
+    auto covisibilityGraph = xpcfComponentManager->resolve<storage::ICovisibilityGraph>();
+    auto keyframeRetriever = xpcfComponentManager->resolve<reloc::IKeyframeRetriever>();
 	auto mapper = xpcfComponentManager->resolve<solver::map::IMapper>();
 	auto loopDetector = xpcfComponentManager->resolve<loop::ILoopClosureDetector>();
 	auto camera = xpcfComponentManager->resolve<input::devices::ICamera>();

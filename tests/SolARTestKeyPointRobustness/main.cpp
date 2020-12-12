@@ -75,13 +75,13 @@ int main(int argc, char **argv) {
     LOG_INFO("Resolving camera ");
     auto camera = xpcfComponentManager->resolve<input::devices::ICamera>();
     LOG_INFO("Resolving point cloud manager");
-	auto pointCloudManager = xpcfComponentManager->resolve<IPointCloudManager>();
+    auto pointCloudManager = xpcfComponentManager->resolve<storage::IPointCloudManager>();
     LOG_INFO("Resolving key frames manager");
-	auto keyframesManager = xpcfComponentManager->resolve<IKeyframesManager>();
+    auto keyframesManager = xpcfComponentManager->resolve<storage::IKeyframesManager>();
     LOG_INFO("Resolving covisibility graph");
-	auto covisibilityGraph = xpcfComponentManager->resolve<ICovisibilityGraph>();
+    auto covisibilityGraph = xpcfComponentManager->resolve<storage::ICovisibilityGraph>();
     LOG_INFO("Resolving key frame retriever");
-	auto keyframeRetriever = xpcfComponentManager->resolve<IKeyframeRetriever>();
+    auto keyframeRetriever = xpcfComponentManager->resolve<reloc::IKeyframeRetriever>();
     LOG_INFO("Resolving key mapper");
 	auto mapper = xpcfComponentManager->resolve<solver::map::IMapper>();
     LOG_INFO("Resolving key points detector");
