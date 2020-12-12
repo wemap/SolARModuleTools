@@ -38,6 +38,7 @@
 #include "api/storage/IPointCloudManager.h"
 #include "api/loop/ILoopClosureDetector.h"
 #include "api/loop/ILoopCorrector.h"
+#include "api/solver/pose/IFiducialMarkerPose.h"
 #include "api/slam/IBootstrapper.h"
 #include "api/slam/ITracking.h"
 #include "api/slam/IMapping.h"
@@ -62,7 +63,7 @@ int main(int argc, char **argv) {
 	/* this is needed in dynamic mode */
 	SRef<xpcf::IComponentManager> xpcfComponentManager = xpcf::getComponentManagerInstance();
 
-    std::string configxml = std::string("conf_SLAM_Mono.xml");
+    std::string configxml = std::string("conf_keypointRobustness.xml");
 	if (argc == 2)
 		configxml = std::string(argv[1]);
 	if (xpcfComponentManager->load(configxml.c_str()) != org::bcom::xpcf::_SUCCESS)
@@ -98,6 +99,8 @@ int main(int argc, char **argv) {
 	auto loopCorrector = xpcfComponentManager->resolve<loop::ILoopCorrector>();
     LOG_INFO("Resolving 3D overlay");
     auto overlay3D = xpcfComponentManager->resolve<display::I3DOverlay>();
+    LOG_INFO("Resolving Fiducial marker pose");
+    auto fiducialMarkerPoseEstimator = xpcfComponentManager->resolve<solver::pose::IFiducialMarkerPose>();
 	LOG_INFO("Resolving bootstrapper");
 	auto bootstrapper = xpcfComponentManager->resolve<slam::IBootstrapper>();
 	LOG_INFO("Resolving tracking");
@@ -111,6 +114,7 @@ int main(int argc, char **argv) {
 	CamDistortion distortion = camera->getDistortionParameters();
     overlay3D->setCameraParameters(calibration, distortion);
 	loopCorrector->setCameraParameters(calibration, distortion);
+    fiducialMarkerPoseEstimator->setCameraParameters(calibration, distortion);
 	bootstrapper->setCameraParameters(calibration, distortion);
 	tracking->setCameraParameters(calibration, distortion);
 	mapping->setCameraParameters(calibration, distortion);
@@ -129,9 +133,21 @@ int main(int argc, char **argv) {
 		keyframesManager->getKeyframe(0, keyframe2);
 	}
 	else {
-		LOG_INFO("Initialization from scratch");
-		if (bootstrapper->run() == FrameworkReturnCode::_ERROR_)
-			return 1;
+        LOG_INFO("Initialization from scratch");
+        bool bootstrapOk = false;
+        while (!bootstrapOk) {
+            SRef<Image> image, view;
+            camera->getNextImage(image);
+            Transform3Df pose = Transform3Df::Identity();
+            fiducialMarkerPoseEstimator->estimate(image, pose);
+            if (bootstrapper->process(image, view, pose) == FrameworkReturnCode::_SUCCESS) {
+                bootstrapOk = true;
+            }
+            if (!pose.isApprox(Transform3Df::Identity()))
+                overlay3D->draw(pose, view);
+            if (imageViewer->display(view) == SolAR::FrameworkReturnCode::_STOP)
+                return 1;
+        }
 		keyframesManager->getKeyframe(1, keyframe2);
 	}
 	

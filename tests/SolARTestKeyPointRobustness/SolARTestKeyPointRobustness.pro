@@ -3,7 +3,7 @@ QT       -= core gui
 CONFIG -= qt
 
 ## global defintions : target lib name, version
-TARGET = SolARSlamSampleMono
+TARGET = SolARTestKeypointRobustness
 VERSION=0.9.0
 
 DEFINES += MYVERSION=$${VERSION}
@@ -15,13 +15,13 @@ include(findremakenrules.pri)
 QT += opengl
 
 CONFIG(debug,debug|release) {
-    TARGETDEPLOYDIR = $${PWD}../../bin/Debug
+    TARGETDEPLOYDIR = $${PWD}/../bin/Debug
     DEFINES += _DEBUG=1
     DEFINES += DEBUG=1
 }
 
 CONFIG(release,debug|release) {
-    TARGETDEPLOYDIR = $${PWD}../../bin/Release
+    TARGETDEPLOYDIR = $${PWD}/../bin/Release
     DEFINES += _NDEBUG=1
     DEFINES += NDEBUG=1
 }
@@ -64,7 +64,7 @@ win32 {
 }
 
 config_files.path = $${TARGETDEPLOYDIR}
-config_files.files= $$files($${PWD}/conf_SLAM_Mono.xml)\
+config_files.files= $$files($${PWD}/conf_keypointRobustness.xml)\
                     $$files($${PWD}/camera_calibration.yml)\
                     $$files($${PWD}/fiducialMarker.yml)\
                     $$files($${PWD}/FiducialMarker.gif)\
