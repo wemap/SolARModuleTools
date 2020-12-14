@@ -248,6 +248,8 @@ int SolARMapper::keyframePruning(const std::vector<SRef<Keyframe>>& keyframes)
 
 	int nbRemovedKfs(0);
 	for (const auto &itKf : keyframesPruning) {
+		if (itKf->getId() == 0)
+			continue;
 		const std::map<uint32_t, uint32_t>& pcVisibility = itKf->getVisibility();
 		int nbRedundantObs(0);
 		bool isPCTwoViews(true);
@@ -255,7 +257,7 @@ int SolARMapper::keyframePruning(const std::vector<SRef<Keyframe>>& keyframes)
 			uint32_t idxPC = itPC.second;
 			SRef<CloudPoint> cloudPoint;
 			if (m_pointCloudManager->getPoint(idxPC, cloudPoint) == FrameworkReturnCode::_SUCCESS) {
-				if (cloudPoint->getVisibility().size() >= 4)
+				if (cloudPoint->getVisibility().size() >= 5)
 					nbRedundantObs++;
 				else if (cloudPoint->getVisibility().size() < 3) {
 					isPCTwoViews = false;
