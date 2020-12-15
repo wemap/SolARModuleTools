@@ -59,7 +59,7 @@ FrameworkReturnCode SolAR3DTransform::transform(const std::vector<Point3Df> & in
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolAR3DTransform::transform(const Transform3Df & transformation, SRef<IMapper>& map)
+FrameworkReturnCode SolAR3DTransform::transform(const Transform3Df & transformation, SRef<IMapper> map)
 {
 	// get cloud points and keyframes
 	SRef<IPointCloudManager> pointcloudManager;

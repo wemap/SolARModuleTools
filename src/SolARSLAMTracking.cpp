@@ -55,14 +55,14 @@ void SolARSLAMTracking::setCameraParameters(const CamCalibration & intrinsicPara
 	m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
 }
 
-void SolARSLAMTracking::updateReferenceKeyframe(const SRef<Keyframe>& refKeyframe)
+void SolARSLAMTracking::updateReferenceKeyframe(const SRef<Keyframe> refKeyframe)
 {
 	std::unique_lock<std::mutex> lock(m_refKeyframeMutex);
 	m_referenceKeyframe = refKeyframe;	
 	m_isUpdateReferenceKeyframe = true;
 }
 
-FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Image> &displayImage)
+FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Image> &displayImage)
 {
 	// init image to display
 	displayImage = frame->getView()->copy();

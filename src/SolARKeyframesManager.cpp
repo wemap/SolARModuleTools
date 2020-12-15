@@ -33,7 +33,7 @@ SolARKeyframesManager::SolARKeyframesManager():ComponentBase(xpcf::toUUID<SolARK
 	m_id = 0;
 }
 
-FrameworkReturnCode SolARKeyframesManager::addKeyframe(const SRef<Keyframe>& keyframe)
+FrameworkReturnCode SolARKeyframesManager::addKeyframe(const SRef<Keyframe> keyframe)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	keyframe->setId(m_id);
@@ -52,10 +52,10 @@ FrameworkReturnCode SolARKeyframesManager::addKeyframe(const Keyframe & keyframe
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARKeyframesManager::getKeyframe(uint32_t id, SRef<Keyframe>& keyframe)
+FrameworkReturnCode SolARKeyframesManager::getKeyframe(const uint32_t id, SRef<Keyframe> & keyframe) const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	std::map< uint32_t, SRef<Keyframe>>::iterator keyframeIt = m_keyframes.find(id);
+    std::map< uint32_t, SRef<Keyframe>>::const_iterator keyframeIt = m_keyframes.find(id);
 	if (keyframeIt != m_keyframes.end()) {
 		keyframe = keyframeIt->second;
 		return FrameworkReturnCode::_SUCCESS;
@@ -66,11 +66,11 @@ FrameworkReturnCode SolARKeyframesManager::getKeyframe(uint32_t id, SRef<Keyfram
 	}
 }
 
-FrameworkReturnCode SolARKeyframesManager::getKeyframes(const std::vector<uint32_t>& ids, std::vector<SRef<Keyframe>>& keyframes)
+FrameworkReturnCode SolARKeyframesManager::getKeyframes(const std::vector<uint32_t>& ids, std::vector<SRef<Keyframe>>& keyframes) const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : ids) {
-		std::map< uint32_t, SRef<Keyframe>>::iterator keyframeIt = m_keyframes.find(it);
+        std::map< uint32_t, SRef<Keyframe>>::const_iterator keyframeIt = m_keyframes.find(it);
 		if (keyframeIt == m_keyframes.end()) {
 			LOG_ERROR("Cannot find keyframe with id {} to get", it);
 			return FrameworkReturnCode::_ERROR_;
@@ -80,7 +80,7 @@ FrameworkReturnCode SolARKeyframesManager::getKeyframes(const std::vector<uint32
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARKeyframesManager::getAllKeyframes(std::vector<SRef<Keyframe>>& keyframes)
+FrameworkReturnCode SolARKeyframesManager::getAllKeyframes(std::vector<SRef<Keyframe>>& keyframes) const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto keyframeIt = m_keyframes.begin(); keyframeIt != m_keyframes.end(); keyframeIt++)
@@ -88,7 +88,7 @@ FrameworkReturnCode SolARKeyframesManager::getAllKeyframes(std::vector<SRef<Keyf
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARKeyframesManager::suppressKeyframe(uint32_t id)
+FrameworkReturnCode SolARKeyframesManager::suppressKeyframe(const uint32_t id)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	std::map< uint32_t, SRef<Keyframe>>::iterator keyframeIt = m_keyframes.find(id);
@@ -102,20 +102,20 @@ FrameworkReturnCode SolARKeyframesManager::suppressKeyframe(uint32_t id)
 	}
 }
 
-DescriptorType SolARKeyframesManager::getDescriptorType()
+DescriptorType SolARKeyframesManager::getDescriptorType() const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	return m_descriptorType;
 }
 
-FrameworkReturnCode SolARKeyframesManager::setDescriptorType(DescriptorType type)
+FrameworkReturnCode SolARKeyframesManager::setDescriptorType(const DescriptorType & type)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_descriptorType = type;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-bool SolARKeyframesManager::isExistKeyframe(uint32_t id)
+bool SolARKeyframesManager::isExistKeyframe(const uint32_t id) const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_keyframes.find(id) != m_keyframes.end())
@@ -124,13 +124,13 @@ bool SolARKeyframesManager::isExistKeyframe(uint32_t id)
 		return false;
 }
 
-int SolARKeyframesManager::getNbKeyframes()
+int SolARKeyframesManager::getNbKeyframes() const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
     return static_cast<int>(m_keyframes.size());
 }
 
-FrameworkReturnCode SolARKeyframesManager::saveToFile(const std::string& file)
+FrameworkReturnCode SolARKeyframesManager::saveToFile(const std::string& file) const
 {
 	std::ofstream ofs(file, std::ios::binary);
 	OutputArchive oa(ofs);

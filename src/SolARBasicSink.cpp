@@ -38,7 +38,7 @@ SolARBasicSink::SolARBasicSink():ConfigurableBase(xpcf::toUUID<ISinkPoseImage>()
    m_imageBufferPointer = 0;
 }
 
-void SolARBasicSink::set( const SRef<Image>& image )
+void SolARBasicSink::set( const SRef<Image> image )
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_image = image->copy();
@@ -53,7 +53,7 @@ FrameworkReturnCode SolARBasicSink::setImageBuffer(unsigned char* imageBufferPoi
    return FrameworkReturnCode::_SUCCESS;
 }
 
-void SolARBasicSink::set(const Transform3Df& pose, const SRef<Image>& image )
+void SolARBasicSink::set(const Transform3Df& pose, const SRef<Image> image )
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_pose = Transform3Df(pose);

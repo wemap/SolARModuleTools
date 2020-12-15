@@ -51,7 +51,7 @@ SolARCovisibilityGraph::SolARCovisibilityGraph():ComponentBase(xpcf::toUUID<SolA
    addInterface<api::storage::ICovisibilityGraph>(this);
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::increaseEdge(uint32_t node1_id, uint32_t node2_id, float weight)
+FrameworkReturnCode SolARCovisibilityGraph::increaseEdge(const uint32_t node1_id, const uint32_t node2_id, const float weight)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (node1_id == node2_id)
@@ -69,7 +69,7 @@ FrameworkReturnCode SolARCovisibilityGraph::increaseEdge(uint32_t node1_id, uint
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::decreaseEdge(uint32_t node1_id, uint32_t node2_id, float weight)
+FrameworkReturnCode SolARCovisibilityGraph::decreaseEdge(const uint32_t node1_id, const uint32_t node2_id, const float weight)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (node1_id == node2_id)
@@ -90,7 +90,7 @@ FrameworkReturnCode SolARCovisibilityGraph::decreaseEdge(uint32_t node1_id, uint
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::removeEdge(uint32_t node1_id, uint32_t node2_id)
+FrameworkReturnCode SolARCovisibilityGraph::removeEdge(const uint32_t node1_id, const uint32_t node2_id)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	auto edge = join(node1_id, node2_id);
@@ -104,7 +104,7 @@ FrameworkReturnCode SolARCovisibilityGraph::removeEdge(uint32_t node1_id, uint32
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::getEdge(uint32_t node1_id, uint32_t node2_id, float & weight)
+FrameworkReturnCode SolARCovisibilityGraph::getEdge(const uint32_t node1_id, const uint32_t node2_id, float & weight) const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	auto edge = join(node1_id, node2_id);
@@ -114,20 +114,20 @@ FrameworkReturnCode SolARCovisibilityGraph::getEdge(uint32_t node1_id, uint32_t 
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-bool SolARCovisibilityGraph::isEdge(uint32_t node1_id, uint32_t node2_id)
+bool SolARCovisibilityGraph::isEdge(const uint32_t node1_id, const uint32_t node2_id) const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	return m_weights.count(join(node1_id, node2_id));
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::getAllNodes(std::set<uint32_t>& nodes_id)
+FrameworkReturnCode SolARCovisibilityGraph::getAllNodes(std::set<uint32_t>& nodes_id) const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	nodes_id = m_nodes;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::suppressNode(uint32_t node_id)
+FrameworkReturnCode SolARCovisibilityGraph::suppressNode(const uint32_t node_id)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_nodes.find(node_id) == m_nodes.end())
@@ -150,7 +150,7 @@ FrameworkReturnCode SolARCovisibilityGraph::suppressNode(uint32_t node_id)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::getNeighbors(uint32_t node_id, float minWeight, std::vector<uint32_t>& neighbors)
+FrameworkReturnCode SolARCovisibilityGraph::getNeighbors(const uint32_t node_id, const float minWeight, std::vector<uint32_t>& neighbors) const
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	std::vector < std:: pair<uint32_t, float> > neighbors_weights;
@@ -160,8 +160,8 @@ FrameworkReturnCode SolARCovisibilityGraph::getNeighbors(uint32_t node_id, float
 	// get neighbors
 	for (auto n : it->second) {
 		auto edge = join(node_id, n);
-		if (m_weights[edge] > minWeight)
-			neighbors_weights.push_back(std::make_pair(n, m_weights[edge]));
+        if (m_weights.at(edge) > minWeight)
+            neighbors_weights.push_back(std::make_pair(n, m_weights.at(edge)));
 	}
 	// sort
 	std::sort(neighbors_weights.begin(), neighbors_weights.end(), [](const std::pair<uint32_t, float> &a, const std::pair<uint32_t, float> &b) {return a.second > b.second; });
@@ -215,8 +215,8 @@ FrameworkReturnCode SolARCovisibilityGraph::minimalSpanningTree(std::vector<std:
 	minTotalWeights = 0;
 	for (auto const &m : mst_edges) {
 		auto i_j = separe(m);
-		edges_weights.push_back(std::make_tuple(i_j.first, i_j.second, m_weights[m]));
-		minTotalWeights += m_weights[m];
+        edges_weights.push_back(std::make_tuple(i_j.first, i_j.second, m_weights.at(m)));
+        minTotalWeights += m_weights.at(m);
 	}
 	return FrameworkReturnCode::_SUCCESS;
 }
@@ -265,13 +265,13 @@ FrameworkReturnCode SolARCovisibilityGraph::maximalSpanningTree(std::vector<std:
 	maxTotalWeights = 0;
 	for (auto const &m : mst_edges) {
 		auto i_j = separe(m);
-		edges_weights.push_back(std::make_tuple(i_j.first, i_j.second, m_weights[m]));
-		maxTotalWeights += m_weights[m];
+        edges_weights.push_back(std::make_tuple(i_j.first, i_j.second, m_weights.at(m)));
+        maxTotalWeights += m_weights.at(m);
 	}
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::getShortestPath(uint32_t node1_id, uint32_t node2_id, std::vector<uint32_t> &path)
+FrameworkReturnCode SolARCovisibilityGraph::getShortestPath(const uint32_t node1_id, const uint32_t node2_id, std::vector<uint32_t> &path)
 {
 	if (node1_id == node2_id)
 		return FrameworkReturnCode::_ERROR_;
@@ -291,7 +291,7 @@ FrameworkReturnCode SolARCovisibilityGraph::getShortestPath(uint32_t node1_id, u
 		//take current node
 		const auto &tn = trees[curNode];
 		//see ifs neighbors
-		for (auto neigh : m_edges[tn.node]) {
+        for (auto neigh : m_edges.at(tn.node)) {
 			if (!visited[neigh]) {
 				visited[neigh] = true;
                 trees.push_back(TreeNode(neigh, static_cast<uint32_t>(curNode)));
@@ -319,7 +319,7 @@ FrameworkReturnCode SolARCovisibilityGraph::getShortestPath(uint32_t node1_id, u
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::display()
+FrameworkReturnCode SolARCovisibilityGraph::display() const
 {
 	// display vertices
 	LOG_INFO("The vertices of the covisibility graph: ");
@@ -336,7 +336,7 @@ FrameworkReturnCode SolARCovisibilityGraph::display()
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARCovisibilityGraph::saveToFile(const std::string& file)
+FrameworkReturnCode SolARCovisibilityGraph::saveToFile(const std::string& file) const
 {
 	std::ofstream ofs(file, std::ios::binary);
 	OutputArchive oa(ofs);

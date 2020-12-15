@@ -58,7 +58,7 @@ void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParam
     m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
 }
 
-FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame>& frame, SRef<Keyframe>& keyframe)
+FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyframe> & keyframe)
 {
 	// find matches between current frame and its reference keyframe
 	std::vector<DescriptorMatch> matches;

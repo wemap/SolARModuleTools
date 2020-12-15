@@ -58,7 +58,7 @@ inline float angleCamDistance(const Transform3Df & pose1, const Transform3Df & p
 	return std::acos(pose1(0, 2) * pose2(0, 2) + pose1(1, 2) * pose2(1, 2) + pose1(2, 2) * pose2(2, 2));
 }
 
-FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> &image, SRef<Image> &view, const Transform3Df &pose)
+FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef<Image> &view, const Transform3Df &pose)
 {
 	Transform3Df						poseFrame;
 	std::vector<Keypoint>				keypoints;

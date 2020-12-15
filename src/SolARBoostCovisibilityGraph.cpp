@@ -52,7 +52,7 @@ SolARBoostCovisibilityGraph::SolARBoostCovisibilityGraph():ComponentBase(xpcf::t
     addInterface<api::storage::ICovisibilityGraph>(this);
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(uint32_t node1_id, uint32_t node2_id, float weight)
+FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(const uint32_t node1_id, const uint32_t node2_id, const float weight)
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
 	if (node1_id == node2_id)
@@ -82,7 +82,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(uint32_t node1_id,
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::decreaseEdge(uint32_t node1_id, uint32_t node2_id, float weight)
+FrameworkReturnCode SolARBoostCovisibilityGraph::decreaseEdge(const uint32_t node1_id, const uint32_t node2_id, const float weight)
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
 	if (node1_id == node2_id)
@@ -111,7 +111,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::decreaseEdge(uint32_t node1_id,
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::removeEdge(uint32_t node1_id, uint32_t node2_id)
+FrameworkReturnCode SolARBoostCovisibilityGraph::removeEdge(const uint32_t node1_id, const uint32_t node2_id)
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
     if( isNode(node1_id) &&  isNode(node2_id))
@@ -135,19 +135,19 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::removeEdge(uint32_t node1_id, u
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::getEdge(uint32_t node1_id, uint32_t node2_id, float & weight)
+FrameworkReturnCode SolARBoostCovisibilityGraph::getEdge(uint32_t node1_id, uint32_t node2_id, float & weight) const
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
 
     if( isNode(node1_id) &&  isNode(node2_id))
     {
-        vertex_t vertex_id_1  = m_map[node1_id];
-        vertex_t vertex_id_2  = m_map[node2_id];
+        vertex_t vertex_id_1  = m_map.at(node1_id);
+        vertex_t vertex_id_2  = m_map.at(node2_id);
         edge_info_t edge_info = boost::edge(vertex_id_1, vertex_id_2, m_graph);
         if(edge_info.second)
         {
             edge_t edge_id = edge_info.first;
-            EdgeProperties& edgeProperties = m_graph[edge_id];
+            const EdgeProperties& edgeProperties = m_graph[edge_id];
             weight = edgeProperties.weight;
         }else{
             // unexistant edge
@@ -161,7 +161,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::getEdge(uint32_t node1_id, uint
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::getAllNodes(std::set<uint32_t>& nodes_id)
+FrameworkReturnCode SolARBoostCovisibilityGraph::getAllNodes(std::set<uint32_t>& nodes_id) const
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
     std::pair<vertex_iterator_t, vertex_iterator_t> it_vertex = vertices(m_graph);
@@ -172,7 +172,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::getAllNodes(std::set<uint32_t>&
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::suppressNode(uint32_t node_id)
+FrameworkReturnCode SolARBoostCovisibilityGraph::suppressNode(const uint32_t node_id)
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
     if(isNode(node_id))
@@ -189,14 +189,14 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::suppressNode(uint32_t node_id)
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::getNeighbors(uint32_t node_id, float minWeight, std::vector<uint32_t>& neighbors)
+FrameworkReturnCode SolARBoostCovisibilityGraph::getNeighbors(uint32_t node_id, float minWeight, std::vector<uint32_t>& neighbors) const
 {
     //std::unique_lock<std::mutex> lock(m_mutex);
     // this version does not sort neighboors TODO ?
     neighbors.clear();
     if(isNode(node_id))
     {
-        vertex_t vertex_id = m_map[node_id];
+        vertex_t vertex_id = m_map.at(node_id);
         std::pair<in_edge_iterator_t, in_edge_iterator_t> it_edge = in_edges(vertex_id, m_graph);
         for( ; it_edge.first != it_edge.second; ++it_edge.first)
         {
@@ -372,7 +372,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::getShortestPath(uint32_t node1_
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::display()
+FrameworkReturnCode SolARBoostCovisibilityGraph::display() const
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
@@ -396,7 +396,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::display()
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(const std::string& file)
+FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(const std::string& file) const
 {
     // std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -413,7 +413,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(const std::string& f
 
        //
        std::set<uint32_t> neighbors;
-       vertex_t vertex_id = m_map[frame_id];
+       vertex_t vertex_id = m_map.at(frame_id);
        std::pair<in_edge_iterator_t, in_edge_iterator_t> it_edge = in_edges(vertex_id, m_graph);
        for( ; it_edge.first != it_edge.second; ++it_edge.first)
        {
@@ -470,21 +470,21 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(const std::string&
     return FrameworkReturnCode::_SUCCESS;
 }
 
-bool SolARBoostCovisibilityGraph::isEdge(uint32_t node1_id, uint32_t node2_id)
+bool SolARBoostCovisibilityGraph::isEdge(const uint32_t node1_id, const uint32_t node2_id) const
 {
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
     bool is_edge = false;
     if( isNode(node1_id) && isNode(node2_id))
     {
-        vertex_t vertex_id_1  = m_map[node1_id];
-        vertex_t vertex_id_2  = m_map[node2_id];
+        vertex_t vertex_id_1  = m_map.at(node1_id);
+        vertex_t vertex_id_2  = m_map.at(node2_id);
         edge_info_t edge_info = edge(vertex_id_1, vertex_id_2, m_graph);
         is_edge = edge_info.second;
     }
     return is_edge;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::addEdge(uint32_t node_id_1, uint32_t node_id_2, float weight)
+FrameworkReturnCode SolARBoostCovisibilityGraph::addEdge(const uint32_t node_id_1, const uint32_t node_id_2, const float weight)
 {
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
     if ( !isNode(node_id_1))
@@ -507,7 +507,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::addEdge(uint32_t node_id_1, uin
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARBoostCovisibilityGraph::addNode(uint32_t node_id)
+FrameworkReturnCode SolARBoostCovisibilityGraph::addNode(const uint32_t node_id)
 {
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
     if(!isNode(node_id))
@@ -518,7 +518,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::addNode(uint32_t node_id)
     return FrameworkReturnCode::_SUCCESS;
 }
 
-bool SolARBoostCovisibilityGraph::isNode(uint32_t node_id)
+bool SolARBoostCovisibilityGraph::isNode(const uint32_t node_id) const
 {
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
     return !(m_map.find(node_id) == m_map.end()) ;

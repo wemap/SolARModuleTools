@@ -135,7 +135,7 @@ void getInliersByProject(const std::vector<Point2Df> &firstProjected2DPts, const
 FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const std::vector<Point3Df> & firstPoints3D,
 																	const std::vector<Point3Df> & secondPoints3D,
 																	Transform3Df & pose,
-																	std::vector<int> &inliers)
+                                                                    std::vector<int> &inliers)
 {	
 	if ((firstPoints3D.size() != secondPoints3D.size()) || (firstPoints3D.size() < 3))
 		return FrameworkReturnCode::_ERROR_;
@@ -195,13 +195,13 @@ FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const std::v
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const SRef<Keyframe>& firstKeyframe, 
-																	const SRef<Keyframe>& secondKeyframe, 
+FrameworkReturnCode SolAR3DTransformEstimationSACFrom3D3D::estimate(const SRef<Keyframe> firstKeyframe,
+                                                                    const SRef<Keyframe> secondKeyframe,
 																	const std::vector<DescriptorMatch>& matches, 
 																	const std::vector<Point3Df>& firstPoints3D, 
 																	const std::vector<Point3Df>& secondPoints3D, 
 																	Transform3Df & pose, 
-																	std::vector<int>& inliers)
+                                                                    std::vector<int>& inliers)
 {
 	if ((firstPoints3D.size() != secondPoints3D.size()) || (matches.size() != firstPoints3D.size()) || (firstPoints3D.size() < 3))
 		return FrameworkReturnCode::_ERROR_;

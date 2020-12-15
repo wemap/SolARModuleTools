@@ -48,7 +48,10 @@ void SolARLoopClosureDetector::setCameraParameters(const CamCalibration & intrin
 	m_estimator3D->setCameraParameters(intrinsicParams, distortionParams);
 }
 
-FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe>& queryKeyframe, SRef<Keyframe>& detectedLoopKeyframe, Transform3Df & sim3Transform, std::vector<std::pair<uint32_t, uint32_t>>& duplicatedPointsIndices)
+FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe> queryKeyframe,
+                                                     SRef<Keyframe> & detectedLoopKeyframe,
+                                                     Transform3Df & sim3Transform,
+                                                     std::vector<std::pair<uint32_t, uint32_t>>& duplicatedPointsIndices) const
 {
 	uint32_t queryKeyframeId = queryKeyframe->getId();
 	std::vector<uint32_t> retKeyframesIndex;

@@ -33,7 +33,7 @@ SolARPointCloudManager::SolARPointCloudManager():ComponentBase(xpcf::toUUID<SolA
 	m_id = 0;
 }
 
-FrameworkReturnCode SolARPointCloudManager::addPoint(const SRef<CloudPoint>& point)
+FrameworkReturnCode SolARPointCloudManager::addPoint(const SRef<CloudPoint> point)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	point->setId(m_id);	
@@ -75,10 +75,10 @@ FrameworkReturnCode SolARPointCloudManager::addPoints(const std::vector<CloudPoi
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::getPoint(uint32_t id, SRef<CloudPoint>& point)
+FrameworkReturnCode SolARPointCloudManager::getPoint(const uint32_t id, SRef<CloudPoint> point) const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	std::map< uint32_t, SRef<CloudPoint>>::iterator pointIt = m_pointCloud.find(id);
+    std::unique_lock<std::mutex> lock(m_mutex);
+    std::map< uint32_t, SRef<CloudPoint>>::const_iterator pointIt = m_pointCloud.find(id);
 	if (pointIt != m_pointCloud.end()) {
 		point = pointIt->second;
 		return FrameworkReturnCode::_SUCCESS;
@@ -89,11 +89,11 @@ FrameworkReturnCode SolARPointCloudManager::getPoint(uint32_t id, SRef<CloudPoin
 	}
 }
 
-FrameworkReturnCode SolARPointCloudManager::getPoints(const std::vector<uint32_t>& ids, std::vector<SRef<CloudPoint>>& points)
+FrameworkReturnCode SolARPointCloudManager::getPoints(const std::vector<uint32_t>& ids, std::vector<SRef<CloudPoint>>& points) const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto &it : ids) {
-		std::map< uint32_t, SRef<CloudPoint>>::iterator pointIt = m_pointCloud.find(it);
+        std::map< uint32_t, SRef<CloudPoint>>::const_iterator pointIt = m_pointCloud.find(it);
 		if (pointIt == m_pointCloud.end()) {
 			LOG_DEBUG("Cannot find cloud point with id {} to get", it);
 			return FrameworkReturnCode::_ERROR_;
@@ -103,15 +103,15 @@ FrameworkReturnCode SolARPointCloudManager::getPoints(const std::vector<uint32_t
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::getAllPoints(std::vector<SRef<CloudPoint>>& points)
+FrameworkReturnCode SolARPointCloudManager::getAllPoints(std::vector<SRef<CloudPoint>>& points) const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 	for (auto pointIt = m_pointCloud.begin(); pointIt != m_pointCloud.end(); pointIt++)
 		points.push_back(pointIt->second);
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::suppressPoint(uint32_t id)
+FrameworkReturnCode SolARPointCloudManager::suppressPoint(const uint32_t id)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	std::map< uint32_t, SRef<CloudPoint>>::iterator pointIt = m_pointCloud.find(id);
@@ -139,35 +139,35 @@ FrameworkReturnCode SolARPointCloudManager::suppressPoints(const std::vector<uin
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-DescriptorType SolARPointCloudManager::getDescriptorType()
+DescriptorType SolARPointCloudManager::getDescriptorType() const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 	return m_descriptorType;
 }
 
-FrameworkReturnCode SolARPointCloudManager::setDescriptorType(DescriptorType type)
+FrameworkReturnCode SolARPointCloudManager::setDescriptorType(const DescriptorType & type)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_descriptorType = type;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-bool SolARPointCloudManager::isExistPoint(uint32_t id)
+bool SolARPointCloudManager::isExistPoint(const uint32_t id) const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_pointCloud.find(id) != m_pointCloud.end())
 		return true;
 	else 
 		return false;
 }
 
-int SolARPointCloudManager::getNbPoints()
+int SolARPointCloudManager::getNbPoints() const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
     return static_cast<int>(m_pointCloud.size());
 }
 
-FrameworkReturnCode SolARPointCloudManager::saveToFile(const std::string& file)
+FrameworkReturnCode SolARPointCloudManager::saveToFile(const std::string& file) const
 {
 	std::ofstream ofs(file, std::ios::binary);
 	OutputArchive oa(ofs);

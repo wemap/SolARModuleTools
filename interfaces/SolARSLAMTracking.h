@@ -59,13 +59,13 @@ public:
 
 	/// @brief this method is used to update reference keyframe to track
 	/// @param[in] refKeyframe: the new reference keyframe.
-	void updateReferenceKeyframe(const SRef<datastructure::Keyframe> & refKeyframe) override;
+    void updateReferenceKeyframe(const SRef<datastructure::Keyframe> refKeyframe) override;
 
 	/// @brief this method is used to process tracking
 	/// @param[in] frame: the input frame.
 	/// @param[out] displayImage: the image to display.
 	/// @return FrameworkReturnCode::_SUCCESS if tracking succeed, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode process(const SRef<datastructure::Frame> & frame, SRef<datastructure::Image> &displayImage) override;
+    FrameworkReturnCode process(const SRef<datastructure::Frame> frame, SRef<datastructure::Image> &displayImage) override;
 
 	void unloadComponent() override final;
 

@@ -48,79 +48,79 @@ SolARMapper::SolARMapper():ConfigurableBase(xpcf::toUUID<SolARMapper>())
 	declareProperty("thresConfidence", m_thresConfidence);
 }
 
-FrameworkReturnCode SolARMapper::setIdentification(SRef<Identification>& identification)
+FrameworkReturnCode SolARMapper::setIdentification(SRef<Identification> identification)
 {
 	m_identification = identification;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::getIdentification(SRef<Identification>& identification)
+FrameworkReturnCode SolARMapper::getIdentification(SRef<Identification>& identification) const
 {
 	identification = m_identification;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::setCoordinateSystem(SRef<CoordinateSystem>& coordinateSystem)
+FrameworkReturnCode SolARMapper::setCoordinateSystem(SRef<CoordinateSystem> coordinateSystem)
 {
 	m_coordinateSystem = coordinateSystem;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::getCoordinateSystem(SRef<CoordinateSystem>& coordinateSystem)
+FrameworkReturnCode SolARMapper::getCoordinateSystem(SRef<CoordinateSystem>& coordinateSystem) const
 {
 	coordinateSystem = m_coordinateSystem;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::setPointCloudManager(SRef<IPointCloudManager>& pointCloudManager)
+FrameworkReturnCode SolARMapper::setPointCloudManager(SRef<IPointCloudManager> pointCloudManager)
 {
 	m_pointCloudManager = pointCloudManager;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::getPointCloudManager(SRef<IPointCloudManager>& pointCloudManager)
+FrameworkReturnCode SolARMapper::getPointCloudManager(SRef<IPointCloudManager>& pointCloudManager) const
 {
 	pointCloudManager = m_pointCloudManager;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::setKeyframesManager(SRef<IKeyframesManager>& keyframesManager)
+FrameworkReturnCode SolARMapper::setKeyframesManager(SRef<IKeyframesManager> keyframesManager)
 {
 	m_keyframesManager = keyframesManager;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::getKeyframesManager(SRef<IKeyframesManager>& keyframesManager)
+FrameworkReturnCode SolARMapper::getKeyframesManager(SRef<IKeyframesManager>& keyframesManager) const
 {
 	keyframesManager = m_keyframesManager;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::setCovisibilityGraph(SRef<ICovisibilityGraph>& covisibilityGraph)
+FrameworkReturnCode SolARMapper::setCovisibilityGraph(SRef<ICovisibilityGraph> covisibilityGraph)
 {
 	m_covisibilityGraph = covisibilityGraph;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::getCovisibilityGraph(SRef<ICovisibilityGraph>& covisibilityGraph)
+FrameworkReturnCode SolARMapper::getCovisibilityGraph(SRef<ICovisibilityGraph>& covisibilityGraph) const
 {
 	covisibilityGraph = m_covisibilityGraph;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::setKeyframeRetriever(SRef<IKeyframeRetriever>& keyframeRetriever)
+FrameworkReturnCode SolARMapper::setKeyframeRetriever(SRef<IKeyframeRetriever> keyframeRetriever)
 {
 	m_keyframeRetriever = keyframeRetriever;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::getKeyframeRetriever(SRef<IKeyframeRetriever>& keyframeRetriever)
+FrameworkReturnCode SolARMapper::getKeyframeRetriever(SRef<IKeyframeRetriever>& keyframeRetriever) const
 {
 	keyframeRetriever = m_keyframeRetriever;
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::getLocalPointCloud(const SRef<Keyframe>& keyframe, float minWeightNeighbor, std::vector<SRef<CloudPoint>>& localPointCloud)
+FrameworkReturnCode SolARMapper::getLocalPointCloud(const SRef<Keyframe> keyframe, const float minWeightNeighbor, std::vector<SRef<CloudPoint>>& localPointCloud) const
 {	
 	std::unique_lock<std::mutex> lock(m_mutex);
 	// get neighbor keyframes of the keyframe
@@ -152,7 +152,7 @@ FrameworkReturnCode SolARMapper::getLocalPointCloud(const SRef<Keyframe>& keyfra
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::addCloudPoint(const SRef<CloudPoint>& cloudPoint)
+FrameworkReturnCode SolARMapper::addCloudPoint(const SRef<CloudPoint> cloudPoint)
 {
 	// add point to cloud
 	m_pointCloudManager->addPoint(cloudPoint);
@@ -173,7 +173,7 @@ FrameworkReturnCode SolARMapper::addCloudPoint(const SRef<CloudPoint>& cloudPoin
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::removeCloudPoint(const SRef<CloudPoint>& cloudPoint)
+FrameworkReturnCode SolARMapper::removeCloudPoint(const SRef<CloudPoint> cloudPoint)
 {	
 	const std::map<uint32_t, uint32_t>& pointVisibility = cloudPoint->getVisibility();
 	std::vector<uint32_t> keyframeIds;
@@ -195,7 +195,7 @@ FrameworkReturnCode SolARMapper::removeCloudPoint(const SRef<CloudPoint>& cloudP
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::removeKeyframe(const SRef<Keyframe>& keyframe)
+FrameworkReturnCode SolARMapper::removeKeyframe(const SRef<Keyframe> keyframe)
 {
 	const std::map<uint32_t, uint32_t>& keyframeVisibility = keyframe->getVisibility();
 	// remove visibility of point cloud
@@ -234,7 +234,7 @@ void SolARMapper::pruning(const std::vector<SRef<CloudPoint>> &cloudPoints)
 	LOG_DEBUG("Number pruning cloud points: {}", count);
 }
 
-FrameworkReturnCode SolARMapper::saveToFile()
+FrameworkReturnCode SolARMapper::saveToFile() const
 {
 	LOG_INFO("Saving the map to file...");
 	boost::filesystem::create_directory(boost::filesystem::path(m_directory.c_str()));
@@ -315,7 +315,7 @@ FrameworkReturnCode SolARMapper::loadFromFile()
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARMapper::set(const SRef<IMapper> &floating_mapper) {
+FrameworkReturnCode SolARMapper::set(const SRef<IMapper> floating_mapper) {
 	floating_mapper->getKeyframesManager(m_keyframesManager);
 	floating_mapper->getKeyframeRetriever(m_keyframeRetriever);
 	floating_mapper->getPointCloudManager(m_pointCloudManager);
@@ -324,6 +324,9 @@ FrameworkReturnCode SolARMapper::set(const SRef<IMapper> &floating_mapper) {
 	return FrameworkReturnCode::_SUCCESS;
 }
 
+FrameworkReturnCode SolARMapper::get(SRef<IMapper> & mapper) {
+    return FrameworkReturnCode::_NOT_IMPLEMENTED;
+}
 
 }
 }
