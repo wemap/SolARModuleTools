@@ -68,8 +68,8 @@ public:
 	/// @param[in] secondPoints3D: second set of 3D points.
 	/// @param[out] pose: 3D transformation maps the first set of 3D points to the second one.
 	/// @param[out] inliers: indices of inlier correspondences.
-	FrameworkReturnCode estimate(const SRef<datastructure::Keyframe> &firstKeyframe,
-								const SRef<datastructure::Keyframe> &secondKeyframe,
+    FrameworkReturnCode estimate(const SRef<datastructure::Keyframe> firstKeyframe,
+                                const SRef<datastructure::Keyframe> secondKeyframe,
 								const std::vector<datastructure::DescriptorMatch> &matches,
 								const std::vector<datastructure::Point3Df> & firstPoints3D,
 								const std::vector<datastructure::Point3Df> & secondPoints3D,

@@ -51,7 +51,7 @@ public:
     /// @brief Get a pointer to the texture buffer to update it with the new image when required.
     /// @param[in,out] image
     /// @return SourceReturnCode::_SUCCESS if a new pose and image have been updated, otherwise frameworkReturnCode::_ERROR_
-    api::source::SourceReturnCode getNextImage(SRef<datastructure::Image> & image) override;
+    api::source::SourceReturnCode getNextImage(SRef<datastructure::Image> & image) const override;
 
     void unloadComponent () override final;
 
@@ -60,7 +60,7 @@ private:
 
     bool m_newImage;
 
-    std::mutex m_mutex;
+    mutable std::mutex m_mutex;
 };
 
 }

@@ -56,13 +56,16 @@ public:
 	/// @param[out] sim3Transform : 3D similarity transformation (Sim(3)) from query keyframe to the detected loop keyframe.
 	/// @param[out] duplicatedPointsIndices: indices of duplicated cloud points. The first index is the id of point cloud seen from the detected loop keyframe. The second one is id of point cloud seen from the query keyframe
 	/// @return FrameworkReturnCode::_SUCCESS if detect a loop closure, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode detect(const SRef<datastructure::Keyframe> &queryKeyframe, SRef<datastructure::Keyframe> &detectedLoopKeyframe, datastructure::Transform3Df &sim3Transform, std::vector<std::pair<uint32_t, uint32_t>> &duplicatedPointsIndices) override;
+    FrameworkReturnCode detect(const SRef<datastructure::Keyframe> queryKeyframe,
+                               SRef<datastructure::Keyframe> & detectedLoopKeyframe,
+                               datastructure::Transform3Df &sim3Transform,
+                               std::vector<std::pair<uint32_t, uint32_t>> &duplicatedPointsIndices) const override;
 
 	void unloadComponent () override final;
 
  private:
-	SRef<api::storage::IKeyframesManager>									m_keyframesManager;
-	SRef<api::storage::ICovisibilityGraph>								m_covisibilityGraph;
+    SRef<api::storage::IKeyframesManager>					m_keyframesManager;
+    SRef<api::storage::ICovisibilityGraph>					m_covisibilityGraph;
 	SRef<api::reloc::IKeyframeRetriever>					m_keyframeRetriever;
 	SRef<api::solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
 	SRef<api::features::IDescriptorMatcher>					m_matcher;

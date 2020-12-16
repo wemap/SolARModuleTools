@@ -58,17 +58,17 @@ public:
 
     /// @brief this method is used to set the fiducial marker
     /// @param[in] Fiducial marker.
-    void setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> & marker) override;
+    void setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> marker) override;
 
     /// @brief this method is used to set the fiducial marker
     /// @param[in] Fiducial marker.
-    void setMarker(const SRef<datastructure::FiducialMarker> & marker) override;
+    void setMarker(const SRef<datastructure::FiducialMarker> marker) override;
 
     /// @brief Estimates camera pose based on a fiducial marker.
 	/// @param[in] image: input image.
 	/// @param[out] pose: camera pose.
 	/// @return FrameworkReturnCode::_SUCCESS if the estimation succeed, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode estimate(const SRef<datastructure::Image> &image, datastructure::Transform3Df & pose) override;
+    FrameworkReturnCode estimate(const SRef<datastructure::Image> image, datastructure::Transform3Df & pose) override;
 
 	void unloadComponent() override final;
 

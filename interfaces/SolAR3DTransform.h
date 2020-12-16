@@ -53,7 +53,7 @@ public:
 	/// @param[in] transformation: transformation the 3D transformation to apply (a 4x4 float matrix)
 	/// @param[in,out] map: the map to apply the transformation
 	/// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode transform(const datastructure::Transform3Df & transformation, SRef<api::solver::map::IMapper> & map) override;
+    FrameworkReturnCode transform(const datastructure::Transform3Df & transformation, SRef<api::solver::map::IMapper> map) override;
 
 	/// @brief This method applies a transformation (4x4 float matrix) to a point cloud
 	/// @param[in] inputPointCloud the point cloud to transform
