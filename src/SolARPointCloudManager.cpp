@@ -75,7 +75,7 @@ FrameworkReturnCode SolARPointCloudManager::addPoints(const std::vector<CloudPoi
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolARPointCloudManager::getPoint(const uint32_t id, SRef<CloudPoint> point) const
+FrameworkReturnCode SolARPointCloudManager::getPoint(const uint32_t id, SRef<CloudPoint>& point) const
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     std::map< uint32_t, SRef<CloudPoint>>::const_iterator pointIt = m_pointCloud.find(id);

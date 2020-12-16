@@ -60,7 +60,7 @@ public:
 	/// @param[in] id of the point to get
 	/// @param[out] a 3D point stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getPoint(const uint32_t id, SRef<datastructure::CloudPoint> point) const override;
+    FrameworkReturnCode getPoint(const uint32_t id, SRef<datastructure::CloudPoint>& point) const override;
 
 	/// @brief This method allows to get a set of 3D points stored in the point cloud by their ids
 	/// @param[in] a vector of ids of the points to get
