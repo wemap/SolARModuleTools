@@ -64,8 +64,7 @@ win32 {
 }
 
 configfile.path = $${TARGETDEPLOYDIR}/
-configfile.files = $${PWD}/SolARTestLoopClosureDetection_config.xml \
-					$$files($${PWD}/camera_calibration.yml)
+configfile.files = $${PWD}/SolARTestLoopClosureDetection_config.xml
 INSTALLS += configfile
 
 #NOTE : Must be placed at the end of the .pro
