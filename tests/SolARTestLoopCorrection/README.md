@@ -6,7 +6,7 @@ If a loop closure is detected, it will perform the loop correction and the loop 
 
 ## How to run
 
-* :warning: Don't forget to download the [fbow vocabulary](https://github.com/SolarFramework/binaries/releases/download/fbow%2F0.0.1%2Fwin/fbow_voc.zip) unzip this archive and put the `akaze.fbow` in ``**./data**`` directory.
+* :warning: Don't forget to download the [fbow vocabulary](https://github.com/SolarFramework/binaries/releases/download/fbow%2F0.0.1%2Fwin/fbow_voc.zip) unzip this archive and put the `akaze.fbow` in ``./data`` directory.
 
 * Open a terminal and execute: `SolARTestLoopCorrection.exe`
 
