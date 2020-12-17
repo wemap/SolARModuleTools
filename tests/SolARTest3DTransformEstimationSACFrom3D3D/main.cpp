@@ -47,7 +47,6 @@ int main(int argc,char** argv)
 	LOG_INFO("Start creating components");
 	auto estimator3D = xpcfComponentManager->resolve<solver::pose::I3DTransformSACFinderFrom3D3D>();
 	auto transform3D = xpcfComponentManager->resolve<geom::I3DTransform>();
-
 	// init random input points
 	int NB_POINTS = 30;
 	int NB_OUTLIERS = 15;
@@ -70,15 +69,19 @@ int main(int argc,char** argv)
 	LOG_INFO("Transform 3D used: \n{}", poseToTransform.matrix());
 
 	// apply 3D transformation to input points
-	std::vector<Point3Df> pts2;
-	LOG_INFO("Outliers indices: ");
+	std::vector<Point3Df> pts2;	
+	std::vector<bool> bInliers(NB_POINTS, true);
 	transform3D->transform(pts1, poseToTransform, pts2);
 	for (int i = 0; i < NB_OUTLIERS; ++i) {
 		int index = rand() % NB_POINTS;
 		pts2[index].setZ(pts2[index].getZ() + 0.2 + (float)rand() / (RAND_MAX));
-		std::cout << index << " ";
+		bInliers[index] = false;		
 	}
-	std::cout << std::endl;
+	LOG_INFO("Inliers indices: ");
+	for (int i = 0; i < NB_POINTS; ++i)
+		if (bInliers[i])
+			std::cout << i << " ";
+	std::cout << "\n\n";
 
 	// find transformation
 	Transform3Df pose;
@@ -90,7 +93,7 @@ int main(int argc,char** argv)
 
 	// display results	
 	LOG_INFO("Transform 3D found: \n{}", pose.matrix());
-	LOG_INFO("Inliers indices: ");
+	LOG_INFO("Inliers indices found: ");
 	for (auto &it : inliers)
 		std::cout << it << " ";
 	std::cout << std::endl;

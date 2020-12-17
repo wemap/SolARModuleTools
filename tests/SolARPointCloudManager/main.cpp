@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     auto pointCloud = xpcfComponentManager->resolve<SolAR::api::storage::IPointCloudManager>();
 
 	// create a covisibility graph
-	std::string fileName = "pointcloud.txt";
+	std::string fileName = "pointcloud.bin";
 	LOG_INFO("Load the point cloud from {}", fileName);
 	if (pointCloud->loadFromFile(fileName) == FrameworkReturnCode::_ERROR_) {
 		LOG_INFO("This file doesn't exist. Create a new point cloud");
