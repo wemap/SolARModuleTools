@@ -67,10 +67,7 @@ int main(int argc,char** argv)
 	loopDetector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 
 	// Load map from file
-	if (mapper->loadFromFile() == FrameworkReturnCode::_SUCCESS) {
-		LOG_INFO("Load map done!");
-	}
-	else {
+	if (mapper->loadFromFile() != FrameworkReturnCode::_SUCCESS) {
 		LOG_INFO("Cannot load map");
 		return 0;
 	}
@@ -108,13 +105,6 @@ int main(int argc,char** argv)
 		// detected loop keyframe
 		LOG_INFO("Detected loop keyframe id: {}", detectedLoopKeyframe->getId());
 		LOG_INFO("Number of duplicated points: {}", duplicatedPointsIndices.size());
-		LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
-		Eigen::Matrix3f scale, rot;
-		sim3Transform.computeScalingRotation(&scale, &rot);
-		std::cout << "Scale : " << scale << std::endl;
-		std::cout << "Rot : " << rot << std::endl;
-		sim3Transform.linear() = rot;
-		sim3Transform.translation() = sim3Transform.translation() / scale(0, 0);
 		LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
 		// display point cloud
 		while (viewer3DPoints->display(localPointCloudTrans, lastKeyframe->getPose(), { detectedLoopKeyframe->getPose() }, {}, pointCloud, keyframePoses) == FrameworkReturnCode::_SUCCESS);

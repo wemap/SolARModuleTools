@@ -75,10 +75,7 @@ int main(int argc,char** argv)
 	loopCorrector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 
 	// Load map from file
-	if (mapper->loadFromFile() == FrameworkReturnCode::_SUCCESS) {
-		LOG_INFO("Load map done!");
-	}
-	else {
+	if (mapper->loadFromFile() != FrameworkReturnCode::_SUCCESS) {
 		LOG_INFO("Cannot load map");
 		return 0;
 	}
@@ -121,7 +118,7 @@ int main(int argc,char** argv)
 		std::vector<Transform3Df> keyframePosesAfter;
 		for (auto const &it : allKeyframes)
 			keyframePosesAfter.push_back(it->getPose());
-		while (viewer3DPoints->display(allPointCloud, lastKeyframe->getPose(), keyframePosesAfter, {}, pointCloudBefore, keyframePosesBefore) == FrameworkReturnCode::_SUCCESS);
+		while (viewer3DPoints->display(pointCloudBefore, lastKeyframe->getPose(), keyframePosesBefore, {}, allPointCloud, keyframePosesAfter) == FrameworkReturnCode::_SUCCESS);
 	}
 	else
 		LOG_INFO("Cannot detect a loop closure from last keyframe");

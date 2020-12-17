@@ -95,9 +95,6 @@
 			<property name="covisibilityGraphFileName" type="string" value="covisibility_graph.bin"/>
 			<property name="keyframeRetrieverFileName" type="string" value="keyframe_retriever.bin"/>
 		</configure>
-		<configure component="SolARLoopClosureDetector">
-            <property name="minNbInliers" type="int" value="10"/>
-		</configure>
 		<configure component="SolARDescriptorMatcherKNNOpencv">
             <property name="distanceRatio" type="float" value="0.7"/>
 		</configure>
@@ -108,16 +105,19 @@
 		</configure>
 		<configure component="SolARKeyframeRetrieverFBOW">
 			<property name="VOCpath" type="String" value="akaze.fbow"/>
-            <property name="threshold" type="float" value="0.01"/>
-            <property name="level" type="int" value="3"/>
-            <property name="matchingDistanceRatio" type="float" value="0.7"/>
-            <property name="matchingDistanceMax" type="float" value="100"/>
+			<property name="threshold" type="Float" value="0.03"/>
+			<property name="level" type="Integer" value="3"/>
+			<property name="matchingDistanceRatio" type="Float" value="0.8"/>
+			<property name="matchingDistanceMax" type="Float" value="600"/>
 		</configure>
 		<configure component="SolAR3DTransformEstimationSACFrom3D3D">
-            <property name="iterationsCount" type="int" value="100"/>
-            <property name="reprojError" type="float" value="3.0"/>
-            <property name="confidence" type="float" value="0.9"/>
-            <property name="minNbInliers" type="int" value="5"/>
+			<property name="iterationsCount" type="Integer" value="500"/>
+			<property name="reprojError" type="Float" value="10.0"/>
+			<property name="confidence" type="Float" value="0.9"/>
+			<property name="minNbInliers" type="Integer" value="10"/>			
+		</configure>
+		<configure component="SolARLoopClosureDetector">
+			<property name="minNbInliers" type="Integer" value="30"/>
 		</configure>
 		<configure component="SolAR3DPointsViewerOpengl">
             <property name="title" type="string" value="Keyframe - White = query, Red = detected loop; Point - Green = origin, Red = transform local map of query (Press esc to exit)"/>
@@ -145,11 +145,11 @@
 				<value>255</value>
 			</property>
             <property name="drawCameraAxis" type="uint" value="1"/>
-            <property name="drawSceneAxis" type="uint" value="1"/>
+            <property name="drawSceneAxis" type="uint" value="0"/>
             <property name="drawWorldAxis" type="uint" value="1"/>
             <property name="axisScale" type="float" value="1.0"/>
             <property name="pointSize" type="float" value="1.0"/>
-            <property name="cameraScale" type="float" value="0.1"/>
+            <property name="cameraScale" type="float" value="1.0"/>
             <property name="keyframeAsCamera" type="uint" value="1"/>
             <property name="framesColor" type="uint">
 				<value>255</value>
