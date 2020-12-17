@@ -11,20 +11,27 @@ DEFINES += WITHREMOTING
 include(findremakenrules.pri)
 
 CONFIG(debug,debug|release) {
+    TARGETDEPLOYDIR = $${PWD}/../bin/Debug
     DEFINES += _DEBUG=1
     DEFINES += DEBUG=1
 }
 
 CONFIG(release,debug|release) {
+    TARGETDEPLOYDIR = $${PWD}/../bin/Release
+    DEFINES += _NDEBUG=1
     DEFINES += NDEBUG=1
 }
 
+DEPENDENCIESCONFIG = shared install_recurse
+
 win32:CONFIG -= static
 win32:CONFIG += shared
-QMAKE_TARGET.arch = x86_64 #must be defined prior to include
-DEPENDENCIESCONFIG = shared recurse
-#NOTE : CONFIG as staticlib or sharedlib,  DEPENDENCIESCONFIG as staticlib or sharedlib, QMAKE_TARGET.arch and PROJECTDEPLOYDIR MUST BE DEFINED BEFORE templatelibconfig.pri inclusion
-include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/templateappconfig.pri)))
+
+## Configuration for Visual Studio to install binaries and dependencies. Work also for QT Creator by replacing QMAKE_INSTALL
+PROJECTCONFIG = QTVS
+
+#NOTE : CONFIG as staticlib or sharedlib, DEPENDENCIESCONFIG as staticlib or sharedlib, QMAKE_TARGET.arch and PROJECTDEPLOYDIR MUST BE DEFINED BEFORE templatelibconfig.pri inclusion
+include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/templateappconfig.pri)))  # Shell_quote & shell_path required for visual on windows
 
 HEADERS += \
     KeyFrameRetrieverMock.h
@@ -35,37 +42,14 @@ SOURCES += \
     testMain.cpp
 
 
-linux {
+unix {
     LIBS += -ldl
+    QMAKE_CXXFLAGS += -DBOOST_LOG_DYN_LINK
 }
 
 macx {
     QMAKE_MAC_SDK= macosx
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
-    QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -fasm-blocks -fPIC -x objective-c++ -std=c++17
-    QMAKE_CFLAGS += -mmacosx-version-min=10.7 #-x objective-c++
-    QMAKE_LFLAGS += -mmacosx-version-min=10.7 -v -lstdc++
-    # must be migrated to remaken
-    CPPAST_ROOT=$$(HOME)/workspace/labs/DIT/SFT/github/github-cppast
-    CPPAST_ROOT_BUILD=$$(HOME)/workspace/labs/DIT/SFT/github/build-cppast
-    INCLUDEPATH += $${CPPAST_ROOT}/include
-    INCLUDEPATH += $${CPPAST_ROOT}/external/cxxopts/include
-    INCLUDEPATH += $${CPPAST_ROOT}/external/type_safe/include
-    INCLUDEPATH += $${CPPAST_ROOT}/external/type_safe/external/debug_assert
-    LIBS += -L$${CPPAST_ROOT_BUILD}/debug/src -lcppast
-    LIBS += -L$${CPPAST_ROOT_BUILD}/debug -l_cppast_tiny_process
-# cppast and xpcf_grpc_gen depends upon brew llvm installation
-# XCode version update needs sometimes to upgrade brew llvm then to rebuild cppast (with the correct link toward llvm)
-# cppast cmake line is :
-# cmake -DCPPAST_TEMPLATE_FULLARGUMENTSPARSING=ON -DCMAKE_BUILD_TYPE=Debug -DLLVM_CONFIG_BINARY=/usr/local/opt/llvm/bin/llvm-config ../../github-cppast/
-# Xcode version update needs to set a link from current OS sdk towards MacOSX.sdk cf https://stackoverflow.com/questions/52509602/cant-compile-c-program-on-a-mac-after-upgrade-to-mojave
-    LLVM_BINARIES = /usr/local/opt/llvm/bin
-    LLVM_LIBDIR = $$system($${LLVM_BINARIES}/llvm-config --libdir)
-    LIBS += -L$${LLVM_LIBDIR} -lclang
-    LLVM_CLANG_LIBS = $$files($${LLVM_LIBDIR}/libclang*.a)
-    LIBS += $${LLVM_CLANG_LIBS}
-    #QMAKE_CXXFLAGS += --coverage
-    #QMAKE_LFLAGS += --coverage
+    QMAKE_CXXFLAGS += -fasm-blocks -x objective-c++
 }
 
 win32 {
@@ -76,10 +60,16 @@ win32 {
     # Windows Kit (msvc2013 64)
     LIBS += -L$$(WINDOWSSDKDIR)lib/winv6.3/um/x64 -lshell32 -lgdi32 -lComdlg32
     INCLUDEPATH += $$(WINDOWSSDKDIR)lib/winv6.3/um/x64
+
 }
 
-DISTFILES += \
-    packagedependencies.txt \
-    testSolARModuleTools_config.xml
+configfile.path = $${TARGETDEPLOYDIR}/
+configfile.files = $${PWD}/testSolARModuleTools_config.xml
+INSTALLS += configfile
 
+DISTFILES += \
+    packagedependencies.txt
+
+#NOTE : Must be placed at the end of the .pro
+include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/remaken_install_target.pri)))) # Shell_quote & shell_path required for visual on windows
 
