@@ -8,31 +8,27 @@ SolARModuleTools is open-source, designed by [b<>com](https://b-com.com/en), und
 
 # Before running the tests
 
-Some tests require external data which has to be download before executing them.
+Some tests require external data which has to be downloaded before executing them.
 
 ## Bag Of Word Vocabulary
 
-This vocabulary is required for Key frame retrieval. Download the vocabularies required for the bag of words available on the GitHub, and extract the `akaze.fbow` file and copy it in the `./data` folder.
+This vocabulary is required for keyframe retrieval. Download the vocabularies required for the bag of words available on the [GitHub](https://github.com/SolarFramework/SolARModuleFBOW/releases/download/fbowVocabulary/fbow_voc.zip), and extract the `akaze.fbow` file and copy it in the `./data` folder.
 
 ## Maps
 
 The loop closure tests will use a pre-built map which need to be download in your `./data` folder. You can use the map available on the SolAR artifactory.
-Download the map [Loop_Desktop_A]https://artifact.b-com.com/solar-generic-local/maps/hololens/bcomLab/loopDesktopA.zip, and extract it to the `./data` folder. 
 
-# Required modules
+Download the map [freiburg3_long_office_household.zip](https://artifact.b-com.com/solar-generic-local/captures/singleRGB/TUM/freiburg3_long_office_household.zip), and extract the `./map` folder to the `./data` folder.
+
+## Required modules
 
 Secondly, some tests require other modules such as OpenGL, OpenCV, FBOW and G20. If they are not yet install on your machine, please run the following command from the test folder:
 
-----
-remaken install packagedependencies.txt
-----
+<pre><code>remaken install packagedependencies.txt</code></pre>
 
 and for debug mode:
 
-----
-remaken install packagedependencies.text -c debug
----- 
-
+<pre><code>remaken install packagedependencies.txt -c debug</code></pre>
 
 # The tests
 
@@ -50,16 +46,16 @@ This test creates an our covisibility graph and evaluate different functions for
 
 ## SolAR test mapper
 
-This test creates two mappers that includes storage components in *Singleton* mode (e.g. point cloud manager, keyframe manager, covisibility graph, keyframe retriever). 
+This test creates two mappers that includes storage components in *Singleton* mode (e.g. point cloud manager, keyframe manager, covisibility graph, keyframe retriever).
 Therefore, Only one instance of each component is created and two mappers share the same storage components.
 
 ## SolAR Test Point Cloud Manager
 
-This test aims at creating a sample point cloud, then trying to save and load it from file. 
+This test aims at creating a sample point cloud, then trying to save and load it from file.
 
 ## SolAR Test Loop closure detection
 
-This test uses the prebuilt map to try to detect a loop closure for the last keyframe. 
+This test uses the prebuilt map to try to detect a loop closure for the last keyframe.
 If a loop closure is detected, it will transform local point cloud of the last keyframe to the coordinate system of the loop detected keyframe.
 
 ## SolAR Test Loop Correction

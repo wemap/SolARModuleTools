@@ -100,7 +100,7 @@ int main(int argc,char** argv)
     std::vector<SRef<CloudPoint>> localPointCloudTrans;
     std::vector<Transform3Df> keyframePosesAfter;
     bool loopDetected = false;
-    SRef<Keyframe> loopKeyframe, detectedLoopKeyframe;
+    SRef<Keyframe> requestedLoopKeyframe, detectedLoopKeyframe;
     for (SRef<Keyframe> currentKeyframe : allKeyframes)
     {
         uint32_t currentKeyframeId = currentKeyframe->getId();
@@ -109,6 +109,7 @@ int main(int argc,char** argv)
         std::vector<std::pair<uint32_t, uint32_t>> duplicatedPointsIndices;
         if (loopDetector->detect(currentKeyframe, detectedLoopKeyframe, sim3Transform, duplicatedPointsIndices) == FrameworkReturnCode::_SUCCESS) {
             // detected loop keyframe
+            LOG_INFO("Requested loop keyframe id: {}", currentKeyframe->getId());
             LOG_INFO("Detected loop keyframe id: {}", detectedLoopKeyframe->getId());
             LOG_INFO("Number of duplicated points: {}", duplicatedPointsIndices.size());
             LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
@@ -124,13 +125,13 @@ int main(int argc,char** argv)
                 keyframePosesAfter.push_back(it->getPose());
 
             loopDetected = true;
-            loopKeyframe = currentKeyframe;
+            requestedLoopKeyframe = currentKeyframe;
         }
         if (loopDetected)
             break;
     }
     if (loopDetected)
-        while (viewer3DPoints->display(pointCloudBefore, loopKeyframe->getPose(), keyframePosesBefore, {}, allPointCloud, keyframePosesAfter) == FrameworkReturnCode::_SUCCESS);
+        while (viewer3DPoints->display(pointCloudBefore, requestedLoopKeyframe->getPose(), keyframePosesBefore, {}, allPointCloud, keyframePosesAfter) == FrameworkReturnCode::_SUCCESS);
 	else
         LOG_INFO("Cannot detect a loop closure");
 	

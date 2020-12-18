@@ -88,7 +88,7 @@ int main(int argc,char** argv)
     // SRef<Keyframe> lastKeyframe = allKeyframes[allKeyframes.size() - 1];
     std::vector<SRef<CloudPoint>> localPointCloudTrans;
     bool loopDetected = false;
-    SRef<Keyframe> loopKeyframe, detectedLoopKeyframe;
+    SRef<Keyframe> requestedLoopKeyframe, detectedLoopKeyframe;
     for (SRef<Keyframe> currentKeyframe : allKeyframes)
     {
         uint32_t currentKeyframeId = currentKeyframe->getId();
@@ -107,18 +107,19 @@ int main(int argc,char** argv)
                 localPointCloudTrans.push_back(xpcf::utils::make_shared<CloudPoint>(it.getX(), it.getY(), it.getZ()));
 
             // detected loop keyframe
+            LOG_INFO("Requested loop keyframe id: {}", currentKeyframe->getId());
             LOG_INFO("Detected loop keyframe id: {}", detectedLoopKeyframe->getId());
             LOG_INFO("Number of duplicated points: {}", duplicatedPointsIndices.size());
             LOG_INFO("Transform 3D from last keyframe and best detected loop keyframe: \n{}", sim3Transform.matrix());
             // display point cloud
-            loopKeyframe = currentKeyframe;
+            requestedLoopKeyframe = currentKeyframe;
             loopDetected = true;
         }
         if (loopDetected)
             break;
     }
     if (loopDetected)
-        while (viewer3DPoints->display(localPointCloudTrans, loopKeyframe->getPose(), { detectedLoopKeyframe->getPose() }, {}, pointCloud, keyframePoses) == FrameworkReturnCode::_SUCCESS);
+        while (viewer3DPoints->display(localPointCloudTrans, requestedLoopKeyframe->getPose(), { detectedLoopKeyframe->getPose() }, {}, pointCloud, keyframePoses) == FrameworkReturnCode::_SUCCESS);
     else
         LOG_INFO("Cannot detect a loop closure");
 	

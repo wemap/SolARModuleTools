@@ -87,7 +87,7 @@
             <property name="deviceID" type="uint" value="0"/>
 		</configure>
 		<configure component="SolARMapper">
-            <property name="directory" type="string" value="../../data/mapA"/>
+            <property name="directory" type="string" value="../../data/map"/>
 			<property name="identificationFileName" type="string" value="identification.bin"/>
 			<property name="coordinateFileName" type="string" value="coordinate.bin"/>
 			<property name="pointCloudManagerFileName" type="string" value="pointcloud.bin"/>
