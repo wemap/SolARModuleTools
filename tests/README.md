@@ -26,3 +26,8 @@ This test creates a covisibility graph based on the boost library and evaluate d
 ## SolAR test covisibility graph
 
 This test creates an our covisibility graph and evaluate different functions for example: create an edge, remove an edge, remove a node, find neighbors, find the shortest path between two nodes, find minimal spanning tree, save and load in the file.
+
+## SolAR test mapper
+
+This test creates two mappers that includes storage components in *Singleton* mode (e.g. point cloud manager, keyframe manager, covisibility graph, keyframe retriever). 
+Therefore, Only one instance of each component is created and two mappers share the same storage components.

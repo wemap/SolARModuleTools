@@ -39,7 +39,7 @@ void print_error(const std::string& msg)
 int main(int argc, char* argv[])
 {
     SRef<xpcf::IComponentManager> cmpMgr = xpcf::getComponentManagerInstance();
-    cmpMgr->load("testSolARModuleTools_config.xml");
+    cmpMgr->load("SolARTest_ModuleTools_DualMapperSingleton_conf.xml");
     cmpMgr->bindLocal<SolAR::api::reloc::IKeyframeRetriever,SolAR::MODULES::TOOLS::KeyFrameRetrieverMock,xpcf::Singleton>();
     auto mapper = cmpMgr->resolve<SolAR::api::solver::map::IMapper>();
     auto otherMapper = cmpMgr->resolve<SolAR::api::solver::map::IMapper>();

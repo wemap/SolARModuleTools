@@ -1,4 +1,4 @@
-TARGET = testSolARModuleTools
+TARGET = SolARTest_ModuleTools_DualMapperSingleton
 VERSION=0.9.0
 
 CONFIG += c++1z
@@ -22,16 +22,17 @@ CONFIG(release,debug|release) {
     DEFINES += NDEBUG=1
 }
 
-DEPENDENCIESCONFIG = shared install_recurse
-
 win32:CONFIG -= static
 win32:CONFIG += shared
+
+QMAKE_TARGET.arch = x86_64 #must be defined prior to include
+DEPENDENCIESCONFIG = shared install_recurse
 
 ## Configuration for Visual Studio to install binaries and dependencies. Work also for QT Creator by replacing QMAKE_INSTALL
 PROJECTCONFIG = QTVS
 
-#NOTE : CONFIG as staticlib or sharedlib, DEPENDENCIESCONFIG as staticlib or sharedlib, QMAKE_TARGET.arch and PROJECTDEPLOYDIR MUST BE DEFINED BEFORE templatelibconfig.pri inclusion
-include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/templateappconfig.pri)))  # Shell_quote & shell_path required for visual on windows
+#NOTE : CONFIG as staticlib or sharedlib,  DEPENDENCIESCONFIG as staticlib or sharedlib, QMAKE_TARGET.arch and PROJECTDEPLOYDIR MUST BE DEFINED BEFORE templatelibconfig.pri inclusion
+include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/templateappconfig.pri)))
 
 HEADERS += \
     KeyFrameRetrieverMock.h
@@ -64,7 +65,7 @@ win32 {
 }
 
 configfile.path = $${TARGETDEPLOYDIR}/
-configfile.files = $${PWD}/testSolARModuleTools_config.xml
+configfile.files = $${PWD}/SolARTest_ModuleTools_DualMapperSingleton_conf.xml
 INSTALLS += configfile
 
 DISTFILES += \
@@ -72,4 +73,3 @@ DISTFILES += \
 
 #NOTE : Must be placed at the end of the .pro
 include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/remaken_install_target.pri)))) # Shell_quote & shell_path required for visual on windows
-
