@@ -71,6 +71,11 @@ doxygen/
 
 # Tests builds
 tests/bin
+teste/build*
+
+# Tests external data
+tests/data/akaze.fbow
+tests/data/map*
 
 # Others
 *.*pre1

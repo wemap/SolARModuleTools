@@ -37,9 +37,9 @@ int main(int argc,char** argv)
 	/* this is needed in dynamic mode */
 	SRef<xpcf::IComponentManager> xpcfComponentManager = xpcf::getComponentManagerInstance();
 
-	if (xpcfComponentManager->load("SolARTest3DTransformEstimationSACFrom3D3D_config.xml") != org::bcom::xpcf::_SUCCESS)
+    if (xpcfComponentManager->load("SolARTest_ModuleTools_3DTransformEstimationSACFrom3D3D_conf.xml") != org::bcom::xpcf::_SUCCESS)
 	{
-		LOG_ERROR("Failed to load the configuration file SolARTest3DTransformEstimationSACFrom3D3D_config.xml")
+        LOG_ERROR("Failed to load the configuration file SolARTest_ModuleTools_3DTransformEstimationSACFrom3D3D_conf.xml")
 			return -1;
 	}
 

@@ -3,7 +3,7 @@ QT       -= core gui
 CONFIG -= qt
 
 ## global defintions : target lib name, version
-TARGET = SolARTest3DTransformEstimationSACFrom3D3D
+TARGET = SolARTest_ModuleTools_3DTransformEstimationSACFrom3D3D
 VERSION=0.9.0
 
 DEFINES += MYVERSION=$${VERSION}
@@ -64,8 +64,11 @@ win32 {
 }
 
 configfile.path = $${TARGETDEPLOYDIR}/
-configfile.files = $${PWD}/SolARTest3DTransformEstimationSACFrom3D3D_config.xml
+configfile.files = $${PWD}/SolARTest_ModuleTools_3DTransformEstimationSACFrom3D3D_conf.xml
 INSTALLS += configfile
+
+DISTFILES += \
+    packagedependencies.txt
 
 #NOTE : Must be placed at the end of the .pro
 include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/remaken_install_target.pri)))) # Shell_quote & shell_path required for visual on windows
