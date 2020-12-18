@@ -18,3 +18,11 @@ First, download the vocabularies required for the bag of words available on the 
 ## SolAR Test 3D Transform Estimation using RANSAC
 
 Given two sets of 3D-3D point correspondences with noisy data, this test aims at estimating the 3D transformation (7-DoF) between them and defining inlier correspondences.
+
+## SolAR test covisibility graph based on Boost library
+
+This test creates a covisibility graph based on the boost library and evaluate different functions for example: create an edge, remove an edge, remove a node, find neighbors, find the shortest path between two nodes, find minimal spanning tree, save and load in the file.
+
+## SolAR test covisibility graph
+
+This test creates an our covisibility graph and evaluate different functions for example: create an edge, remove an edge, remove a node, find neighbors, find the shortest path between two nodes, find minimal spanning tree, save and load in the file.

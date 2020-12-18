@@ -35,9 +35,9 @@ int main(int argc, char* argv[])
 	LOG_ADD_LOG_TO_CONSOLE();
 	SRef<xpcf::IComponentManager> xpcfComponentManager = xpcf::getComponentManagerInstance();
 
-    if (xpcfComponentManager->load("testSolARBoostCovisibilityGraph_conf.xml") != org::bcom::xpcf::_SUCCESS)
+    if (xpcfComponentManager->load("SolARTest_ModuleTools_BoostCovisibilityGraph_conf.xml") != org::bcom::xpcf::_SUCCESS)
 	{
-        std::cerr << "Failed to load the configuration file testSolARBoostCovisibilityGraph_conf.xml" << std::endl;
+        std::cerr << "Failed to load the configuration file SolARTest_ModuleTools_BoostCovisibilityGraph_conf.xml" << std::endl;
 		return -1;
 	}
     auto covisibilityGraph = xpcfComponentManager->resolve<SolAR::api::storage::ICovisibilityGraph>();

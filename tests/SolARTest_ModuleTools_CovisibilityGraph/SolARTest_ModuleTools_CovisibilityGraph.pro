@@ -3,7 +3,7 @@ QT       -= core gui
 CONFIG -= qt
 
 ## global defintions : target lib name, version
-TARGET = testSolARCovisibilityGraph
+TARGET = SolARTest_ModuleTools_CovisibilityGraph
 VERSION=0.9.0
 
 DEFINES += MYVERSION=$${VERSION}
@@ -63,7 +63,7 @@ win32 {
 }
 
 configfile.path = $${TARGETDEPLOYDIR}/
-configfile.files = $${PWD}/testSolARCovisibilityGraph_conf.xml
+configfile.files = $${PWD}/SolARTest_ModuleTools_CovisibilityGraph_conf.xml
 INSTALLS += configfile
 
 DISTFILES += \
