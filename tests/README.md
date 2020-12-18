@@ -10,7 +10,28 @@ SolARModuleTools is open-source, designed by [b<>com](https://b-com.com/en), und
 
 Some tests require external data which has to be download before executing them.
 
-First, download the vocabularies required for the bag of words available on the GitHub, and extract the akaze.fbow file and copy it in the data folder.
+## Bag Of Word Vocabulary
+
+This vocabulary is required for Key frame retrieval. Download the vocabularies required for the bag of words available on the GitHub, and extract the `akaze.fbow` file and copy it in the `./data` folder.
+
+## Maps
+
+The loop closure tests will use a pre-built map which need to be download in your `./data` folder. You can use the map available on the SolAR artifactory.
+Download the map [Loop_Desktop_A]https://artifact.b-com.com/solar-generic-local/maps/hololens/bcomLab/loopDesktopA.zip, and extract it to the `./data` folder. 
+
+# Required modules
+
+Secondly, some tests require other modules such as OpenGL, OpenCV, FBOW and G20. If they are not yet install on your machine, please run the following command from the test folder:
+
+----
+remaken install packagedependencies.txt
+----
+
+and for debug mode:
+
+----
+remaken install packagedependencies.text -c debug
+---- 
 
 
 # The tests
@@ -31,3 +52,17 @@ This test creates an our covisibility graph and evaluate different functions for
 
 This test creates two mappers that includes storage components in *Singleton* mode (e.g. point cloud manager, keyframe manager, covisibility graph, keyframe retriever). 
 Therefore, Only one instance of each component is created and two mappers share the same storage components.
+
+## SolAR Test Point Cloud Manager
+
+This test aims at creating a sample point cloud, then trying to save and load it from file. 
+
+## SolAR Test Loop closure detection
+
+This test uses the prebuilt map to try to detect a loop closure for the last keyframe. 
+If a loop closure is detected, it will transform local point cloud of the last keyframe to the coordinate system of the loop detected keyframe.
+
+## SolAR Test Loop Correction
+
+This test uses the prebuilt map to try to detect a loop closure for the last keyframe.
+If a loop closure is detected, it will perform the loop correction and the loop optimization based on the global bundle adjustment.
