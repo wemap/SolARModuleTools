@@ -28,6 +28,7 @@
 #include "api/solver/map/IKeyframeSelector.h"
 #include "api/display/IMatchesOverlay.h"
 #include "api/solver/pose/I3DTransformFinderFrom2D2D.h"
+#include "api/geom/IUndistortPoints.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
 
@@ -88,6 +89,7 @@ private:
 	SRef<api::solver::map::IMapFilter>					m_mapFilter;
 	SRef<api::solver::map::IKeyframeSelector>			m_keyframeSelector;
 	SRef<api::solver::pose::I3DTransformFinderFrom2D2D>	m_poseFinderFrom2D2D;
+	SRef<api::geom::IUndistortPoints>					m_undistortPoints;
 	SRef<api::display::IMatchesOverlay>					m_matchesOverlay;
 };
 

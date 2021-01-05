@@ -41,6 +41,7 @@ SolARSLAMBootstrapper::SolARSLAMBootstrapper() :ConfigurableBase(xpcf::toUUID<So
 	declareInjectable<api::solver::map::IMapFilter>(m_mapFilter);
 	declareInjectable<api::solver::map::IKeyframeSelector>(m_keyframeSelector);
 	declareInjectable<api::solver::pose::I3DTransformFinderFrom2D2D>(m_poseFinderFrom2D2D);
+	declareInjectable<api::geom::IUndistortPoints>(m_undistortPoints);
 	declareInjectable<api::display::IMatchesOverlay>(m_matchesOverlay);
 	declareProperty("hasPose", m_hasPose);
 	declareProperty("nbMinInitPointCloud", m_nbMinInitPointCloud);
@@ -52,6 +53,7 @@ void SolARSLAMBootstrapper::setCameraParameters(const CamCalibration & intrinsic
 	m_camDistortion = distortionParams;
 	m_triangulator->setCameraParameters(m_camMatrix, m_camDistortion);
 	m_poseFinderFrom2D2D->setCameraParameters(m_camMatrix, m_camDistortion);
+    m_undistortPoints->setCameraParameters(m_camMatrix, m_camDistortion);
 }
 
 inline float angleCamDistance(const Transform3Df & pose1, const Transform3Df & pose2) {
@@ -61,7 +63,7 @@ inline float angleCamDistance(const Transform3Df & pose1, const Transform3Df & p
 FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef<Image> &view, const Transform3Df &pose)
 {
 	Transform3Df						poseFrame;
-	std::vector<Keypoint>				keypoints;
+	std::vector<Keypoint>				keypoints, undistortedKeypoints;
 	SRef<DescriptorBuffer>				descriptors;
 	std::vector<DescriptorMatch>		matches;
 	SRef<Frame>							frame2;	
@@ -76,16 +78,19 @@ FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef
 	else
 		poseFrame = Transform3Df::Identity();			
 
-	// feature extraction
+	// keypoint detection
 	m_keypointsDetector->detect(image, keypoints);
+	// undistort keypoints
+	m_undistortPoints->undistort(keypoints, undistortedKeypoints);
+	// feature extraction
 	m_descriptorExtractor->extract(image, keypoints, descriptors);
 	if (!m_initKeyframe1) {
 		// init first keyframe
 		m_initKeyframe1 = true;		
-		m_keyframe1 = xpcf::utils::make_shared<Keyframe>(keypoints, descriptors, image, poseFrame);
+		m_keyframe1 = xpcf::utils::make_shared<Keyframe>(keypoints, undistortedKeypoints, descriptors, image, poseFrame);
 	}
 	else {
-		frame2 = xpcf::utils::make_shared<Frame>(keypoints, descriptors, image, m_keyframe1, poseFrame);		
+		frame2 = xpcf::utils::make_shared<Frame>(keypoints, undistortedKeypoints, descriptors, image, m_keyframe1, poseFrame);		
 		// matching
 		m_matcher->match(m_keyframe1->getDescriptors(), frame2->getDescriptors(), matches);
 		m_matchesFilter->filter(matches, matches, m_keyframe1->getKeypoints(), frame2->getKeypoints());
