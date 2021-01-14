@@ -16,6 +16,7 @@
 
 #include "SolARBasicMatchesFilter.h"
 #include "xpcf/component/ComponentFactory.h"
+#include "xpcf/core/helpers.h"
 #include <set>
 
 namespace xpcf = org::bcom::xpcf;
@@ -46,8 +47,8 @@ bool sortMatchByDistance(const std::pair<int,float> &lhs, const std::pair<int,fl
 // filter matches : keep the best match in case of multiple matches per keypoint
 void SolARBasicMatchesFilter::filter(const std::vector<DescriptorMatch> & inputMatches,
                                      std::vector<DescriptorMatch> & outputMatches,
-                                     [[maybe_unused]] const std::vector<Keypoint> & inputKeyPointsA,
-                                     [[maybe_unused]] const std::vector<Keypoint> & inputKeyPointsB)
+                                     ATTRIBUTE(maybe_unused) const std::vector<Keypoint> & inputKeyPointsA,
+                                     ATTRIBUTE(maybe_unused) const std::vector<Keypoint> & inputKeyPointsB)
 {
     std::map<int,std::vector<std::pair<int,float>>> matchesMap;
 

@@ -16,6 +16,8 @@
 
 #include "SolARKeyframeSelector.h"
 
+#include "xpcf/core/helpers.h"
+
 namespace xpcf  = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARKeyframeSelector);
@@ -60,7 +62,7 @@ bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::vector<De
 }
 
 
-bool SolARKeyframeSelector::select([[maybe_unused]] const SRef<Frame> frame) const
+bool SolARKeyframeSelector::select(ATTRIBUTE(maybe_unused) const SRef<Frame> frame) const
 {
     // NOT IMPLEMENTED : NEEDS AVAILABLE STORAGE COMPONENTS
     return false;
