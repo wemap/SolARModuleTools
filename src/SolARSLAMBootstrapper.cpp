@@ -52,7 +52,6 @@ xpcf::XPCFErrorCode SolARSLAMBootstrapper::onConfigured()
 {
 	LOG_DEBUG("SolARSLAMBootstrapper onConfigured");
 	m_ratioDistanceIsKeyframe = m_keyframeSelector->bindTo<xpcf::IConfigurable>()->getProperty("minMeanDistanceIsKeyframe")->getFloatingValue();
-	LOG_INFO("m_ratioDistanceIsKeyframe: {}", m_ratioDistanceIsKeyframe);
 	return xpcf::XPCFErrorCode::_SUCCESS;
 }
 
@@ -100,7 +99,8 @@ FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef
 	else {
 		frame2 = xpcf::utils::make_shared<Frame>(keypoints, undistortedKeypoints, descriptors, image, m_keyframe1, poseFrame);		
 		// matching
-		m_matcher->matchInRegion(m_keyframe1, frame2, matches, image->getWidth() * (m_ratioDistanceIsKeyframe + 0.01));
+		m_matcher->match(m_keyframe1->getDescriptors(), descriptors, matches);
+		//m_matcher->matchInRegion(m_keyframe1, frame2, matches, image->getWidth() * (m_ratioDistanceIsKeyframe + 0.01));
 		m_matchesFilter->filter(matches, matches, m_keyframe1->getKeypoints(), frame2->getKeypoints());
 		if (matches.size() > 0) {
 			m_matchesOverlay->draw(image, view, m_keyframe1->getKeypoints(), frame2->getKeypoints(), matches);
