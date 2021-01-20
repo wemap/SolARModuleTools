@@ -34,8 +34,32 @@ namespace TOOLS {
 * @brief <B>Finds the 3D transform of 3D-3D points correspondences with a SAmple Consensus.</B>
 * <TT>UUID: 3b7a1117-8b59-46b1-8e0c-6e76a8377ab4</TT>
 *
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::geom::I3DTransform}
+* @SolARComponentInjectable{SolAR::api::geom::IProject}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ iterationsCount,
+*                          number of iterations,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 500 }}
+* @SolARComponentProperty{ reprojError,
+*                          inlier threshold value used by the RANSAC procedure.<br>
+*                           The parameter value is the maximum allowed distance between 
+*                           the observed and computed point projections to consider it an inlier,
+*                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 4.f }}
+* @SolARComponentProperty{ distanceError,
+*                          inlier threshold value based on 3d distance error,
+*                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0.1f }}
+* @SolARComponentProperty{ confidence,
+*                          the probability that the algorithm produces a useful result,
+*                          @SolARComponentPropertyDescNum{ float, [0..1], 0.99f }}
+* @SolARComponentProperty{ minNbInliers,
+*                          the minimum of number of inliers to valid a good pose estimation,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 10 }}
+* @SolARComponentPropertiesEnd
+*
 */
-
 class SOLAR_TOOLS_EXPORT_API SolAR3DTransformEstimationSACFrom3D3D : public org::bcom::xpcf::ConfigurableBase,
     public api::solver::pose::I3DTransformSACFinderFrom3D3D
 {

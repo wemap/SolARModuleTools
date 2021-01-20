@@ -42,6 +42,35 @@ namespace TOOLS {
 * @brief <B> SLAM mapping.</B>
 * <TT>UUID: c276bcb1-2ac8-42f2-806d-d4fe0ce7d4be</TT>
 *
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::storage::IPointCloudManager}
+* @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
+* @SolARComponentInjectable{SolAR::api::storage::ICovisibilityGraph}
+* @SolARComponentInjectable{SolAR::api::solver::map::IKeyframeSelector}
+* @SolARComponentInjectable{SolAR::api::solver::map::IBundler}
+* @SolARComponentInjectable{SolAR::api::reloc::IKeyframeRetriever}
+* @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
+* @SolARComponentInjectable{SolAR::api::solver::map::ITriangulator}
+* @SolARComponentInjectable{SolAR::solver::map::IMapFilter}
+* @SolARComponentInjectable{SolAR::api::geom::IProject}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I2D3DCorrespondencesFinder}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ minWeightNeighbor,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 1.f }}
+* @SolARComponentProperty{ maxNbNeighborKfs,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 5 }}
+* @SolARComponentProperty{ minTrackedPoints,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 100 }}
+* @SolARComponentPropertiesEnd
+*
+*
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARSLAMMapping : public org::bcom::xpcf::ConfigurableBase,
