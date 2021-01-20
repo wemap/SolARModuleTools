@@ -15,6 +15,10 @@ namespace TOOLS {
 * @brief <B>Finds the 3D-3D correspondences from feature matches of two keyframes.</B>
 * <TT>UUID: 978068ef-7f93-41ef-8e24-13419776d9c6</TT>
 *
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::storage::IPointCloudManager}
+* @SolARComponentInjectablesEnd
+*
 */
 class SOLAR_TOOLS_EXPORT_API SolAR3D3DCorrespondencesFinder : public org::bcom::xpcf::ComponentBase,
 	public api::solver::pose::I3D3DCorrespondencesFinder

@@ -32,6 +32,15 @@ namespace TOOLS {
  * @brief <B>Defines if a frame can be a candidate for a keyframe.</B>
  * <TT>UUID: ad59a5ba-beb8-11e8-a355-529269fb1459</TT>
  *
+ * @SolARComponentPropertiesBegin
+ * @SolARComponentProperty{ minNbMatchesIsKeyframe,
+ *                          minimum number of matches for a frame to be a keyframe,
+ *                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 50 }}
+ * @SolARComponentProperty{ minMeanDistanceIsKeyframe,
+ *                          minimum mean distance for a frame to be a keyframe,
+ *                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 20.f }}
+ * @SolARComponentPropertiesEnd
+ *
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARKeyframeSelector : public org::bcom::xpcf::ConfigurableBase,

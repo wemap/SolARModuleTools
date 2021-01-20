@@ -36,10 +36,26 @@ namespace SolAR {
 namespace MODULES {
 namespace TOOLS {
 /**
-* @class SolARLoopClosureDetector
+* @class SolAROverlapDetector
 * @brief Detect a loop closure from a given keyframe.
 * <TT>UUID: 58087630-1376-11eb-adc1-0242ac120002</TT>
+*
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformSACFinderFrom3D3D}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3D3DCorrespondencesFinder}
+* @SolARComponentInjectable{SolAR::api::geom::I3DTransform}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ minNbInliers,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 0 }}
+* @SolARComponentPropertiesEnd
+*
 */
+
 class SOLAR_TOOLS_EXPORT_API SolAROverlapDetector : public org::bcom::xpcf::ConfigurableBase,
         public api::loop::IOverlapDetector {
 public:

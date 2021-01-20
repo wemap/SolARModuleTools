@@ -32,6 +32,21 @@ namespace TOOLS {
  * @brief <B>Retrieves the 3D correspondences of pixels of a 2D marker.</B>
  * <TT>UUID: 6fed0169-4f01-4545-842a-3e2425bee248</TT>
  *
+ * @SolARComponentPropertiesBegin
+ * @SolARComponentProperty{ digitalWidth,
+ *                          the width of the 2D marker in pixels for a natural image marker\, or in cells for a squared binary marker,
+ *                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 0 }}
+ * @SolARComponentProperty{ digitalHeight,
+ *                          the height of the 2D marker in pixels for a natural image marker\, or in cells for a squared binary marker,
+ *                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 0 }}
+ * @SolARComponentProperty{ worldWidth,
+ *                          the width of the marker in a user-defined world coordinate system (meters\, cenimeters\, etc.),
+ *                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0 }}
+ * @SolARComponentProperty{ worldHeight,
+ *                          the height of the marker in a user-defined world coordinate system (meters\, cenimeters\, etc.),
+ *                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0 }}
+ * @SolARComponentPropertiesEnd
+ *
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARImage2WorldMapper4Marker2D : public org::bcom::xpcf::ConfigurableBase,
