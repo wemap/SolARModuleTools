@@ -115,30 +115,30 @@
 		</configure>
 		<configure component="SolARKeyframeRetrieverFBOW">
 			<property name="VOCpath" type="String" value="../../data/akaze.fbow"/>
-			<property name="threshold" type="Float" value="0.03"/>
-			<property name="level" type="Integer" value="3"/>
-			<property name="matchingDistanceRatio" type="Float" value="0.8"/>
-			<property name="matchingDistanceMax" type="Float" value="600"/>
+                        <property name="threshold" type="float" value="0.03"/>
+                        <property name="level" type="int" value="3"/>
+                        <property name="matchingDistanceRatio" type="float" value="0.8"/>
+                        <property name="matchingDistanceMax" type="float" value="600"/>
 		</configure>
 		<configure component="SolAR3DTransformEstimationSACFrom3D3D">
-			<property name="iterationsCount" type="Integer" value="500"/>
-			<property name="reprojError" type="Float" value="10.0"/>
-			<property name="confidence" type="Float" value="0.9"/>
-			<property name="minNbInliers" type="Integer" value="10"/>			
+                        <property name="iterationsCount" type="int" value="500"/>
+                        <property name="reprojError" type="float" value="10.0"/>
+                        <property name="confidence" type="float" value="0.9"/>
+                        <property name="minNbInliers" type="int" value="10"/>
 		</configure>
 		<configure component="SolARLoopClosureDetector">
-			<property name="minNbInliers" type="Integer" value="30"/>
+                        <property name="minNbInliers" type="int" value="30"/>
 		</configure>
 		<configure component="SolAROptimizationG2O">
-			<property name="nbIterationsLocal" type="Integer" value="10"/>
-			<property name="nbIterationsGlobal" type="Integer" value="20"/>
-			<property name="setVerbose" type="Integer" value="0"/>
-			<property name="nbMaxFixedKeyframes" type="Integer" value="30"/>
-			<property name="errorOutlier" type="Float" value="5.0"/>
-			<property name="useSpanningTree" type="Integer" value="0"/>
-			<property name="isRobust" type="Integer" value="0"/>
-			<property name="fixedMap" type="Integer" value="0"/>
-			<property name="fixedKeyframes" type="Integer" value="0"/>
+                        <property name="nbIterationsLocal" type="int" value="10"/>
+                        <property name="nbIterationsGlobal" type="int" value="20"/>
+                        <property name="setVerbose" type="int" value="0"/>
+                        <property name="nbMaxFixedKeyframes" type="int" value="30"/>
+                        <property name="errorOutlier" type="float" value="5.0"/>
+                        <property name="useSpanningTree" type="int" value="0"/>
+                        <property name="isRobust" type="int" value="0"/>
+                        <property name="fixedMap" type="int" value="0"/>
+                        <property name="fixedKeyframes" type="int" value="0"/>
 		</configure>
 		<configure component="SolAR3DPointsViewerOpengl">
             <property name="title" type="string" value="White = query, Red = before loop; Green = after loop optimization (Press esc to exit)"/>
