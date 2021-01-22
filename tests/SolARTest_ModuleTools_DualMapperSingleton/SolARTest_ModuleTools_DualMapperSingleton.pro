@@ -1,5 +1,5 @@
 TARGET = SolARTest_ModuleTools_DualMapperSingleton
-VERSION=0.9.0
+VERSION=0.9.3
 
 CONFIG += c++1z
 CONFIG += console
