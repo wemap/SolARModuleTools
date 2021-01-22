@@ -38,7 +38,26 @@ namespace TOOLS {
 * @class SolARLoopClosureDetector
 * @brief Detect a loop closure from a given keyframe.
 * <TT>UUID: e3d5946c-c1f1-11ea-b3de-0242ac130004</TT>
+*
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
+* @SolARComponentInjectable{SolAR::api::storage::ICovisibilityGraph}
+* @SolARComponentInjectable{SolAR::api::reloc::IKeyframeRetriever}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformSACFinderFrom3D3D}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3D3DCorrespondencesFinder}
+* @SolARComponentInjectable{SolAR::api::geom::I3DTransform}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ minNbInliers,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 0 }}
+* @SolARComponentPropertiesEnd
+*
 */
+
 class SOLAR_TOOLS_EXPORT_API SolARLoopClosureDetector : public org::bcom::xpcf::ConfigurableBase,
         public api::loop::ILoopClosureDetector {
 public:

@@ -47,7 +47,7 @@ tests/build*
 *vcxproj.*
 x64/
 .vs/
-*.bat
+
 *remakeninfo.txt
 Debug/
 Release/
@@ -74,7 +74,7 @@ tests/bin
 teste/build*
 
 # Tests external data
-tests/data/akaze.fbow
+tests/data/*.fbow
 tests/data/map*
 
 # Others

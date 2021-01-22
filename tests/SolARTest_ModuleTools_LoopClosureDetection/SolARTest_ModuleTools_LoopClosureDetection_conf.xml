@@ -105,19 +105,19 @@
 		</configure>
 		<configure component="SolARKeyframeRetrieverFBOW">
 			<property name="VOCpath" type="String" value="../../data/akaze.fbow"/>
-			<property name="threshold" type="Float" value="0.03"/>
-			<property name="level" type="Integer" value="3"/>
-			<property name="matchingDistanceRatio" type="Float" value="0.8"/>
-			<property name="matchingDistanceMax" type="Float" value="600"/>
+                        <property name="threshold" type="float" value="0.03"/>
+                        <property name="level" type="int" value="3"/>
+                        <property name="matchingDistanceRatio" type="float" value="0.8"/>
+                        <property name="matchingDistanceMax" type="float" value="600"/>
 		</configure>
 		<configure component="SolAR3DTransformEstimationSACFrom3D3D">
-			<property name="iterationsCount" type="Integer" value="500"/>
-			<property name="reprojError" type="Float" value="10.0"/>
-			<property name="confidence" type="Float" value="0.9"/>
-			<property name="minNbInliers" type="Integer" value="10"/>			
+                        <property name="iterationsCount" type="int" value="500"/>
+                        <property name="reprojError" type="float" value="10.0"/>
+                        <property name="confidence" type="float" value="0.9"/>
+                        <property name="minNbInliers" type="int" value="10"/>
 		</configure>
 		<configure component="SolARLoopClosureDetector">
-			<property name="minNbInliers" type="Integer" value="30"/>
+                        <property name="minNbInliers" type="int" value="30"/>
 		</configure>
 		<configure component="SolAR3DPointsViewerOpengl">
             <property name="title" type="string" value="Keyframe - White = query, Red = detected loop; Point - Green = origin, Red = transform local map of query (Press esc to exit)"/>

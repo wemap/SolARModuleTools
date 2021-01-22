@@ -17,7 +17,24 @@ namespace TOOLS {
  * <TT>UUID: 09205b96-7cba-4415-bc61-64744bc26222</TT>
  *
  * The projection error threshold as well as the test of cheirality (removing points behind the camera) can be configured.
+ *
+ * @SolARComponentPropertiesBegin
+ * @SolARComponentProperty{ reprojErrorThreshold,
+ *                          maximum reprojection error to keep the triangulated 3D point,
+ *                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0.5f }}
+ * @SolARComponentProperty{ cheiralityCheck,
+ *                          if not 0\, the point reconstructed behind the camera are removed,
+ *                          @SolARComponentPropertyDescNum{ int, [0..1], 1 }}
+ * @SolARComponentProperty{ minTriangulationAngle,
+ *                          min angle between rays,
+ *                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0.03f }}
+ * @SolARComponentProperty{ maxTriangulationAngle,
+ *                          max angle between rays,
+ *                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0.2f }}
+ * @SolARComponentPropertiesEnd
+ *
  */
+
 class SOLAR_TOOLS_EXPORT_API SolARMapFilter : public org::bcom::xpcf::ConfigurableBase,
         public api::solver::map::IMapFilter {
 public:

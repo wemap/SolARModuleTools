@@ -40,6 +40,31 @@ namespace TOOLS {
 * @brief <B>Initialization SLAM using an image stream of a camera.</B>
 * <TT>UUID: 8f43eed0-1a2e-4c47-83f0-8dd5b259cdb0</TT>
 *
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::features::IKeypointDetector}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorsExtractor}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
+* @SolARComponentInjectable{SolAR::api::solver::map::ITriangulator}
+* @SolARComponentInjectable{SolAR::api::solver::map::IMapFilter}
+* @SolARComponentInjectable{SolAR::api::solver::map::IKeyframeSelector}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformFinderFrom2D2D}
+* @SolARComponentInjectable{api::display::IMatchesOverlay}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ hasPose,
+*                          (0 = false\, 1 = true),
+*                          @SolARComponentPropertyDescNum{ int, [0\, 1], 1 }}
+* @SolARComponentProperty{ nbMinInitPointCloud,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 50 }}
+* @SolARComponentProperty{ angleThres,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ float, [0..2*PI], 0.1f }}
+* @SolARComponentPropertiesEnd
+*
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARSLAMBootstrapper : public org::bcom::xpcf::ConfigurableBase,

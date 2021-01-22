@@ -40,6 +40,31 @@ namespace TOOLS {
 * @brief <B> SLAM tracking task.</B>
 * <TT>UUID: c45da19d-9637-48b6-ab52-33d3f0af6f72</TT>
 *
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I2D3DCorrespondencesFinder}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformFinderFrom2D3D}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformSACFinderFrom2D3D}
+* @SolARComponentInjectable{SolAR::api::geom::IProject}
+* @SolARComponentInjectable{SolAR::api::reloc::IKeyframeRetriever}
+* @SolARComponentInjectable{SolAR::api::display::I2DOverlay}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ minWeightNeighbor,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 10.f }}
+* @SolARComponentProperty{ thresAngleViewDirection,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0.7f }}
+* @SolARComponentProperty{ displayTrackedPoints,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 1 }}
+* @SolARComponentPropertiesEnd
+*
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARSLAMTracking : public org::bcom::xpcf::ConfigurableBase,

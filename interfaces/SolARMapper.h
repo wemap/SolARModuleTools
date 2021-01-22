@@ -23,12 +23,52 @@ namespace TOOLS {
  * @brief <B>Allow to manage all components of a map.</B>
  * <TT>UUID: 8e3c926a-0861-46f7-80b2-8abb5576692c</TT>
  *
+ * @SolARComponentInjectablesBegin
+ * @SolARComponentInjectable{SolAR::datastructure::Identification}
+ * @SolARComponentInjectable{SolAR::datastructure::CoordinateSystem}
+ * @SolARComponentInjectable{SolAR::api::storage::IPointCloudManager}
+ * @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
+ * @SolARComponentInjectable{SolAR::api::storage::ICovisibilityGraph}
+ * @SolARComponentInjectable{SolAR::api::reloc::IKeyframeRetriever}
+ * @SolARComponentInjectablesEnd
+ *
+ * @SolARComponentPropertiesBegin
+ * @SolARComponentProperty{ directory,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ identificationFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ coordinateFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ pointCloudManagerFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ keyframesManagerFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ covisibilityGraphFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ keyframeRetrieverFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ reprojErrorThreshold,
+ *                          ,
+ *                           @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 3.f }}
+ * @SolARComponentProperty{ thresConfidence,
+ *                          ,
+ *                           @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 3.f }}
+ * @SolARComponentPropertiesEnd
+ *
  */
 
 /**
 * @class SolARMapper
 * @brief Store all components of a map
 */
+
 class SOLAR_TOOLS_EXPORT_API SolARMapper : public org::bcom::xpcf::ConfigurableBase,
     public api::solver::map::IMapper {
 public:
