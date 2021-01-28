@@ -41,6 +41,32 @@ namespace TOOLS {
 * @brief <B>Estimate camera pose based on a fiducial marker.</B>
 * <TT>UUID: cddd23c4-da4e-4c5c-b3f9-7d095d097c97</TT>
 *
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::input::files::IMarker2DSquaredBinary}
+* @SolARComponentInjectable{SolAR::api::image::IImageFilter}
+* @SolARComponentInjectable{SolAR::api::image::IImageConvertor}
+* @SolARComponentInjectable{SolAR::api::features::IContoursExtractor}
+* @SolARComponentInjectable{SolAR::api::features::IContoursFilter}
+* @SolARComponentInjectable{SolAR::api::image::IPerspectiveController}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorsExtractorSBPattern}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::ISBPatternReIndexer}
+* @SolARComponentInjectable{SolAR::api::geom::IImage2WorldMapper}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformFinderFrom2D3D}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ nbThreshold,
+*                         ,
+*                         @SolARComponentPropertyDescNum{ int, [0..MAX INT], 3 }}
+* @SolARComponentProperty{ minThreshold,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [-1..MAX INT], -1 }}
+* @SolARComponentProperty{ maxThreshold,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 220 }}
+* @SolARComponentPropertiesEnd
+*
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARFiducialMarkerPoseEstimator : public org::bcom::xpcf::ConfigurableBase,

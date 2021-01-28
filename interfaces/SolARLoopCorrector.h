@@ -38,7 +38,18 @@ namespace TOOLS {
  * @class SolARLoopCorrector
  * @brief Corrects a loop of camera poses and updates associated geometry.
  * <TT>UUID: 1007b588-c1f2-11ea-b3de-0242ac130004</TT>
+ *
+ *@SolARComponentInjectablesBegin
+ * @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
+ * @SolARComponentInjectable{SolAR::api::storage::IPointCloudManager}
+ * @SolARComponentInjectable{SolAR::api::storage::ICovisibilityGraph}
+ * @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+ * @SolARComponentInjectable{SolAR::api::geom::I3DTransform}
+ * @SolARComponentInjectable{SolAR::api::geom::IProject}
+ * @SolARComponentInjectablesEnd
+ *
  */
+
 class SOLAR_TOOLS_EXPORT_API SolARLoopCorrector : public org::bcom::xpcf::ConfigurableBase,
         public api::loop::ILoopCorrector {
 public:

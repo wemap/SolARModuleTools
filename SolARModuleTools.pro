@@ -42,6 +42,7 @@ INCLUDEPATH += interfaces/
 include (SolARModuleTools.pri)
 
 unix:!android {
+    QMAKE_CXXFLAGS += -Wignored-qualifiers
 }
 
 macx {
