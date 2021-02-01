@@ -47,12 +47,19 @@ SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMT
 	declareProperty("displayTrackedPoints", m_displayTrackedPoints);
 }
 
+xpcf::XPCFErrorCode SolARSLAMTracking::onConfigured()
+{
+	LOG_DEBUG("SolARSLAMTracking onConfigured");
+	m_reprojErrorThreshold = m_mapper->bindTo<xpcf::IConfigurable>()->getProperty("reprojErrorThreshold")->getFloatingValue();
+	return xpcf::XPCFErrorCode::_SUCCESS;
+}
+
 void SolARSLAMTracking::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
 	m_camMatrix = intrinsicParams;
 	m_camDistortion = distortionParams;
 	m_pnpRansac->setCameraParameters(m_camMatrix, m_camDistortion);
 	m_pnp->setCameraParameters(m_camMatrix, m_camDistortion);
-	m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
+	m_projector->setCameraParameters(m_camMatrix, m_camDistortion);	
 }
 
 void SolARSLAMTracking::updateReferenceKeyframe(const SRef<Keyframe> refKeyframe)
@@ -67,7 +74,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 	// init image to display
 	displayImage = frame->getView()->copy();
 	std::vector<DescriptorMatch> matches;
-	Transform3Df framePose;
+	Transform3Df framePose = frame->getPose();
 	if (m_isLostTrack) {
 		LOG_DEBUG("Pose estimation has failed");		
 		// reloc
@@ -118,110 +125,114 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 		return cpViewDir.dot(frameViewDir.normalized());
 	};
 
-	// run pnp ransac
-	std::vector<uint32_t> inliers;
-	if (m_pnpRansac->estimate(pt2d, pt3d, inliers, framePose, m_lastPose) == FrameworkReturnCode::_SUCCESS) {
+	// find initial pose
+	bool bFindPose = framePose.isApprox(Transform3Df::Identity());
+	if (bFindPose) {
+		std::vector<uint32_t> inliers;
+		if (m_pnpRansac->estimate(pt2d, pt3d, inliers, framePose, m_lastPose) != FrameworkReturnCode::_SUCCESS)
+			return FrameworkReturnCode::_ERROR_;
 		LOG_DEBUG("Inliers / Nb of correspondences: {} / {}", inliers.size(), pt3d.size());
-		LOG_DEBUG("Estimated pose: \n {}", framePose.matrix());
-		// Set the pose of the new frame
-		frame->setPose(framePose);
-		// refine pose and update map visibility of frame
-		std::map<uint32_t, uint32_t> newMapVisibility;
-		std::vector<Point2Df> pts2dInliers;
-		std::vector<Point3Df> pts3dInliers;
-		const std::vector<Keypoint> &keypoints = frame->getKeypoints();
-		// find visibilities from inliers and update confidence score of cloud points
-		int itInliers = 0;
-		inliers.push_back(-1);
-		std::set<uint32_t> idxCPSeen;
-		for (int itCorr = 0; itCorr < corres2D3D.size(); ++itCorr) {
-			std::pair<uint32_t, SRef<CloudPoint>> corr2D3D = corres2D3D[itCorr];
-			idxCPSeen.insert(corr2D3D.second->getId());
-			if (itCorr == inliers[itInliers]) { // Inliers
-				newMapVisibility[corr2D3D.first] = corr2D3D.second->getId();
-				corr2D3D.second->updateConfidence(true);
-				pts2dInliers.push_back(Point2Df(keypoints[corr2D3D.first].getX(), keypoints[corr2D3D.first].getY()));
-				pts3dInliers.push_back(Point3Df(corr2D3D.second->getX(), corr2D3D.second->getY(), corr2D3D.second->getZ()));
-				itInliers++;
+		LOG_DEBUG("Estimated pose: \n {}", framePose.matrix());		
+		frame->setPose(framePose);	// Set the pose of the new frame
+	}
+
+	// Update map visibility of the current frame
+	// And find more inliers of 2D-3D points for improving pose
+	std::map<uint32_t, uint32_t> newMapVisibility;
+	std::vector<Point2Df> pts2dInliers;
+	std::vector<Point3Df> pts3dInliers;
+	const std::vector<Keypoint> &keypoints = frame->getKeypoints();
+	// Define inlier/outlier of 2D-3D correspondences found by the reference keyframe
+	std::vector< Point2Df > pt3DProj;
+	std::set<uint32_t> idxCPSeen;
+	m_projector->project(pt3d, pt3DProj, framePose);
+	for (int i = 0; i < pt3DProj.size(); ++i) {
+		idxCPSeen.insert(corres2D3D[i].second->getId());
+		float dis = (pt2d[i] - pt3DProj[i]).norm();
+		if (dis < m_reprojErrorThreshold) {
+			corres2D3D[i].second->updateConfidence(true);
+			newMapVisibility[corres2D3D[i].first] = corres2D3D[i].second->getId();
+			pts2dInliers.push_back(pt2d[i]);
+			pts3dInliers.push_back(pt3d[i]);
+		}
+		else {
+			corres2D3D[i].second->updateConfidence(false);
+		}
+	}
+
+	// find other visiblities from local map
+	std::vector<SRef<CloudPoint>> localMapUnseen;
+	for (auto &it_cp : m_localMap)
+		if ((idxCPSeen.find(it_cp->getId()) == idxCPSeen.end()) && (cosineViewDirectionAngle(frame, it_cp) > m_thresAngleViewDirection))
+			localMapUnseen.push_back(it_cp);
+
+	std::vector<SRef<CloudPoint>> localMapUnseenCandidates;
+	std::vector< Point2Df > projected2DPtsCandidates;
+	//  projection points and filter point out of frame
+	if (localMapUnseen.size() > 0) {
+		std::vector< Point2Df > projected2DPts;
+		m_projector->project(localMapUnseen, projected2DPts, frame->getPose());
+		uint32_t imgWidth = frame->getView()->getWidth();
+		uint32_t imgHeight = frame->getView()->getHeight();
+		for (int idx = 0; idx < projected2DPts.size(); idx++)
+			if ((projected2DPts[idx].getX() > 0) && (projected2DPts[idx].getX() < imgWidth) && (projected2DPts[idx].getY() > 0) && (projected2DPts[idx].getY() < imgHeight)) {
+				projected2DPtsCandidates.push_back(std::move(projected2DPts[idx]));
+				localMapUnseenCandidates.push_back(std::move(localMapUnseen[idx]));
 			}
-			else { // Outliers
-				corr2D3D.second->updateConfidence(false);
+	}
+	LOG_DEBUG("Nb of filtered local map : {}", localMapUnseenCandidates.size());
+
+	if (localMapUnseenCandidates.size() > 0) {
+		// find more inlier matches
+		std::vector<SRef<DescriptorBuffer>> desAllLocalMapUnseen;
+		for (auto &it_cp : localMapUnseenCandidates) {
+			desAllLocalMapUnseen.push_back(it_cp->getDescriptor());
+		}
+		std::vector<DescriptorMatch> allMatches;
+		m_matcher->matchInRegion(projected2DPtsCandidates, desAllLocalMapUnseen, frame, allMatches, 0, maxMatchDistance);
+		// find visibility of new frame
+		int nbMatchesLocalMap(0);
+		std::vector<bool> checkLocalMapInOut(localMapUnseenCandidates.size(), false);
+		for (auto &it_match : allMatches) {
+			int idx_2d = it_match.getIndexInDescriptorB();
+			int idx_3d = it_match.getIndexInDescriptorA();
+			checkLocalMapInOut[idx_3d] = true;
+			if (newMapVisibility.find(idx_2d) == newMapVisibility.end()) {
+				pts2dInliers.push_back(Point2Df(keypoints[idx_2d].getX(), keypoints[idx_2d].getY()));
+				pts3dInliers.push_back(Point3Df(localMapUnseenCandidates[idx_3d]->getX(), localMapUnseenCandidates[idx_3d]->getY(), localMapUnseenCandidates[idx_3d]->getZ()));
+				newMapVisibility[idx_2d] = localMapUnseenCandidates[idx_3d]->getId();
+				nbMatchesLocalMap++;
 			}
 		}
-
-		// find other visiblities from local map
-		std::vector<SRef<CloudPoint>> localMapUnseen;
-		for (auto &it_cp : m_localMap)
-			if ((idxCPSeen.find(it_cp->getId()) == idxCPSeen.end()) && (cosineViewDirectionAngle(frame, it_cp) > m_thresAngleViewDirection))	
-				localMapUnseen.push_back(it_cp);		
-
-		std::vector<SRef<CloudPoint>> localMapUnseenCandidates;
-		std::vector< Point2Df > projected2DPtsCandidates;
-		//  projection points and filter point out of frame
-		if (localMapUnseen.size() > 0) {
-			std::vector< Point2Df > projected2DPts;
-			m_projector->project(localMapUnseen, projected2DPts, frame->getPose());
-			uint32_t imgWidth = frame->getView()->getWidth();
-			uint32_t imgHeight = frame->getView()->getHeight();
-			for (int idx = 0; idx < projected2DPts.size(); idx++)
-				if ((projected2DPts[idx].getX() > 0) && (projected2DPts[idx].getX() < imgWidth) && (projected2DPts[idx].getY() > 0) && (projected2DPts[idx].getY() < imgHeight)) {
-					projected2DPtsCandidates.push_back(std::move(projected2DPts[idx]));
-					localMapUnseenCandidates.push_back(std::move(localMapUnseen[idx]));
-				}
+		LOG_DEBUG("Nb of matched local map: {}", nbMatchesLocalMap);
+		// update confidence score of matched cloud points
+		for (int i = 0; i < localMapUnseenCandidates.size(); ++i) {
+			if (checkLocalMapInOut[i])
+				localMapUnseenCandidates[i]->updateConfidence(true);
 		}
-		LOG_DEBUG("Nb of filtered local map : {}", localMapUnseenCandidates.size());
+	}
 
-		if (localMapUnseenCandidates.size() > 0) {
-			// find more inlier matches
-			std::vector<SRef<DescriptorBuffer>> desAllLocalMapUnseen;
-			for (auto &it_cp : localMapUnseenCandidates) {
-				desAllLocalMapUnseen.push_back(it_cp->getDescriptor());
-			}
-			std::vector<DescriptorMatch> allMatches;
-			m_matcher->matchInRegion(projected2DPtsCandidates, desAllLocalMapUnseen, frame, allMatches, 0, maxMatchDistance);
-			// find visibility of new frame
-			int nbMatchesLocalMap(0);
-			std::vector<bool> checkLocalMapInOut(localMapUnseenCandidates.size(), false);
-			for (auto &it_match : allMatches) {
-				int idx_2d = it_match.getIndexInDescriptorB();
-				int idx_3d = it_match.getIndexInDescriptorA();
-				checkLocalMapInOut[idx_3d] = true;
-				if (newMapVisibility.find(idx_2d) == newMapVisibility.end()) {
-					pts2dInliers.push_back(Point2Df(keypoints[idx_2d].getX(), keypoints[idx_2d].getY()));
-					pts3dInliers.push_back(Point3Df(localMapUnseenCandidates[idx_3d]->getX(), localMapUnseenCandidates[idx_3d]->getY(), localMapUnseenCandidates[idx_3d]->getZ()));
-					newMapVisibility[idx_2d] = localMapUnseenCandidates[idx_3d]->getId();
-					nbMatchesLocalMap++;
-				}
-			}
-			LOG_DEBUG("Nb of matched local map: {}", nbMatchesLocalMap);
-			// update confidence score of matched cloud points
-			for (int i = 0; i < localMapUnseenCandidates.size(); ++i) {
-				if (checkLocalMapInOut[i])
-					localMapUnseenCandidates[i]->updateConfidence(true);
-			}
-		}
+	// update map visibility of current frame
+	frame->addVisibilities(newMapVisibility);
+	LOG_DEBUG("Nb of map visibilities of current frame: {}", newMapVisibility.size());
 
-		// pnp optimization
+	// pnp optimization
+	if (bFindPose) {
 		Transform3Df refinedPose;
 		m_pnp->estimate(pts2dInliers, pts3dInliers, refinedPose, frame->getPose());
 		frame->setPose(refinedPose);
-		// update map visibility of current frame
-		frame->addVisibilities(newMapVisibility);
-		LOG_DEBUG("Nb of map visibilities of current frame: {}", newMapVisibility.size());
-
-		// display tracked points
-		if (m_displayTrackedPoints)
-			m_overlay2D->drawCircles(pts2dInliers, displayImage);
-
-		LOG_DEBUG("Refined pose: \n {}", frame->getPose().matrix());
-		m_lastPose = frame->getPose();
-
-		// tracking is good
-		m_isLostTrack = false;	
-		return FrameworkReturnCode::_SUCCESS;
 	}
-	
-	return FrameworkReturnCode::_ERROR_;		
+
+	// display tracked points
+	if (m_displayTrackedPoints)
+		m_overlay2D->drawCircles(pts2dInliers, displayImage);
+
+	LOG_DEBUG("Refined pose: \n {}", frame->getPose().matrix());
+	m_lastPose = frame->getPose();
+
+	// tracking is good
+	m_isLostTrack = false;
+	return FrameworkReturnCode::_SUCCESS;
 }
 
 void SolARSLAMTracking::updateLocalMap()
