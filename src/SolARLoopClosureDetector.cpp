@@ -61,8 +61,11 @@ FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe> queryK
 	for (auto &it : retKeyframesIndex) {
 		std::vector<uint32_t> paths;
 		m_covisibilityGraph->getShortestPath(queryKeyframeId, it, paths);
-		if (paths.size() > 3)
+		if (paths.size() > 3) {
 			candidatesId.push_back(it);
+			if (candidatesId.size() >= 3)
+				break;
+		}
 	}
 	std::vector<SRef<Keyframe>> candidateKeyframes;
 	std::vector<Transform3Df> candidateKeyframePoses;
