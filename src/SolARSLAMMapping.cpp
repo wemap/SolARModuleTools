@@ -100,6 +100,7 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyf
 SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 {
 	// create a new keyframe from the current frame
+	frame->setView(nullptr);
 	SRef<Keyframe> newKeyframe = xpcf::utils::make_shared<Keyframe>(frame);
 	// Add to keyframe manager
 	m_keyframesManager->addKeyframe(newKeyframe);
