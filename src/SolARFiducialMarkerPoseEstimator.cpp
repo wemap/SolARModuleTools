@@ -24,6 +24,7 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARFiducialMarkerPo
 
 
 namespace SolAR {
+using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -64,7 +65,7 @@ void SolARFiducialMarkerPoseEstimator::setCameraParameters(const CamCalibration 
 	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldHeight")->setFloatingValue(m_binaryMarker->getSize().height);
 }
 
-void SolARFiducialMarkerPoseEstimator::setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> & marker)
+void SolARFiducialMarkerPoseEstimator::setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> marker)
 {
     m_binaryMarker = marker;
 
@@ -79,7 +80,7 @@ void SolARFiducialMarkerPoseEstimator::setMarker(const SRef<api::input::files::I
     m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldHeight")->setFloatingValue(m_binaryMarker->getSize().height);
 }
 
-void SolARFiducialMarkerPoseEstimator::setMarker(const SRef<datastructure::FiducialMarker> & marker)
+void SolARFiducialMarkerPoseEstimator::setMarker(const SRef<datastructure::FiducialMarker> marker)
 {
     // components initialisation for marker detection
     m_patternDescriptorExtractor->extract(marker->getPattern(), m_markerPatternDescriptor);
@@ -92,7 +93,7 @@ void SolARFiducialMarkerPoseEstimator::setMarker(const SRef<datastructure::Fiduc
     m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldHeight")->setFloatingValue(marker->getHeight());
 }
 
-FrameworkReturnCode SolARFiducialMarkerPoseEstimator::estimate(const SRef<Image>& image, Transform3Df & pose)
+FrameworkReturnCode SolARFiducialMarkerPoseEstimator::estimate(const SRef<Image> image, Transform3Df & pose)
 {
 	SRef<Image>                     greyImage, binaryImage;
 	std::vector<Contour2Df>			contours;

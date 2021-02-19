@@ -33,15 +33,29 @@
 #include <mutex>
 
 namespace SolAR {
-using namespace SolAR::datastructure;
-using namespace SolAR::api;
 namespace MODULES {
 namespace TOOLS {
 /**
-* @class SolARLoopClosureDetector
+* @class SolAROverlapDetector
 * @brief Detect a loop closure from a given keyframe.
 * <TT>UUID: 58087630-1376-11eb-adc1-0242ac120002</TT>
+*
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformSACFinderFrom3D3D}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3D3DCorrespondencesFinder}
+* @SolARComponentInjectable{SolAR::api::geom::I3DTransform}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ minNbInliers,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 0 }}
+* @SolARComponentPropertiesEnd
+*
 */
+
 class SOLAR_TOOLS_EXPORT_API SolAROverlapDetector : public org::bcom::xpcf::ConfigurableBase,
         public api::loop::IOverlapDetector {
 public:
@@ -52,7 +66,7 @@ public:
 	/// @param[in] intrinsicParams: Camera calibration matrix parameters.
 	/// @param[in] distortionParams: Camera distortion parameters.
 
-	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) override;
+	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distortionParams) override;
 
 	/// @brief Detect overlap between two floating maps with different refences.
 	/// @param[in] global mapper as reference.
@@ -60,10 +74,10 @@ public:
 	/// @param[out] sim3Transform : 3D similarity transformation (Sim(3)) from the floating map to the global map.
 	/// @param[out] cpOverlapIndices : pairs of detected overlap cloud points indices of floating map and global map.
 	/// @return FrameworkReturnCode::_SUCCESS if detect a loop closure, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode detect(const SRef<api::solver::map::IMapper> &globalMap,
-							const SRef<api::solver::map::IMapper> &floatingMap,
-							Transform3Df &sim3Transform,
-							std::vector<std::pair<uint32_t, uint32_t>>&cpOverlapIndices) override;
+    FrameworkReturnCode detect(const SRef<api::solver::map::IMapper> globalMap,
+                               const SRef<api::solver::map::IMapper> floatingMap,
+                               datastructure::Transform3Df &sim3Transform,
+                               std::vector<std::pair<uint32_t, uint32_t>>&cpOverlapIndices) const override;
 
 	/// @brief Detect overlap between two floating maps with different refences.
 	/// @param[in] global mapper as reference.
@@ -72,11 +86,11 @@ public:
 	/// @param[out] overlapIndices : pairs of detected overlap keyframe indices of floating map and global map.
 	/// @param[out] scores : represent scores of overlap candidates.
 	/// @return FrameworkReturnCode::_SUCCESS if detect a loop closure, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode detect(const SRef<api::solver::map::IMapper> &globalMap,
-							const SRef<api::solver::map::IMapper> &floatingMap,
-							std::vector<Transform3Df> &sim3Transform,
-							std::vector<std::pair<uint32_t, uint32_t>>&overlapIndices,
-							std::vector<double>&scores) override;
+    FrameworkReturnCode detect(const SRef<api::solver::map::IMapper> globalMap,
+                               const SRef<api::solver::map::IMapper> floatingMap,
+                               std::vector<datastructure::Transform3Df> &sim3Transform,
+                               std::vector<std::pair<uint32_t, uint32_t>>&overlapIndices,
+                               std::vector<double>&scores) const override;
 
 
 	void unloadComponent () override final;
@@ -86,12 +100,12 @@ public:
 	//SRef<ICovisibilityGraph>							m_covisibilityGraph;
 	//SRef<reloc::IKeyframeRetriever>						m_keyframeRetriever;
 	//SRef<IPointCloudManager>							m_pointCloudManager;
-	SRef<solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
-	SRef<features::IDescriptorMatcher>					m_matcher;
-	SRef<features::IMatchesFilter>						m_matchesFilter;
-	SRef<solver::pose::I3D3DCorrespondencesFinder>		m_corr3D3DFinder;
-	SRef<geom::I3DTransform>							m_transform3D;
-	int													m_NbMinInliers;
+	SRef<api::solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
+	SRef<api::features::IDescriptorMatcher>					m_matcher;
+	SRef<api::features::IMatchesFilter>						m_matchesFilter;
+	SRef<api::solver::pose::I3D3DCorrespondencesFinder>		m_corr3D3DFinder;
+	SRef<api::geom::I3DTransform>							m_transform3D;
+	int														m_NbMinInliers;
 };
 
 }

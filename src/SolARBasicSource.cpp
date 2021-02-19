@@ -44,7 +44,7 @@ SourceReturnCode SolARBasicSource::setInputTexture(const void* sourceTexturehand
     return SourceReturnCode::_NEW_IMAGE;
 }
 
-SourceReturnCode SolARBasicSource::getNextImage(SRef<Image> & image)
+SourceReturnCode SolARBasicSource::getNextImage(SRef<Image> & image) const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     image = m_image->copy();

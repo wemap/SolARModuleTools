@@ -24,8 +24,6 @@
 #include <vector>
 
 namespace SolAR {
-using namespace datastructure;
-using namespace api::storage;
 namespace MODULES {
 namespace TOOLS {
 
@@ -49,19 +47,19 @@ public:
     /// @param[in] transformation The 3D transform to apply to the set of 3D points.
     /// @param[out] outputPoints The resulting 3D points after application of the 3D transform.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode transform(const std::vector<Point3Df> & inputPoints, const Transform3Df & transformation, std::vector<Point3Df> & outputPoints) override;
+    FrameworkReturnCode transform(const std::vector<datastructure::Point3Df> & inputPoints, const datastructure::Transform3Df & transformation, std::vector<datastructure::Point3Df> & outputPoints) override;
 
 	/// @brief This method applies a transformation (4x4 float matrix) to a map including point cloud and keyframes	
 	/// @param[in] transformation: transformation the 3D transformation to apply (a 4x4 float matrix)
 	/// @param[in,out] map: the map to apply the transformation
 	/// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode transform(const Transform3Df & transformation, SRef<IMapper> & map) override;
+    FrameworkReturnCode transform(const datastructure::Transform3Df & transformation, SRef<api::solver::map::IMapper> map) override;
 
 	/// @brief This method applies a transformation (4x4 float matrix) to a point cloud
 	/// @param[in] inputPointCloud the point cloud to transform
 	/// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
 	/// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode transformInPlace(SRef<PointCloud> inputPointCloud, const Transform3Df transformation) const override;
+	FrameworkReturnCode transformInPlace(SRef<datastructure::PointCloud> inputPointCloud, const datastructure::Transform3Df transformation) const override;
 
     void unloadComponent () override final;
 

@@ -28,11 +28,11 @@
 #include "api/solver/map/IKeyframeSelector.h"
 #include "api/display/IMatchesOverlay.h"
 #include "api/solver/pose/I3DTransformFinderFrom2D2D.h"
+#include "api/geom/IUndistortPoints.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -40,6 +40,31 @@ namespace TOOLS {
 * @class SolARSLAMBootstrapper
 * @brief <B>Initialization SLAM using an image stream of a camera.</B>
 * <TT>UUID: 8f43eed0-1a2e-4c47-83f0-8dd5b259cdb0</TT>
+*
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::features::IKeypointDetector}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorsExtractor}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
+* @SolARComponentInjectable{SolAR::api::solver::map::ITriangulator}
+* @SolARComponentInjectable{SolAR::api::solver::map::IMapFilter}
+* @SolARComponentInjectable{SolAR::api::solver::map::IKeyframeSelector}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformFinderFrom2D2D}
+* @SolARComponentInjectable{api::display::IMatchesOverlay}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ hasPose,
+*                          (0 = false\, 1 = true),
+*                          @SolARComponentPropertyDescNum{ int, [0\, 1], 1 }}
+* @SolARComponentProperty{ nbMinInitPointCloud,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 50 }}
+* @SolARComponentProperty{ angleThres,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ float, [0..2*PI], 0.1f }}
+* @SolARComponentPropertiesEnd
 *
 */
 
@@ -51,19 +76,21 @@ public:
 	SolARSLAMBootstrapper();
 	///@brief SolAR3DTransformEstimationFrom3D3D destructor;
 	~SolARSLAMBootstrapper() = default;
+	
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] Camera calibration matrix parameters.
 	/// @param[in] Camera distorsion parameters.
-	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distorsionParams) override;
+	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;
 
 	/// @brief This method uses images to boostrap
 	/// @param[in] image: input image to process
 	/// @param[out] view: output image to visualize
 	/// @param[in] pose: the pose of the input image
 	/// @return FrameworkReturnCode::_SUCCESS_ if initialization succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode process(const SRef<Image> &image, SRef<Image> &view, const Transform3Df &pose = Transform3Df::Identity()) override;
+    FrameworkReturnCode process(const SRef<datastructure::Image> image, SRef<datastructure::Image> & view, const datastructure::Transform3Df & pose = datastructure::Transform3Df::Identity()) override;
 
 	void unloadComponent() override final;
+	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
 
 private:
 	/// bootstrap uses marker
@@ -75,11 +102,12 @@ private:
 	int													m_hasPose = 1;
 	int													m_nbMinInitPointCloud = 50;
     float												m_angleThres = 0.1f;
+    float												m_ratioDistanceIsKeyframe = 0.05f;
 	bool												m_bootstrapOk = false;
 	bool												m_initKeyframe1 = false;
-	SRef<Keyframe>										m_keyframe1, m_keyframe2;
-	CamCalibration										m_camMatrix;
-	CamDistortion										m_camDistortion;
+	SRef<datastructure::Keyframe>										m_keyframe1, m_keyframe2;
+	datastructure::CamCalibration										m_camMatrix;
+	datastructure::CamDistortion										m_camDistortion;
 	SRef<api::solver::map::IMapper>						m_mapper;
 	SRef<api::features::IKeypointDetector>				m_keypointsDetector;
 	SRef<api::features::IDescriptorsExtractor>			m_descriptorExtractor;
@@ -89,6 +117,7 @@ private:
 	SRef<api::solver::map::IMapFilter>					m_mapFilter;
 	SRef<api::solver::map::IKeyframeSelector>			m_keyframeSelector;
 	SRef<api::solver::pose::I3DTransformFinderFrom2D2D>	m_poseFinderFrom2D2D;
+	SRef<api::geom::IUndistortPoints>					m_undistortPoints;
 	SRef<api::display::IMatchesOverlay>					m_matchesOverlay;
 };
 

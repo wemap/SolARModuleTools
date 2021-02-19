@@ -16,6 +16,8 @@
 
 #include "SolARKeyframeSelector.h"
 
+#include "xpcf/core/helpers.h"
+
 namespace xpcf  = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARKeyframeSelector);
@@ -33,7 +35,7 @@ SolARKeyframeSelector::SolARKeyframeSelector():ConfigurableBase(xpcf::toUUID<Sol
 }
 
 
-bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::vector<DescriptorMatch>& matches)
+bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::vector<DescriptorMatch>& matches) const
 {
     if (matches.size() < m_minNbMatchesIsKeyframe)
         return false;
@@ -60,13 +62,13 @@ bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::vector<
 }
 
 
-bool SolARKeyframeSelector::select([[maybe_unused]] const SRef<Frame> & frame)
+bool SolARKeyframeSelector::select(ATTRIBUTE(maybe_unused) const SRef<Frame> frame) const
 {
     // NOT IMPLEMENTED : NEEDS AVAILABLE STORAGE COMPONENTS
     return false;
 }
 
-bool SolARKeyframeSelector::select(const SRef<Frame> & frame, const std::function<bool(const SRef<Frame> &)> & func)
+bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::function<bool(const SRef<Frame> &)> & func) const
 {
     return func(frame);
 }

@@ -24,6 +24,10 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAROverlapDetector)
 
 
 namespace SolAR {
+using namespace datastructure;
+using namespace api;
+using namespace api::storage;
+using namespace api::reloc;
 namespace MODULES {
 namespace TOOLS {
 
@@ -42,7 +46,10 @@ void SolAROverlapDetector::setCameraParameters(const CamCalibration & intrinsicP
 	m_estimator3D->setCameraParameters(intrinsicParams, distortionParams);
 }
 
-FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IMapper>& globalMap, const SRef<api::solver::map::IMapper>& floatingMap, Transform3Df & sim3Transform, std::vector<std::pair<uint32_t, uint32_t>>& cpOverlapIndices)
+FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IMapper> globalMap,
+                                                 const SRef<api::solver::map::IMapper> floatingMap,
+                                                 Transform3Df & sim3Transform,
+                                                 std::vector<std::pair<uint32_t, uint32_t>>& cpOverlapIndices) const
 {
 	SRef<IPointCloudManager> floatingPointCloudManager, globalPointCloudManager;
 	SRef<IKeyframesManager> floatingKeyframesManager, globalKeyframesManager;
@@ -142,11 +149,11 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 	return FrameworkReturnCode::_ERROR_;
 }
 
-FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IMapper> &globalMap,
-												const SRef<api::solver::map::IMapper> &floatingMap,
+FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IMapper> globalMap,
+                                                const SRef<api::solver::map::IMapper> floatingMap,
 												std::vector<Transform3Df> &sim3Transform,
 												std::vector<std::pair<uint32_t, uint32_t>>&overlapIndices,
-												std::vector<double>&scores) 
+                                                std::vector<double>&scores) const
 {	
 	SRef<IPointCloudManager> floatingPointCloudManager, globalPointCloudManager;
 	SRef<IKeyframesManager> floatingKeyframesManager, globalKeyframesManager;

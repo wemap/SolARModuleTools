@@ -33,7 +33,6 @@
 #include "xpcf/component/ConfigurableBase.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -41,6 +40,32 @@ namespace TOOLS {
 * @class SolARFiducialMarkerPoseEstimator
 * @brief <B>Estimate camera pose based on a fiducial marker.</B>
 * <TT>UUID: cddd23c4-da4e-4c5c-b3f9-7d095d097c97</TT>
+*
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::input::files::IMarker2DSquaredBinary}
+* @SolARComponentInjectable{SolAR::api::image::IImageFilter}
+* @SolARComponentInjectable{SolAR::api::image::IImageConvertor}
+* @SolARComponentInjectable{SolAR::api::features::IContoursExtractor}
+* @SolARComponentInjectable{SolAR::api::features::IContoursFilter}
+* @SolARComponentInjectable{SolAR::api::image::IPerspectiveController}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorsExtractorSBPattern}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::ISBPatternReIndexer}
+* @SolARComponentInjectable{SolAR::api::geom::IImage2WorldMapper}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformFinderFrom2D3D}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ nbThreshold,
+*                         ,
+*                         @SolARComponentPropertyDescNum{ int, [0..MAX INT], 3 }}
+* @SolARComponentProperty{ minThreshold,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [-1..MAX INT], -1 }}
+* @SolARComponentProperty{ maxThreshold,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 220 }}
+* @SolARComponentPropertiesEnd
 *
 */
 
@@ -55,27 +80,27 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
         /// @param[in] Camera calibration matrix parameters.
         /// @param[in] Camera distorsion parameters.
-	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distorsionParams) override;
+	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;
 
     /// @brief this method is used to set the fiducial marker
     /// @param[in] Fiducial marker.
-    void setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> & marker) override;
+    void setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> marker) override;
 
     /// @brief this method is used to set the fiducial marker
     /// @param[in] Fiducial marker.
-    void setMarker(const SRef<datastructure::FiducialMarker> & marker) override;
+    void setMarker(const SRef<datastructure::FiducialMarker> marker) override;
 
     /// @brief Estimates camera pose based on a fiducial marker.
 	/// @param[in] image: input image.
 	/// @param[out] pose: camera pose.
 	/// @return FrameworkReturnCode::_SUCCESS if the estimation succeed, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode estimate(const SRef<Image> &image, Transform3Df & pose) override;
+    FrameworkReturnCode estimate(const SRef<datastructure::Image> image, datastructure::Transform3Df & pose) override;
 
 	void unloadComponent() override final;
 
 private:
-	CamCalibration										m_camMatrix;
-	CamDistortion										m_camDistortion;
+	datastructure::CamCalibration										m_camMatrix;
+	datastructure::CamDistortion										m_camDistortion;
 	SRef<api::input::files::IMarker2DSquaredBinary>		m_binaryMarker;
 	SRef<api::image::IImageFilter>						m_imageFilterBinary;
 	SRef<api::image::IImageConvertor>					m_imageConvertor;
@@ -87,7 +112,7 @@ private:
 	SRef<api::features::ISBPatternReIndexer>			m_patternReIndexer;
 	SRef<api::geom::IImage2WorldMapper>					m_img2worldMapper;
 	SRef<api::solver::pose::I3DTransformFinderFrom2D3D>	m_pnp;
-	SRef<DescriptorBuffer>								m_markerPatternDescriptor;
+	SRef<datastructure::DescriptorBuffer>				m_markerPatternDescriptor;
 	int													m_nbThreshold = 3;
 	int													m_minThreshold = -1;
 	int													m_maxThreshold = 220;

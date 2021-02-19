@@ -23,6 +23,7 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAR3D3DCorresponden
 
 namespace SolAR {
 using namespace datastructure;
+using namespace api::storage;
 namespace MODULES {
 namespace TOOLS {
 SolAR3D3DCorrespondencesFinder::SolAR3D3DCorrespondencesFinder() :ComponentBase(xpcf::toUUID<SolAR3D3DCorrespondencesFinder>())

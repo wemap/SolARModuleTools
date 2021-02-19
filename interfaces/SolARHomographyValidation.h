@@ -22,7 +22,6 @@
 #include "SolARToolsAPI.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -30,6 +29,23 @@ namespace TOOLS {
  * @class SolARHomographyValidation
  * @brief <B>Checks if an homography is valid based on 4 corners of a squared marker and their projection through a given homography.</B>
  * <TT>UUID: 112f9f03-79c1-4393-b8f3-e02227bebfed</TT>
+ *
+ * @SolARComponentPropertiesBegin
+ * @SolARComponentProperty{ oppositeSideRatio,
+ *                          minimum length ratio of the opposite reprojected sides of the squared marker,
+ *                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0.5f }}
+ * @SolARComponentProperty{ surfaceRatio,
+ *                          minimum surface ratio between the squared marker and its reprojection through the homography,
+ *                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0.15f }}
+ * @SolARComponentProperty{ maxOppositeDotProduct,
+ *                          the maximum of the dot product of the two opposite and normalized sides 
+ *                            of the reprojected squared marker.<br>
+ *                            Here\, we check is the opposite reprojected sides of the squared
+ *                            marker are not to perpendicular. If the dot product is close to 1\,
+ *                            it means that the opposite side are perpendicular and so that the
+ *                            homography is not good.,
+ *                          @SolARComponentPropertyDescNum{ float, [0..1], 0.9f }}
+ * @SolARComponentPropertiesEnd
  *
  */
 
@@ -44,7 +60,7 @@ public:
     /// @param[in] ref2DSquaredMarkerCorners The 4 corners of a marker in pixels.
     /// @param[in] projected2DSquaredMarkerCorners The 4 corners of a marker in the current image captured by a camera in pixels.
     /// @return true if the homography is valid, otherwise false
-    bool isValid(const std::vector<Point2Df> & ref2DSquaredMarkerCorners, const std::vector<Point2Df> & projected2DSquaredMarkerCorners) override;
+    bool isValid(const std::vector<datastructure::Point2Df> & ref2DSquaredMarkerCorners, const std::vector<datastructure::Point2Df> & projected2DSquaredMarkerCorners) override;
 
     void unloadComponent () override final;
 

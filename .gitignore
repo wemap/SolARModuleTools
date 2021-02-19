@@ -7,6 +7,7 @@
 *.o
 *.obj
 build/
+tests/build*
 
 # Precompiled Headers
 *.gch
@@ -46,7 +47,7 @@ build/
 *vcxproj.*
 x64/
 .vs/
-*.bat
+
 *remakeninfo.txt
 Debug/
 Release/
@@ -56,8 +57,10 @@ Release/
 *-packagedependencies-unix.*
 *-packagedependencies-android.*
 *.pc
-*-Debug
-*-Release
+*-Debug*
+*-Release*
+*_Debug*
+*_Release*
 
 # Executables
 *.exe
@@ -70,6 +73,11 @@ doxygen/
 
 # Tests builds
 tests/bin
+teste/build*
+
+# Tests external data
+tests/data/*.fbow
+tests/data/map*
 
 # Others
 *.*pre1

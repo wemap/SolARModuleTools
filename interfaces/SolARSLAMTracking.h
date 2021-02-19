@@ -32,7 +32,6 @@
 #include "xpcf/component/ConfigurableBase.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -40,6 +39,31 @@ namespace TOOLS {
 * @class SolARSLAMTracking
 * @brief <B> SLAM tracking task.</B>
 * <TT>UUID: c45da19d-9637-48b6-ab52-33d3f0af6f72</TT>
+*
+* @SolARComponentInjectablesBegin
+* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
+* @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
+* @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I2D3DCorrespondencesFinder}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformFinderFrom2D3D}
+* @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformSACFinderFrom2D3D}
+* @SolARComponentInjectable{SolAR::api::geom::IProject}
+* @SolARComponentInjectable{SolAR::api::reloc::IKeyframeRetriever}
+* @SolARComponentInjectable{SolAR::api::display::I2DOverlay}
+* @SolARComponentInjectablesEnd
+*
+* @SolARComponentPropertiesBegin
+* @SolARComponentProperty{ minWeightNeighbor,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 10.f }}
+* @SolARComponentProperty{ thresAngleViewDirection,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 0.7f }}
+* @SolARComponentProperty{ displayTrackedPoints,
+*                          ,
+*                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 1 }}
+* @SolARComponentPropertiesEnd
 *
 */
 
@@ -58,37 +82,39 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] Camera calibration matrix parameters.
 	/// @param[in] Camera distorsion parameters.
-	void setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distorsionParams) override;
+	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;
 
 	/// @brief this method is used to update reference keyframe to track
 	/// @param[in] refKeyframe: the new reference keyframe.
-	void updateReferenceKeyframe(const SRef<Keyframe> & refKeyframe) override;
+    void updateReferenceKeyframe(const SRef<datastructure::Keyframe> refKeyframe) override;
 
 	/// @brief this method is used to process tracking
 	/// @param[in] frame: the input frame.
 	/// @param[out] displayImage: the image to display.
 	/// @return FrameworkReturnCode::_SUCCESS if tracking succeed, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode process(const SRef<Frame> & frame, SRef<Image> &displayImage) override;
+    FrameworkReturnCode process(const SRef<datastructure::Frame> frame, SRef<datastructure::Image> &displayImage) override;
 
 	void unloadComponent() override final;
+	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
 
 private:
 	void updateLocalMap();
 
 private:
-	SRef<Keyframe>										m_referenceKeyframe;
-	Transform3Df										m_lastPose = Transform3Df::Identity();
-	std::vector<SRef<CloudPoint>>						m_localMap;
+	SRef<datastructure::Keyframe>						m_referenceKeyframe;
+	datastructure::Transform3Df							m_lastPose = datastructure::Transform3Df::Identity();
+	std::vector<SRef<datastructure::CloudPoint>>		m_localMap;
 	bool												m_isLostTrack = false;
 	float												m_minWeightNeighbor = 10.f;
 	float												m_thresAngleViewDirection = 0.7f;
+	float												m_reprojErrorThreshold;
 	int													m_displayTrackedPoints = 1;
 	int													m_reprojErrorThreshold;
 	int													m_estimatedPose = 0;
 	bool												m_isUpdateReferenceKeyframe = false;
 	std::mutex											m_refKeyframeMutex;
-	CamCalibration										m_camMatrix;
-	CamDistortion										m_camDistortion;
+	datastructure::CamCalibration						m_camMatrix;
+	datastructure::CamDistortion						m_camDistortion;
 	SRef<api::solver::map::IMapper>						m_mapper;
 	SRef<api::features::IDescriptorMatcher>				m_matcher;
 	SRef<api::features::IMatchesFilter>					m_matchesFilter;

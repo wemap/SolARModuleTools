@@ -42,6 +42,7 @@ INCLUDEPATH += interfaces/
 include (SolARModuleTools.pri)
 
 unix:!android {
+    QMAKE_CXXFLAGS += -Wignored-qualifiers
 }
 
 macx {
@@ -54,10 +55,11 @@ macx {
 }
 
 win32 {
-
     DEFINES += WIN64 UNICODE _UNICODE
     QMAKE_COMPILER_DEFINES += _WIN64
-    QMAKE_CXXFLAGS += -wd4250 -wd4251 -wd4244 -wd4275
+    QMAKE_CXXFLAGS += -wd4250 -wd4251 -wd4244 -wd4275 -wd5030
+    QMAKE_CXXFLAGS_RELEASE += /O2
+    QMAKE_CXXFLAGS_DEBUG += /Od
 }
 
 android {

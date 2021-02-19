@@ -24,6 +24,7 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARSLAMTracking);
 #define BORDER_IMAGE 50
 
 namespace SolAR {
+using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -54,22 +55,29 @@ xpcf::XPCFErrorCode SolARSLAMTracking::onConfigured()
 	m_reprojErrorThreshold = m_mapper->bindTo<xpcf::IConfigurable>()->getProperty("reprojErrorThreshold")->getFloatingValue();
 }
 
+xpcf::XPCFErrorCode SolARSLAMTracking::onConfigured()
+{
+	LOG_DEBUG("SolARSLAMTracking onConfigured");
+	m_reprojErrorThreshold = m_mapper->bindTo<xpcf::IConfigurable>()->getProperty("reprojErrorThreshold")->getFloatingValue();
+	return xpcf::XPCFErrorCode::_SUCCESS;
+}
+
 void SolARSLAMTracking::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
 	m_camMatrix = intrinsicParams;
 	m_camDistortion = distortionParams;
 	m_pnpRansac->setCameraParameters(m_camMatrix, m_camDistortion);
 	m_pnp->setCameraParameters(m_camMatrix, m_camDistortion);
-	m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
+	m_projector->setCameraParameters(m_camMatrix, m_camDistortion);	
 }
 
-void SolARSLAMTracking::updateReferenceKeyframe(const SRef<Keyframe>& refKeyframe)
+void SolARSLAMTracking::updateReferenceKeyframe(const SRef<Keyframe> refKeyframe)
 {
 	std::unique_lock<std::mutex> lock(m_refKeyframeMutex);
 	m_referenceKeyframe = refKeyframe;	
 	m_isUpdateReferenceKeyframe = true;
 }
 
-float cosineViewDirectionAngle(const SRef<Frame>& frame, const SRef<CloudPoint>& cp) 
+float cosineViewDirectionAngle(const SRef<Frame>& frame, const SRef<CloudPoint>& cp)
 {
 	const Transform3Df &pose = frame->getPose();
 	Vector3f frameViewDir(pose(0, 3) - cp->getX(), pose(1, 3) - cp->getY(), pose(2, 3) - cp->getZ());
@@ -77,11 +85,12 @@ float cosineViewDirectionAngle(const SRef<Frame>& frame, const SRef<CloudPoint>&
 	return cpViewDir.dot(frameViewDir.normalized());
 }
 
-FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Image> &displayImage)
+FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Image> &displayImage)
 {
 	// init image to display
 	displayImage = frame->getView()->copy();
 	std::vector<DescriptorMatch> matches;
+	Transform3Df framePose = frame->getPose();
 	if (m_isLostTrack) {
 		LOG_DEBUG("Pose estimation has failed");		
 		// reloc
@@ -124,61 +133,49 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 	m_corr2D3DFinder->find(m_referenceKeyframe, frame, matches, pt3d, pt2d, corres2D3D, foundMatches, remainingMatches);
 	LOG_DEBUG("Nb of 2D-3D correspondences: {}", pt2d.size());		
 
-	// run pnp ransac
-	std::vector<uint32_t> inliers;
-	if (!m_estimatedPose) {
-		Transform3Df framePose;
-		if (m_pnpRansac->estimate(pt2d, pt3d, inliers, framePose, m_lastPose) == FrameworkReturnCode::_SUCCESS) {
-			LOG_DEBUG("Inliers / Nb of correspondences: {} / {}", inliers.size(), pt3d.size());
-			LOG_DEBUG("Estimated pose: \n {}", framePose.matrix());
-			// Set the pose of the new frame
-			frame->setPose(framePose);
-		}
-		else
+	// find initial pose
+	bool bFindPose = framePose.isApprox(Transform3Df::Identity());
+	if (bFindPose) {
+		std::vector<uint32_t> inliers;
+		if (m_pnpRansac->estimate(pt2d, pt3d, inliers, framePose, m_lastPose) != FrameworkReturnCode::_SUCCESS)
 			return FrameworkReturnCode::_ERROR_;
+		LOG_DEBUG("Inliers / Nb of correspondences: {} / {}", inliers.size(), pt3d.size());
+		LOG_DEBUG("Estimated pose: \n {}", framePose.matrix());		
+		frame->setPose(framePose);	// Set the pose of the new frame
 	}
-	else {
-		// define inliers based on reprojection error
-		std::vector< Point2Df > projected2DPts;
-		m_projector->project(pt3d, projected2DPts, frame->getPose());
-		for (int i = 0; i < projected2DPts.size(); ++i) {
-			float dis = (pt2d[i] - projected2DPts[i]).norm();
-			if (dis < m_reprojErrorThreshold)
-				inliers.push_back(i);
-		}
-	}
-	// refine pose and update map visibility of frame
-	std::map<uint32_t, uint32_t>	newMapVisibility;
-	std::vector<Point2Df>			pts2dInliers, pts2dOutliers;
-	std::vector<SRef<CloudPoint>>	cloudPointsOutlier;
-	std::vector<Point3Df>			pts3dInliers;
-	const std::vector<Keypoint>&	keypoints = frame->getKeypoints();
-	// find visibilities from inliers and update confidence score of cloud points
-	int itInliers = 0;
-	inliers.push_back(-1);
+
+	// Update map visibility of the current frame
+	// And find more inliers of 2D-3D points for improving pose
+	std::map<uint32_t, uint32_t> newMapVisibility;
+	std::vector<Point2Df> pts2dInliers, pts2dOutliers;
+	std::vector<Point3Df> pts3dInliers;
+	std::vector<SRef<CloudPoint>> cloudPointsOutlier;
+	const std::vector<Keypoint> &keypoints = frame->getKeypoints();
+	// Define inlier/outlier of 2D-3D correspondences found by the reference keyframe
+	std::vector< Point2Df > pt3DProj;
 	std::set<uint32_t> idxCPSeen;
-	for (int itCorr = 0; itCorr < corres2D3D.size(); ++itCorr) {
-		std::pair<uint32_t, SRef<CloudPoint>> corr2D3D = corres2D3D[itCorr];
-		idxCPSeen.insert(corr2D3D.second->getId());
-		if (itCorr == inliers[itInliers]) { // Inliers
-			newMapVisibility[corr2D3D.first] = corr2D3D.second->getId();
-			corr2D3D.second->updateConfidence(true);
-			pts2dInliers.push_back(Point2Df(keypoints[corr2D3D.first].getX(), keypoints[corr2D3D.first].getY()));
-			pts3dInliers.push_back(Point3Df(corr2D3D.second->getX(), corr2D3D.second->getY(), corr2D3D.second->getZ()));
-			itInliers++;
+	m_projector->project(pt3d, pt3DProj, framePose);
+	for (int i = 0; i < pt3DProj.size(); ++i) {
+		idxCPSeen.insert(corres2D3D[i].second->getId());
+		float dis = (pt2d[i] - pt3DProj[i]).norm();
+		if (dis < m_reprojErrorThreshold) {
+			corres2D3D[i].second->updateConfidence(true);
+			newMapVisibility[corres2D3D[i].first] = corres2D3D[i].second->getId();
+			pts2dInliers.push_back(pt2d[i]);
+			pts3dInliers.push_back(pt3d[i]);
 		}
-		else { // Outliers
-			corr2D3D.second->updateConfidence(false);
-			cloudPointsOutlier.push_back(corr2D3D.second);
-			pts2dOutliers.push_back(Point2Df(keypoints[corr2D3D.first].getX(), keypoints[corr2D3D.first].getY()));
+		else {
+			corres2D3D[i].second->updateConfidence(false);
+			cloudPointsOutlier.push_back(corres2D3D[i].second);
+			pts2dOutliers.push_back(pt2d[i]);
 		}
-	}	
+	}
 
 	// find other visiblities from local map
 	std::vector<SRef<CloudPoint>> localMapUnseen;
 	for (auto &it_cp : m_localMap)
-		if ((idxCPSeen.find(it_cp->getId()) == idxCPSeen.end()) && (cosineViewDirectionAngle(frame, it_cp) > m_thresAngleViewDirection))	
-			localMapUnseen.push_back(it_cp);		
+		if ((idxCPSeen.find(it_cp->getId()) == idxCPSeen.end()) && (cosineViewDirectionAngle(frame, it_cp) > m_thresAngleViewDirection))
+			localMapUnseen.push_back(it_cp);
 
 	std::vector<SRef<CloudPoint>> localMapUnseenCandidates;
 	std::vector< Point2Df > projected2DPtsCandidates;
@@ -232,30 +229,32 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame>& frame, SRef<Im
 		}
 	}
 
-	// check number of visibilities
-	if (newMapVisibility.size() == 0)
-		return FrameworkReturnCode::_ERROR_;
 	// update map visibility of current frame
 	frame->addVisibilities(newMapVisibility);
 	LOG_DEBUG("Nb of map visibilities of current frame: {}", newMapVisibility.size());
+
 	// pnp optimization
-	Transform3Df refinedPose;
-	m_pnp->estimate(pts2dInliers, pts3dInliers, refinedPose, frame->getPose());
-	frame->setPose(refinedPose);	
-	m_lastPose = frame->getPose();
-	LOG_DEBUG("Refined pose: \n {}", frame->getPose().matrix());	
+	if (bFindPose) {
+		Transform3Df refinedPose;
+		m_pnp->estimate(pts2dInliers, pts3dInliers, refinedPose, frame->getPose());
+		frame->setPose(refinedPose);
+	}
+
 	// display tracked points
 	if (m_displayTrackedPoints) {
 		m_overlay2DRed->drawCircles(pts2dOutliers, displayImage);
 		m_overlay2DGreen->drawCircles(pts2dInliers, displayImage);
-	}		
+	}
+
+	LOG_DEBUG("Refined pose: \n {}", frame->getPose().matrix());
+	m_lastPose = frame->getPose();
+
 	// tracking is good
-	m_isLostTrack = false;	
+	m_isLostTrack = false;
 	// check to need map pruning
 	if (m_mapper->pointCloudPruning(cloudPointsOutlier) > 0)
 		updateLocalMap();
-
-	return FrameworkReturnCode::_SUCCESS;			
+	return FrameworkReturnCode::_SUCCESS;
 }
 
 void SolARSLAMTracking::updateLocalMap()

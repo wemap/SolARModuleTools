@@ -22,7 +22,6 @@
 #include "SolARToolsAPI.h"
 
 namespace SolAR {
-using namespace datastructure;
 namespace MODULES {
 namespace TOOLS {
 
@@ -30,6 +29,12 @@ namespace TOOLS {
  * @class SolARSBPatternReIndexer
  * @brief <B>Provides both the 4 corners of a pattern in its reference coordinate system (pixels, cells, etc.) and the 4 corners in pixels of this pattern in the current image.</B>
  * <TT>UUID: a2ef5542-029e-4fce-9974-0aea14b29d6f</TT>
+ *
+ * @SolARComponentPropertiesBegin
+ * @SolARComponentProperty{ sbPatternSize,
+ *                          ,
+ *                          @SolARComponentPropertyDescNum{ int, [0..MAX INT], 0 }}
+ * @SolARComponentPropertiesEnd
  *
  */
 
@@ -45,10 +50,10 @@ public:
     /// @param[out] patternPoints The 2D corners of the squared binary marker in the coordinate system of the marker.
     /// @param[out] imagePoints The 2D corners of the squared binary marker in the coordinate system of the current image.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode reindex(const std::vector<Contour2Df> & candidateContours,
-                                const std::vector<DescriptorMatch> & matches,
-                                std::vector<Point2Df> & patternPoints,
-                                std::vector<Point2Df> & imagePoints) override;
+    FrameworkReturnCode reindex(const std::vector<datastructure::Contour2Df> & candidateContours,
+                                const std::vector<datastructure::DescriptorMatch> & matches,
+                                std::vector<datastructure::Point2Df> & patternPoints,
+                                std::vector<datastructure::Point2Df> & imagePoints) override;
 
     void unloadComponent () override final;
 

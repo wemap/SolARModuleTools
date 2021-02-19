@@ -22,6 +22,8 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAR3DTransform);
 
 namespace SolAR {
 using namespace datastructure;
+using namespace api::storage;
+using namespace api::solver::map;
 namespace MODULES {
 namespace TOOLS {
 
@@ -57,7 +59,7 @@ FrameworkReturnCode SolAR3DTransform::transform(const std::vector<Point3Df> & in
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolAR3DTransform::transform(const Transform3Df & transformation, SRef<IMapper>& map)
+FrameworkReturnCode SolAR3DTransform::transform(const Transform3Df & transformation, SRef<IMapper> map)
 {
 	// get cloud points and keyframes
 	SRef<IPointCloudManager> pointcloudManager;

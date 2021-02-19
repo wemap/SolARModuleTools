@@ -8,7 +8,6 @@
 #include <vector>
 
 namespace SolAR {
-    using namespace datastructure;
     namespace MODULES {
         namespace TOOLS {
        /**
@@ -30,10 +29,10 @@ namespace SolAR {
                /// @param[out] Filtred matches based on redanduncy or geometric relations such as epipolar constraint.
                /// @param[in] Original keypoints associated to desc_1.
                /// @param[in] Original keypoints associated to desc_2.
-               void filter(const std::vector<DescriptorMatch> & inputMatches,
-                          std::vector<DescriptorMatch> & outputMatches,
-                          const std::vector<Keypoint> & inputKeyPointsA,
-                          const std::vector<Keypoint> & inputKeyPointsB) override;
+               void filter(const std::vector<datastructure::DescriptorMatch> & inputMatches,
+                          std::vector<datastructure::DescriptorMatch> & outputMatches,
+                          const std::vector<datastructure::Keypoint> & inputKeyPointsA,
+                          const std::vector<datastructure::Keypoint> & inputKeyPointsB) override;
 
                 void unloadComponent () override final;
 

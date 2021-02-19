@@ -24,6 +24,8 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARLoopCorrector);
 
 
 namespace SolAR {
+using namespace datastructure;
+using namespace api;
 namespace MODULES {
 namespace TOOLS {
 
@@ -62,7 +64,7 @@ void SolARLoopCorrector::getLocalMapPoints(const std::map<uint32_t, SRef<Keyfram
 	}
 }
 
-FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> & queryKeyframe, const SRef<Keyframe> & detectedLoopKeyframe, const Transform3Df & S_wl_wc, const std::vector<std::pair<uint32_t, uint32_t>> & duplicatedPointsIndices)
+FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> queryKeyframe, const SRef<Keyframe> detectedLoopKeyframe, const Transform3Df & S_wl_wc, const std::vector<std::pair<uint32_t, uint32_t>> & duplicatedPointsIndices)
 {
     // Get current and loop neighbors
     std::vector<uint32_t> kfLoopNeighborsIds;

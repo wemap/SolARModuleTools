@@ -24,6 +24,9 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARLoopClosureDetec
 
 
 namespace SolAR {
+using namespace SolAR::datastructure;
+using namespace SolAR::api;
+using namespace SolAR::api::storage;
 namespace MODULES {
 namespace TOOLS {
 
@@ -45,7 +48,10 @@ void SolARLoopClosureDetector::setCameraParameters(const CamCalibration & intrin
 	m_estimator3D->setCameraParameters(intrinsicParams, distortionParams);
 }
 
-FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe>& queryKeyframe, SRef<Keyframe>& detectedLoopKeyframe, Transform3Df & sim3Transform, std::vector<std::pair<uint32_t, uint32_t>>& duplicatedPointsIndices)
+FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe> queryKeyframe,
+                                                     SRef<Keyframe> & detectedLoopKeyframe,
+                                                     Transform3Df & sim3Transform,
+                                                     std::vector<std::pair<uint32_t, uint32_t>>& duplicatedPointsIndices) const
 {
 	uint32_t queryKeyframeId = queryKeyframe->getId();
 	std::vector<uint32_t> retKeyframesIndex;
@@ -55,8 +61,11 @@ FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe>& query
 	for (auto &it : retKeyframesIndex) {
 		std::vector<uint32_t> paths;
 		m_covisibilityGraph->getShortestPath(queryKeyframeId, it, paths);
-		if (paths.size() > 3)
+		if (paths.size() > 3) {
 			candidatesId.push_back(it);
+			if (candidatesId.size() >= 3)
+				break;
+		}
 	}
 	std::vector<SRef<Keyframe>> candidateKeyframes;
 	std::vector<Transform3Df> candidateKeyframePoses;
