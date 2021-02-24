@@ -43,15 +43,19 @@ SolARFiducialMarkerPoseEstimator::SolARFiducialMarkerPoseEstimator():Configurabl
 	declareInjectable<api::features::ISBPatternReIndexer>(m_patternReIndexer);
 	declareInjectable<api::geom::IImage2WorldMapper>(m_img2worldMapper);
 	declareInjectable<api::solver::pose::I3DTransformFinderFrom2D3D>(m_pnp);
+	declareInjectable<api::features::ICornerRefinement>(m_cornerRefinement);
+	declareInjectable<api::geom::IProject>(m_projector);
 	declareProperty("nbThreshold", m_nbThreshold);
 	declareProperty("minThreshold", m_minThreshold);
 	declareProperty("maxThreshold", m_maxThreshold);
+	declareProperty("maxReprojError", m_maxReprojError);
 }
 
 void SolARFiducialMarkerPoseEstimator::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
 	m_camMatrix = intrinsicParams;
 	m_camDistortion = distortionParams;
 	m_pnp->setCameraParameters(m_camMatrix, m_camDistortion);
+	m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
 	// components initialisation for marker detection
 	m_binaryMarker->loadMarker();
 	m_patternDescriptorExtractor->extract(m_binaryMarker->getPattern(), m_markerPatternDescriptor);
@@ -136,10 +140,22 @@ FrameworkReturnCode SolARFiducialMarkerPoseEstimator::estimate(const SRef<Image>
 				m_patternReIndexer->reindex(recognizedContours, patternMatches, pattern2DPoints, img2DPoints);
 				// Compute the 3D position of each corner of the marker
 				m_img2worldMapper->map(pattern2DPoints, pattern3DPoints);
+				// Refine corner locations
+				m_cornerRefinement->refine(greyImage, img2DPoints);
 				// Compute the pose of the camera using a Perspective n Points algorithm using only the 4 corners of the marker
 				if (m_pnp->estimate(img2DPoints, pattern3DPoints, pose) == FrameworkReturnCode::_SUCCESS)
 				{
-					return FrameworkReturnCode::_SUCCESS;
+					std::vector<Point2Df> projected2DPts;
+					m_projector->project(pattern3DPoints, projected2DPts, pose);
+					float errorReproj(0.f);
+					for (int j = 0; j < projected2DPts.size(); ++j)
+						errorReproj += (projected2DPts[j] - img2DPoints[j]).norm();
+					errorReproj /= projected2DPts.size();
+					LOG_DEBUG("Mean reprojection error: {}", errorReproj);
+					if (errorReproj < m_maxReprojError)
+						return FrameworkReturnCode::_SUCCESS;
+					pose = Transform3Df::Identity();
+					return FrameworkReturnCode::_ERROR_;
 				}
 			}
 		}
