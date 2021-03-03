@@ -100,7 +100,8 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 
 			floatingPointCloudManager->getPoints(floatingCloudPointsIndices, floatingCloudPoints);
 			globalPointCloudManager->getPoints(globalCloudPointsIndices, globalCloudPoints);
-
+			if (floatingCloudPoints.size() != globalCloudPoints.size())
+				continue;
 			std::vector<Point3Df> pts1, pts2;
 			pts1.resize(floatingCloudPoints.size());
 			pts2.resize(floatingCloudPoints.size());

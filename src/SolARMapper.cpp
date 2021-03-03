@@ -277,31 +277,39 @@ int SolARMapper::keyframePruning(const std::vector<SRef<Keyframe>>& keyframes)
 
 FrameworkReturnCode SolARMapper::saveToFile() const
 {
-	LOG_INFO("Saving the map to file...");
-	boost::filesystem::create_directories(boost::filesystem::path(m_directory.c_str()));
-	LOG_DEBUG("Save identification");
-	std::ofstream ofs_iden(m_directory + "/" + m_identificationFileName, std::ios::binary);
-	OutputArchive oa_iden(ofs_iden);
-	oa_iden << m_identification;
-	ofs_iden.close();
-	LOG_DEBUG("Save coordinate system");
-	std::ofstream ofs_coor(m_directory + "/" + m_coordinateFileName, std::ios::binary);
-	OutputArchive oa_coor(ofs_coor);
-	oa_coor << m_coordinateSystem;
-	ofs_coor.close();
-	LOG_DEBUG("Save point cloud manager");
-	if (m_pointCloudManager->saveToFile(m_directory + "/" + m_pcManagerFileName) == FrameworkReturnCode::_ERROR_)
-		return FrameworkReturnCode::_ERROR_;
-	LOG_DEBUG("Save keyframes manager");
-	if (m_keyframesManager->saveToFile(m_directory + "/" + m_kfManagerFileName) == FrameworkReturnCode::_ERROR_)
-		return FrameworkReturnCode::_ERROR_;
-	LOG_DEBUG("Save covisibility graph");
-	if (m_covisibilityGraph->saveToFile(m_directory + "/" + m_covisGraphFileName) == FrameworkReturnCode::_ERROR_)
-		return FrameworkReturnCode::_ERROR_;
-	LOG_DEBUG("Save keyframe retriever");
-	if (m_keyframeRetriever->saveToFile(m_directory + "/" + m_kfRetrieverFileName) == FrameworkReturnCode::_ERROR_)
-		return FrameworkReturnCode::_ERROR_;
-	LOG_INFO("Save done!");
+	if (m_pointCloudManager->getNbPoints() == 0)
+	{
+		LOG_WARNING("Map is empty: nothing to save");
+	}
+	else
+	{
+		LOG_INFO("Saving the map to file...");
+		boost::filesystem::create_directories(boost::filesystem::path(m_directory.c_str()));
+		LOG_DEBUG("Save identification");
+		std::ofstream ofs_iden(m_directory + "/" + m_identificationFileName, std::ios::binary);
+		OutputArchive oa_iden(ofs_iden);
+		oa_iden << m_identification;
+		ofs_iden.close();
+		LOG_DEBUG("Save coordinate system");
+		std::ofstream ofs_coor(m_directory + "/" + m_coordinateFileName, std::ios::binary);
+		OutputArchive oa_coor(ofs_coor);
+		oa_coor << m_coordinateSystem;
+		ofs_coor.close();
+		LOG_DEBUG("Save point cloud manager");
+		if (m_pointCloudManager->saveToFile(m_directory + "/" + m_pcManagerFileName) == FrameworkReturnCode::_ERROR_)
+			return FrameworkReturnCode::_ERROR_;
+		LOG_DEBUG("Save keyframes manager");
+		if (m_keyframesManager->saveToFile(m_directory + "/" + m_kfManagerFileName) == FrameworkReturnCode::_ERROR_)
+			return FrameworkReturnCode::_ERROR_;
+		LOG_DEBUG("Save covisibility graph");
+		if (m_covisibilityGraph->saveToFile(m_directory + "/" + m_covisGraphFileName) == FrameworkReturnCode::_ERROR_)
+			return FrameworkReturnCode::_ERROR_;
+		LOG_DEBUG("Save keyframe retriever");
+		if (m_keyframeRetriever->saveToFile(m_directory + "/" + m_kfRetrieverFileName) == FrameworkReturnCode::_ERROR_)
+			return FrameworkReturnCode::_ERROR_;
+		LOG_INFO("Save done!");
+	}
+
 	return FrameworkReturnCode::_SUCCESS;
 }
 
@@ -352,6 +360,10 @@ FrameworkReturnCode SolARMapper::loadFromFile()
         LOG_WARNING("Cannot load map keyframe retriever file with url: {}", m_directory + "/" + m_kfRetrieverFileName);
         return FrameworkReturnCode::_ERROR_;
     }
+	if (m_pointCloudManager->getNbPoints() == 0)
+	{
+		LOG_WARNING("Loaded map is empty");
+	}
 	LOG_INFO("Load done!");
 	return FrameworkReturnCode::_SUCCESS;
 }
