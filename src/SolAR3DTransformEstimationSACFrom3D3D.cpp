@@ -29,9 +29,9 @@ namespace TOOLS {
 SolAR3DTransformEstimationSACFrom3D3D::SolAR3DTransformEstimationSACFrom3D3D() :ConfigurableBase(xpcf::toUUID<SolAR3DTransformEstimationSACFrom3D3D>())
 {
 	declareInterface<api::solver::pose::I3DTransformSACFinderFrom3D3D>(this);
-	declareInjectable<I3DTransform>(m_transform3D);
-	declareInjectable<IProject>(m_projector);
-	declareInjectable<IBundler>(m_bundler);
+	declareInjectable<api::geom::I3DTransform>(m_transform3D);
+	declareInjectable<api::geom::IProject>(m_projector);
+	declareInjectable<api::solver::map::IBundler>(m_bundler);
 	declareProperty("iterationsCount", m_iterationsCount);
 	declareProperty("reprojError", m_reprojError);
 	declareProperty("distanceError", m_distanceError);

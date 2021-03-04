@@ -51,12 +51,6 @@ SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMT
 
 xpcf::XPCFErrorCode SolARSLAMTracking::onConfigured()
 {
-	LOG_DEBUG(" SolARSLAMTracking onConfigured");
-	m_reprojErrorThreshold = m_mapper->bindTo<xpcf::IConfigurable>()->getProperty("reprojErrorThreshold")->getFloatingValue();
-}
-
-xpcf::XPCFErrorCode SolARSLAMTracking::onConfigured()
-{
 	LOG_DEBUG("SolARSLAMTracking onConfigured");
 	m_reprojErrorThreshold = m_mapper->bindTo<xpcf::IConfigurable>()->getProperty("reprojErrorThreshold")->getFloatingValue();
 	return xpcf::XPCFErrorCode::_SUCCESS;

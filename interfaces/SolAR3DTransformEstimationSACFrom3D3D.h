@@ -22,6 +22,7 @@
 #include "api/geom/I3DTransform.h"
 #include "api/geom/IProject.h"
 #include "datastructure/Image.h"
+#include "api/solver/map/IBundler.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
 
@@ -116,6 +117,8 @@ private:
 	float m_confidence = 0.99f;
 
 	/// @brief The minimum of number of inliers to valid a good pose estimation
+	/// @brief Does optimize sim3 using graph optimization
+	int m_optimizeSim3 = 0;	
 	int m_NbInliersToValidPose = 10;
 
 	/// @brief Transform 3D
@@ -123,6 +126,12 @@ private:
 
 	/// @brief Projector
 	SRef<api::geom::IProject> m_projector;
+	/// @brief Bundler
+	SRef<api::solver::map::IBundler> m_bundler;
+	/// @brief intrinsic parameters
+	CamCalibration m_intrinsicParams;
+	/// @brief distortion parameters
+	CamDistortion m_distortionParams;
 };
 
 }

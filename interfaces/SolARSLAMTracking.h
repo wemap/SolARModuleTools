@@ -95,7 +95,6 @@ public:
     FrameworkReturnCode process(const SRef<datastructure::Frame> frame, SRef<datastructure::Image> &displayImage) override;
 
 	void unloadComponent() override final;
-	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
 
 private:
 	void updateLocalMap();
@@ -109,7 +108,6 @@ private:
 	float												m_thresAngleViewDirection = 0.7f;
 	float												m_reprojErrorThreshold;
 	int													m_displayTrackedPoints = 1;
-	int													m_reprojErrorThreshold;
 	int													m_estimatedPose = 0;
 	bool												m_isUpdateReferenceKeyframe = false;
 	std::mutex											m_refKeyframeMutex;
