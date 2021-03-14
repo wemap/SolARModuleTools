@@ -69,6 +69,14 @@ void SolARSLAMTracking::updateReferenceKeyframe(const SRef<Keyframe> refKeyframe
 	m_isUpdateReferenceKeyframe = true;
 }
 
+float cosineViewDirectionAngle(const SRef<Frame>& frame, const SRef<CloudPoint>& cp) 
+{
+	const Transform3Df &pose = frame->getPose();
+	Vector3f frameViewDir(pose(0, 3) - cp->getX(), pose(1, 3) - cp->getY(), pose(2, 3) - cp->getZ());
+	const Vector3f& cpViewDir = cp->getViewDirection();
+	return cpViewDir.dot(frameViewDir.normalized());
+};
+
 FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Image> &displayImage)
 {
 	// init image to display
@@ -116,14 +124,8 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 	std::vector < std::pair<uint32_t, SRef<CloudPoint>>> corres2D3D;
 	m_corr2D3DFinder->find(m_referenceKeyframe, frame, matches, pt3d, pt2d, corres2D3D, foundMatches, remainingMatches);
 	LOG_DEBUG("Nb of 2D-3D correspondences: {}", pt2d.size());	
-
-	// get cosine view direction angle 
-	auto cosineViewDirectionAngle = [](const SRef<Frame>& frame, const SRef<CloudPoint>& cp) {
-		const Transform3Df &pose = frame->getPose();
-		Vector3f frameViewDir(pose(0, 3) - cp->getX(), pose(1, 3) - cp->getY(), pose(2, 3) - cp->getZ());
-		const Vector3f& cpViewDir = cp->getViewDirection();
-		return cpViewDir.dot(frameViewDir.normalized());
-	};
+	if (pt2d.size() == 0)
+		return FrameworkReturnCode::_ERROR_;
 
 	// find initial pose
 	bool bFindPose = framePose.isApprox(Transform3Df::Identity());
