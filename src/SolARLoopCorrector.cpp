@@ -116,7 +116,6 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> queryKeyfra
 		Eigen::Matrix3f rot;
 		S_wl_i.computeScalingRotation(&scale, &rot);
 		S_wl_i.linear() = rot;
-		S_wl_i.translation() = S_wl_i.translation() / scale(0, 0);
 		keyframe->setPose(S_wl_i);
 	}
 
