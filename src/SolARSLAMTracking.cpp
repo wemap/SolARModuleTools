@@ -125,7 +125,9 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 	std::vector<DescriptorMatch> remainingMatches;
 	std::vector < std::pair<uint32_t, SRef<CloudPoint>>> corres2D3D;
 	m_corr2D3DFinder->find(m_referenceKeyframe, frame, matches, pt3d, pt2d, corres2D3D, foundMatches, remainingMatches);
-	LOG_DEBUG("Nb of 2D-3D correspondences: {}", pt2d.size());		
+	LOG_DEBUG("Nb of 2D-3D correspondences: {}", pt2d.size());	
+	if (pt2d.size() == 0)
+		return FrameworkReturnCode::_ERROR_;
 
 	// find initial pose
 	bool bFindPose = framePose.isApprox(Transform3Df::Identity());
