@@ -107,6 +107,7 @@ private:
 	float												m_minWeightNeighbor = 10.f;
 	float												m_thresAngleViewDirection = 0.7f;
 	float												m_reprojErrorThreshold;
+	float												m_thresConfidence;	
 	int													m_displayTrackedPoints = 1;
 	int													m_estimatedPose = 0;
 	bool												m_isUpdateReferenceKeyframe = false;
