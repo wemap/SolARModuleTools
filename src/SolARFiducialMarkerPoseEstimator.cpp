@@ -31,8 +31,7 @@ namespace TOOLS {
 
 SolARFiducialMarkerPoseEstimator::SolARFiducialMarkerPoseEstimator():ConfigurableBase(xpcf::toUUID<SolARFiducialMarkerPoseEstimator>())
 {
-	addInterface<api::solver::pose::IFiducialMarkerPose>(this);
-	declareInjectable<api::input::files::IMarker2DSquaredBinary>(m_binaryMarker);
+    addInterface<api::solver::pose::ITrackablePose>(this);
 	declareInjectable<api::image::IImageFilter>(m_imageFilterBinary);
 	declareInjectable<api::image::IImageConvertor>(m_imageConvertor);
 	declareInjectable<api::features::IContoursExtractor>(m_contoursExtractor);
@@ -52,45 +51,30 @@ void SolARFiducialMarkerPoseEstimator::setCameraParameters(const CamCalibration 
 	m_camMatrix = intrinsicParams;
 	m_camDistortion = distortionParams;
 	m_pnp->setCameraParameters(m_camMatrix, m_camDistortion);
-	// components initialisation for marker detection
-	m_binaryMarker->loadMarker();
-	m_patternDescriptorExtractor->extract(m_binaryMarker->getPattern(), m_markerPatternDescriptor);
-	LOG_DEBUG("Marker pattern:\n {}", m_binaryMarker->getPattern().getPatternMatrix());
-	int patternSize = m_binaryMarker->getPattern().getSize();
-	m_patternDescriptorExtractor->bindTo<xpcf::IConfigurable>()->getProperty("patternSize")->setIntegerValue(patternSize);
-	m_patternReIndexer->bindTo<xpcf::IConfigurable>()->getProperty("sbPatternSize")->setIntegerValue(patternSize);
-	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalWidth")->setIntegerValue(patternSize);
-	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalHeight")->setIntegerValue(patternSize);
-	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldWidth")->setFloatingValue(m_binaryMarker->getSize().width);
-	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldHeight")->setFloatingValue(m_binaryMarker->getSize().height);
 }
 
-void SolARFiducialMarkerPoseEstimator::setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> marker)
-{
-    m_binaryMarker = marker;
-
-    // components initialisation for marker detection
-    m_patternDescriptorExtractor->extract(m_binaryMarker->getPattern(), m_markerPatternDescriptor);
-    int patternSize = m_binaryMarker->getPattern().getSize();
-    m_patternDescriptorExtractor->bindTo<xpcf::IConfigurable>()->getProperty("patternSize")->setIntegerValue(patternSize);
-    m_patternReIndexer->bindTo<xpcf::IConfigurable>()->getProperty("sbPatternSize")->setIntegerValue(patternSize);
-    m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalWidth")->setIntegerValue(patternSize);
-    m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalHeight")->setIntegerValue(patternSize);
-    m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldWidth")->setFloatingValue(m_binaryMarker->getSize().width);
-    m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldHeight")->setFloatingValue(m_binaryMarker->getSize().height);
-}
-
-void SolARFiducialMarkerPoseEstimator::setMarker(const SRef<datastructure::FiducialMarker> marker)
+FrameworkReturnCode SolARFiducialMarkerPoseEstimator::setTrackable(const SRef<datastructure::Trackable> trackable)
 {
     // components initialisation for marker detection
-    m_patternDescriptorExtractor->extract(marker->getPattern(), m_markerPatternDescriptor);
-    int patternSize = marker->getPattern().getSize();
-    m_patternDescriptorExtractor->bindTo<xpcf::IConfigurable>()->getProperty("patternSize")->setIntegerValue(patternSize);
-    m_patternReIndexer->bindTo<xpcf::IConfigurable>()->getProperty("sbPatternSize")->setIntegerValue(patternSize);
-    m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalWidth")->setIntegerValue(patternSize);
-    m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalHeight")->setIntegerValue(patternSize);
-    m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldWidth")->setFloatingValue(marker->getWidth());
-    m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldHeight")->setFloatingValue(marker->getHeight());
+    if (trackable->getType() == TrackableType::FIDUCIAL_MARKER)
+    {
+        m_fiducialMarker = xpcf::utils::dynamic_pointer_cast<FiducialMarker>(trackable);
+        SquaredBinaryPattern pattern = m_fiducialMarker->getPattern();
+        m_patternDescriptorExtractor->extract(pattern, m_markerPatternDescriptor);
+        LOG_DEBUG("Marker pattern:\n {}", pattern.getPatternMatrix());
+        int patternSize = pattern.getSize();
+        m_patternDescriptorExtractor->bindTo<xpcf::IConfigurable>()->getProperty("patternSize")->setIntegerValue(patternSize);
+        m_patternReIndexer->bindTo<xpcf::IConfigurable>()->getProperty("sbPatternSize")->setIntegerValue(patternSize);
+        m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalWidth")->setIntegerValue(patternSize);
+        m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalHeight")->setIntegerValue(patternSize);
+        m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldWidth")->setFloatingValue(m_fiducialMarker->getWidth());
+        m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldHeight")->setFloatingValue(m_fiducialMarker->getHeight());
+    }
+    else {
+        LOG_ERROR("The SolARFiducialMarkerPoseEstimator should only use a trackable of type FIDUCIAL_MARKER")
+        return FrameworkReturnCode::_ERROR_;
+    }
+    return FrameworkReturnCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARFiducialMarkerPoseEstimator::estimate(const SRef<Image> image, Transform3Df & pose)

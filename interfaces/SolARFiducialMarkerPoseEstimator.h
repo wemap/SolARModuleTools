@@ -16,8 +16,7 @@
 
 #ifndef SOLARFIDUCIALMARKERPOSEESTIMATOR_H
 #define SOLARFIDUCIALMARKERPOSEESTIMATOR_H
-#include "api/solver/pose/IFiducialMarkerPose.h"
-#include "api/input/files/IMarker2DSquaredBinary.h"
+#include "api/solver/pose/ITrackablePose.h"
 #include "api/image/IImageFilter.h"
 #include "api/image/IImageConvertor.h"
 #include "api/features/IContoursExtractor.h"
@@ -42,7 +41,6 @@ namespace TOOLS {
 * <TT>UUID: cddd23c4-da4e-4c5c-b3f9-7d095d097c97</TT>
 *
 * @SolARComponentInjectablesBegin
-* @SolARComponentInjectable{SolAR::api::input::files::IMarker2DSquaredBinary}
 * @SolARComponentInjectable{SolAR::api::image::IImageFilter}
 * @SolARComponentInjectable{SolAR::api::image::IImageConvertor}
 * @SolARComponentInjectable{SolAR::api::features::IContoursExtractor}
@@ -70,7 +68,7 @@ namespace TOOLS {
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARFiducialMarkerPoseEstimator : public org::bcom::xpcf::ConfigurableBase,
-	public api::solver::pose::IFiducialMarkerPose
+    public api::solver::pose::ITrackablePose
 {
 public:
 	///@brief SolAR3DTransformEstimationFrom3D3D constructor;
@@ -80,15 +78,11 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
         /// @param[in] Camera calibration matrix parameters.
         /// @param[in] Camera distorsion parameters.
-	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;
+	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;;
 
-    /// @brief this method is used to set the fiducial marker
-    /// @param[in] Fiducial marker.
-    void setMarker(const SRef<api::input::files::IMarker2DSquaredBinary> marker) override;
-
-    /// @brief this method is used to set the fiducial marker
-    /// @param[in] Fiducial marker.
-    void setMarker(const SRef<datastructure::FiducialMarker> marker) override;
+    /// @brief this method is used to set the trackable used to estimate the pose.
+    /// @param[in] the trackable used to estimate the pose.
+    FrameworkReturnCode setTrackable(const SRef<SolAR::datastructure::Trackable> trackable) override;
 
     /// @brief Estimates camera pose based on a fiducial marker.
 	/// @param[in] image: input image.
@@ -99,9 +93,9 @@ public:
 	void unloadComponent() override final;
 
 private:
-	datastructure::CamCalibration										m_camMatrix;
-	datastructure::CamDistortion										m_camDistortion;
-	SRef<api::input::files::IMarker2DSquaredBinary>		m_binaryMarker;
+    datastructure::CamCalibration						m_camMatrix;
+    datastructure::CamDistortion						m_camDistortion;
+    SRef<datastructure::FiducialMarker>                 m_fiducialMarker;
 	SRef<api::image::IImageFilter>						m_imageFilterBinary;
 	SRef<api::image::IImageConvertor>					m_imageConvertor;
 	SRef<api::features::IContoursExtractor>				m_contoursExtractor;
