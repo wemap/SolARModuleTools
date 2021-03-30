@@ -105,8 +105,12 @@ private:
 
 private:
 	float																		m_minWeightNeighbor = 1.f;
-	int																			m_minTrackedPoints = 100;
+	int																			m_minTrackedPoints = 200;
 	int																			m_maxNbNeighborKfs = 5;
+	int																			m_nbPassedFrames = 0;
+	int																			m_nbVisibilityAtLeast = 30;
+	int																			m_nbPassedFrameAtLeast = 5;
+	float																		m_ratioCPRefKeyframe = 0.5;
 	SRef<datastructure::Keyframe>												m_updatedReferenceKeyframe;
 	datastructure::CamCalibration												m_camMatrix;
 	datastructure::CamDistortion												m_camDistortion;

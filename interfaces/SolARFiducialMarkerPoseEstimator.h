@@ -26,7 +26,9 @@
 #include "api/features/IDescriptorsExtractorSBPattern.h"
 #include "api/features/ISBPatternReIndexer.h"
 #include "api/geom/IImage2WorldMapper.h"
+#include "api/geom/IProject.h"
 #include "api/solver/pose/I3DTransformFinderFrom2D3D.h"
+#include "api/features/ICornerRefinement.h"
 #include "datastructure/Image.h"
 #include "datastructure/FiducialMarker.h"
 #include "SolARToolsAPI.h"
@@ -53,6 +55,7 @@ namespace TOOLS {
 * @SolARComponentInjectable{SolAR::api::features::ISBPatternReIndexer}
 * @SolARComponentInjectable{SolAR::api::geom::IImage2WorldMapper}
 * @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformFinderFrom2D3D}
+* @SolARComponentInjectable{SolAR::api::features::ICornerRefinement}
 * @SolARComponentInjectablesEnd
 *
 * @SolARComponentPropertiesBegin
@@ -112,10 +115,13 @@ private:
 	SRef<api::features::ISBPatternReIndexer>			m_patternReIndexer;
 	SRef<api::geom::IImage2WorldMapper>					m_img2worldMapper;
 	SRef<api::solver::pose::I3DTransformFinderFrom2D3D>	m_pnp;
+	SRef<api::features::ICornerRefinement>				m_cornerRefinement;
+	SRef<api::geom::IProject>							m_projector;
 	SRef<datastructure::DescriptorBuffer>				m_markerPatternDescriptor;
 	int													m_nbThreshold = 3;
 	int													m_minThreshold = -1;
 	int													m_maxThreshold = 220;
+	float												m_maxReprojError = 0.5f;
 };
 
 }

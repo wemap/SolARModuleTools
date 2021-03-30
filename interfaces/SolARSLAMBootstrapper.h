@@ -28,6 +28,7 @@
 #include "api/solver/map/IKeyframeSelector.h"
 #include "api/display/IMatchesOverlay.h"
 #include "api/solver/pose/I3DTransformFinderFrom2D2D.h"
+#include "api/geom/IUndistortPoints.h"
 #include "SolARToolsAPI.h"
 #include "xpcf/component/ConfigurableBase.h"
 
@@ -75,6 +76,7 @@ public:
 	SolARSLAMBootstrapper();
 	///@brief SolAR3DTransformEstimationFrom3D3D destructor;
 	~SolARSLAMBootstrapper() = default;
+	
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] Camera calibration matrix parameters.
 	/// @param[in] Camera distorsion parameters.
@@ -88,6 +90,7 @@ public:
     FrameworkReturnCode process(const SRef<datastructure::Image> image, SRef<datastructure::Image> & view, const datastructure::Transform3Df & pose = datastructure::Transform3Df::Identity()) override;
 
 	void unloadComponent() override final;
+	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
 
 private:
 	/// bootstrap uses marker
@@ -99,6 +102,7 @@ private:
 	int													m_hasPose = 1;
 	int													m_nbMinInitPointCloud = 50;
     float												m_angleThres = 0.1f;
+    float												m_ratioDistanceIsKeyframe = 0.05f;
 	bool												m_bootstrapOk = false;
 	bool												m_initKeyframe1 = false;
 	SRef<datastructure::Keyframe>										m_keyframe1, m_keyframe2;
@@ -113,6 +117,7 @@ private:
 	SRef<api::solver::map::IMapFilter>					m_mapFilter;
 	SRef<api::solver::map::IKeyframeSelector>			m_keyframeSelector;
 	SRef<api::solver::pose::I3DTransformFinderFrom2D2D>	m_poseFinderFrom2D2D;
+	SRef<api::geom::IUndistortPoints>					m_undistortPoints;
 	SRef<api::display::IMatchesOverlay>					m_matchesOverlay;
 };
 
