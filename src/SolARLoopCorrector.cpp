@@ -69,8 +69,8 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> queryKeyfra
     // Get current and loop neighbors
     std::vector<uint32_t> kfLoopNeighborsIds;
     std::vector<uint32_t> kfCurrentNeighborsIds;
-    m_covisibilityGraph->getNeighbors(queryKeyframe->getId(), 1.0, kfCurrentNeighborsIds);
-    m_covisibilityGraph->getNeighbors(detectedLoopKeyframe->getId(), 1.0, kfLoopNeighborsIds);
+    m_covisibilityGraph->getNeighbors(queryKeyframe->getId(), 20.0, kfCurrentNeighborsIds);
+    m_covisibilityGraph->getNeighbors(detectedLoopKeyframe->getId(), 20.0, kfLoopNeighborsIds);
 
     // Compute current keyframe's neighboors similarity poses in loop keyframe and current keyframe worlds c.s.
     std::map<uint32_t, Transform3Df > KfSim_wl_i;
@@ -116,7 +116,6 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> queryKeyfra
 		Eigen::Matrix3f rot;
 		S_wl_i.computeScalingRotation(&scale, &rot);
 		S_wl_i.linear() = rot;
-		S_wl_i.translation() = S_wl_i.translation() / scale(0, 0);
 		keyframe->setPose(S_wl_i);
 	}
 

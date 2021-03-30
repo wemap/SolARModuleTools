@@ -243,7 +243,7 @@ FrameworkReturnCode SolARMapper::saveToFile() const
 	else
 	{
 		LOG_INFO("Saving the map to file...");
-		boost::filesystem::create_directory(boost::filesystem::path(m_directory.c_str()));
+		boost::filesystem::create_directories(boost::filesystem::path(m_directory.c_str()));
 		LOG_DEBUG("Save identification");
 		std::ofstream ofs_iden(m_directory + "/" + m_identificationFileName, std::ios::binary);
 		OutputArchive oa_iden(ofs_iden);

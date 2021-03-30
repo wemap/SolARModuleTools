@@ -49,6 +49,9 @@ SolARSLAMMapping::SolARSLAMMapping() :ConfigurableBase(xpcf::toUUID<SolARSLAMMap
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
 	declareProperty("maxNbNeighborKfs", m_maxNbNeighborKfs);
 	declareProperty("minTrackedPoints", m_minTrackedPoints);
+	declareProperty("nbVisibilityAtLeast", m_nbVisibilityAtLeast);
+	declareProperty("nbPassedFrameAtLeast", m_nbPassedFrameAtLeast);
+	declareProperty("ratioCPRefKeyframe", m_ratioCPRefKeyframe);
 }
 
 void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
@@ -60,8 +63,10 @@ void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParam
 
 FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyframe> & keyframe)
 {
-	// find matches between current frame and its reference keyframe
-	std::vector<DescriptorMatch> matches;
+	// increment number of passed frames
+	m_nbPassedFrames++;
+	// find number of cloud points common between current frame and its reference keyframe
+	int nbCommonCP(0);
 	const std::map<uint32_t, uint32_t>& frameVisibilities = frame->getVisibility();
 	const uint32_t& refKf_id = frame->getReferenceKeyframe()->getId();
 	for (const auto &it : frameVisibilities) {
@@ -70,11 +75,13 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyf
 			const std::map<uint32_t, uint32_t>& cpVisibilities = cp->getVisibility();
 			auto refKf_it = cpVisibilities.find(refKf_id);
 			if (refKf_it != cpVisibilities.end())
-				matches.push_back(DescriptorMatch(refKf_it->second, it.first, 0.f));
+				nbCommonCP++;
 		}
 	}
+	LOG_DEBUG("Nb of passed frames: {}, ratio: {}", m_nbPassedFrames, (float)nbCommonCP / frame->getReferenceKeyframe()->getVisibility().size());
 	// check need new keyframe
-	if (m_keyframeSelector->select(frame, matches) || (frame->getVisibility().size() < m_minTrackedPoints))
+    if ((m_nbPassedFrames > m_nbPassedFrameAtLeast) && (frame->getVisibility().size() > m_nbVisibilityAtLeast) && 
+		((nbCommonCP < m_ratioCPRefKeyframe * frame->getReferenceKeyframe()->getVisibility().size()) || (frame->getVisibility().size() < m_minTrackedPoints)))
 	{
 		if (!checkNeedNewKeyframeInLocalMap(frame)) {
 			keyframe = m_updatedReferenceKeyframe;
@@ -83,6 +90,7 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyf
 		else {
 			// create new keyframe
 			keyframe = processNewKeyframe(frame);
+			m_nbPassedFrames = 0;
 			return FrameworkReturnCode::_SUCCESS;
 		}
 	}
@@ -92,6 +100,7 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyf
 SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 {
 	// create a new keyframe from the current frame
+	frame->setView(nullptr);
 	SRef<Keyframe> newKeyframe = xpcf::utils::make_shared<Keyframe>(frame);
 	// Add to keyframe manager
 	m_keyframesManager->addKeyframe(newKeyframe);
@@ -112,7 +121,7 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	std::vector<SRef<CloudPoint>> newCloudPoint;
 	LOG_DEBUG("Nb of neighbors for mapping: {}", idxBestNeighborKfs.size());
 	findMatchesAndTriangulation(newKeyframe, idxBestNeighborKfs, newCloudPoint);
-	LOG_DEBUG("Nb of new triangulated 3D cloud points: {}", newCloudPoint.size());
+    LOG_DEBUG("Nb of new triangulated 3D cloud points: {}", newCloudPoint.size());
 	// add new points to point cloud manager, update visibility map and covisibility graph
 	for (auto const &point : newCloudPoint) {
 		m_mapper->addCloudPoint(point);
@@ -205,7 +214,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf);
 		const Transform3Df &tmpKf_pose = tmpKf->getPose();
 		// check base line
-		if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() < 0.1)
+        if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() < 0.05)
 			continue;
 		// get keypoints don't have associated cloud points
 		std::vector<int> newKf_indexKeypoints;

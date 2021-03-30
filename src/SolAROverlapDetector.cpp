@@ -82,8 +82,10 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 		std::vector<SRef<Keyframe>> candidateKeyframes;
 		for (auto &it : candidatesId) {
 			SRef<Keyframe> keyframe;
-			globalKeyframesManager->getKeyframe(it, keyframe);
-			candidateKeyframes.push_back(keyframe);
+			if (globalKeyframesManager->getKeyframe(it, keyframe) == FrameworkReturnCode::_SUCCESS)
+				candidateKeyframes.push_back(keyframe);
+			if (candidateKeyframes.size() > 2)
+				break;
 		}
 		// find best candidate loop detection
 		Transform3Df bestTransform;
@@ -100,7 +102,8 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 
 			floatingPointCloudManager->getPoints(floatingCloudPointsIndices, floatingCloudPoints);
 			globalPointCloudManager->getPoints(globalCloudPointsIndices, globalCloudPoints);
-
+			if (floatingCloudPoints.size() != globalCloudPoints.size())
+				continue;
 			std::vector<Point3Df> pts1, pts2;
 			pts1.resize(floatingCloudPoints.size());
 			pts2.resize(floatingCloudPoints.size());
@@ -182,8 +185,10 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 		std::vector<SRef<Keyframe>> candidateKeyframes;
 		for (auto &it : candidatesId) {
 			SRef<Keyframe> keyframe;
-			globalKeyframesManager->getKeyframe(it, keyframe);
-			candidateKeyframes.push_back(keyframe);
+			if (globalKeyframesManager->getKeyframe(it, keyframe) == FrameworkReturnCode::_SUCCESS)
+				candidateKeyframes.push_back(keyframe);
+			if (candidateKeyframes.size() > 2)
+				break;
 		}
 		// find best candidate loop detection
 		Transform3Df bestTransform;
