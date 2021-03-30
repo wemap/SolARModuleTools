@@ -114,7 +114,7 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 			Transform3Df pose;
 			std::vector<int> inliers;
 
-			if (m_estimator3D->estimate(queryKeyframe, it, foundMatches, pts1, pts2, pose, inliers) == FrameworkReturnCode::_SUCCESS) {
+			if (m_estimator3D->estimate(pts1, pts2, pose, inliers) == FrameworkReturnCode::_SUCCESS) {
 				if (inliers.size() > bestInliers.size()) {
 					bestTransform = pose;
 					bestDetectedLoopKeyframe = it;
