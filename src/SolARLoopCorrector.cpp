@@ -32,7 +32,7 @@ namespace TOOLS {
 
 SolARLoopCorrector::SolARLoopCorrector():ConfigurableBase(xpcf::toUUID<SolARLoopCorrector>())
 {
-    addInterface<api::loop::ILoopCorrector>(this);
+    addInterface<SolAR::api::loop::ILoopCorrector>(this);
     declareInjectable<storage::IKeyframesManager>(m_keyframesManager);
     declareInjectable<storage::IPointCloudManager>(m_pointCloudManager);
     declareInjectable<storage::ICovisibilityGraph>(m_covisibilityGraph);

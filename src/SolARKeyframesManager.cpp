@@ -29,7 +29,7 @@ namespace TOOLS {
 
 SolARKeyframesManager::SolARKeyframesManager():ComponentBase(xpcf::toUUID<SolARKeyframesManager>())
 {
-	addInterface<api::storage::IKeyframesManager>(this);
+    addInterface<SolAR::api::storage::IKeyframesManager>(this);
 	m_id = 0;
 }
 

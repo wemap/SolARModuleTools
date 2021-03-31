@@ -35,7 +35,7 @@ namespace TOOLS {
  */
 
 class SOLAR_TOOLS_EXPORT_API SolAR3DTransform : public org::bcom::xpcf::ComponentBase,
-        public api::geom::I3DTransform {
+        public SolAR::api::geom::I3DTransform {
 public:
 
     SolAR3DTransform();
@@ -47,7 +47,7 @@ public:
     /// @param[in] transformation The 3D transform to apply to the set of 3D points.
     /// @param[out] outputPoints The resulting 3D points after application of the 3D transform.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode transform(const std::vector<SolAR::datastructure::Point3Df> & inputPoints, const SolAR::datastructure::Transform3Df & transformation, std::vector<datastructure::Point3Df> & outputPoints) override;
+    FrameworkReturnCode transform(const std::vector<SolAR::datastructure::Point3Df> & inputPoints, const SolAR::datastructure::Transform3Df & transformation, std::vector<SolAR::datastructure::Point3Df> & outputPoints) override;
 
     /// @brief This method applies a transformation (4x4 float matrix) to a point cloud
     /// @param[in] transformation: transformation the 3D transformation to apply (a 4x4 float matrix)

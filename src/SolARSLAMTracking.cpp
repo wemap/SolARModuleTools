@@ -31,17 +31,17 @@ namespace TOOLS {
 
 SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMTracking>())
 {
-	addInterface<api::slam::ITracking>(this);
-	declareInjectable<api::solver::map::IMapper>(m_mapper);
-	declareInjectable<api::storage::IKeyframesManager>(m_keyframesManager);
-	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
-	declareInjectable<api::features::IMatchesFilter>(m_matchesFilter);
-	declareInjectable<api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
-	declareInjectable<api::solver::pose::I3DTransformFinderFrom2D3D>(m_pnp);
-	declareInjectable<api::solver::pose::I3DTransformSACFinderFrom2D3D>(m_pnpRansac);
-	declareInjectable<api::geom::IProject>(m_projector);
-	declareInjectable<api::reloc::IKeyframeRetriever>(m_keyframeRetriever);
-	declareInjectable<api::display::I2DOverlay>(m_overlay2D);
+    addInterface<SolAR::api::slam::ITracking>(this);
+    declareInjectable<SolAR::api::solver::map::IMapper>(m_mapper);
+    declareInjectable<SolAR::api::storage::IKeyframesManager>(m_keyframesManager);
+    declareInjectable<SolAR::api::features::IDescriptorMatcher>(m_matcher);
+    declareInjectable<SolAR::api::features::IMatchesFilter>(m_matchesFilter);
+    declareInjectable<SolAR::api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
+    declareInjectable<SolAR::api::solver::pose::I3DTransformFinderFrom2D3D>(m_pnp);
+    declareInjectable<SolAR::api::solver::pose::I3DTransformSACFinderFrom2D3D>(m_pnpRansac);
+    declareInjectable<SolAR::api::geom::IProject>(m_projector);
+    declareInjectable<SolAR::api::reloc::IKeyframeRetriever>(m_keyframeRetriever);
+    declareInjectable<SolAR::api::display::I2DOverlay>(m_overlay2D);
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
 	declareProperty("thresAngleViewDirection", m_thresAngleViewDirection);
 	declareProperty("displayTrackedPoints", m_displayTrackedPoints);

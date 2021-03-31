@@ -35,7 +35,7 @@ namespace TOOLS {
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARBasicSource : public org::bcom::xpcf::ConfigurableBase,
-    public api::source::ISourceImage
+    public SolAR::api::source::ISourceImage
 {
 public:
     SolARBasicSource();
@@ -46,17 +46,17 @@ public:
     /// @param [in] width of the image coming from the third party like Unity
     /// @param [in] height of the image coming from the third party like Unity
     /// @return SourceReturnCode::_SUCCESS if a new pose and image have been updated, otherwise frameworkReturnCode::_ERROR_
-    api::source::SourceReturnCode setInputTexture(const void* sourceTexturehandle,const int width,const int height ) override;
+    SolAR::api::source::SourceReturnCode setInputTexture(const void* sourceTexturehandle,const int width,const int height ) override;
 
     /// @brief Get a pointer to the texture buffer to update it with the new image when required.
     /// @param[in,out] image
     /// @return SourceReturnCode::_SUCCESS if a new pose and image have been updated, otherwise frameworkReturnCode::_ERROR_
-    api::source::SourceReturnCode getNextImage(SRef<datastructure::Image> & image) const override;
+    SolAR::api::source::SourceReturnCode getNextImage(SRef<SolAR::datastructure::Image> & image) const override;
 
     void unloadComponent () override final;
 
 private:
-    SRef<datastructure::Image> m_image;
+    SRef<SolAR::datastructure::Image> m_image;
 
     bool m_newImage;
 

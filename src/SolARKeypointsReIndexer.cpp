@@ -28,7 +28,7 @@ namespace TOOLS {
 
     SolARKeypointsReIndexer::SolARKeypointsReIndexer():ComponentBase(xpcf::toUUID<SolARKeypointsReIndexer>())
     {
-        declareInterface<api::features::IKeypointsReIndexer>(this);
+        declareInterface<SolAR::api::features::IKeypointsReIndexer>(this);
     }
 
   FrameworkReturnCode SolARKeypointsReIndexer::reindex(const std::vector<Keypoint> & refKeypoints,

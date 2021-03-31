@@ -35,7 +35,7 @@ namespace TOOLS {
  */
 
 class SOLAR_TOOLS_EXPORT_API SolAR2DTransform : public org::bcom::xpcf::ComponentBase,
-        public api::geom::I2DTransform {
+        public SolAR::api::geom::I2DTransform {
 public:
 
     SolAR2DTransform();
@@ -46,7 +46,7 @@ public:
     /// @param[in] transformation The 2D transform to apply to the set of 2D points.
     /// @param[out] outputPoints The resulting 2D points after application of the 2D transform.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode transform(const std::vector<datastructure::Point2Df> & inputPoints, const datastructure::Transform2Df & transformation, std::vector<datastructure::Point2Df> & outputPoints) override;
+    FrameworkReturnCode transform(const std::vector<SolAR::datastructure::Point2Df> & inputPoints, const SolAR::datastructure::Transform2Df & transformation, std::vector<SolAR::datastructure::Point2Df> & outputPoints) override;
     
     void unloadComponent () override final;
 

@@ -17,7 +17,7 @@ namespace SolAR {
        *
        */
             class SOLAR_TOOLS_EXPORT_API SolARBasicMatchesFilter : public org::bcom::xpcf::ComponentBase,
-                    public api::features::IMatchesFilter {
+                    public SolAR::api::features::IMatchesFilter {
             public:
                ///@brief SolARBasicMatchesFilter constructor.
                SolARBasicMatchesFilter();
@@ -29,10 +29,10 @@ namespace SolAR {
                /// @param[out] Filtred matches based on redanduncy or geometric relations such as epipolar constraint.
                /// @param[in] Original keypoints associated to desc_1.
                /// @param[in] Original keypoints associated to desc_2.
-               void filter(const std::vector<datastructure::DescriptorMatch> & inputMatches,
-                          std::vector<datastructure::DescriptorMatch> & outputMatches,
-                          const std::vector<datastructure::Keypoint> & inputKeyPointsA,
-                          const std::vector<datastructure::Keypoint> & inputKeyPointsB) override;
+               void filter(const std::vector<SolAR::datastructure::DescriptorMatch> & inputMatches,
+                          std::vector<SolAR::datastructure::DescriptorMatch> & outputMatches,
+                          const std::vector<SolAR::datastructure::Keypoint> & inputKeyPointsA,
+                          const std::vector<SolAR::datastructure::Keypoint> & inputKeyPointsB) override;
 
                 void unloadComponent () override final;
 

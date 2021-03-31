@@ -29,7 +29,7 @@ namespace TOOLS {
 
 SolARPointCloudManager::SolARPointCloudManager():ComponentBase(xpcf::toUUID<SolARPointCloudManager>())
 {
-	addInterface<api::storage::IPointCloudManager>(this);
+    addInterface<SolAR::api::storage::IPointCloudManager>(this);
 	m_id = 0;
 }
 

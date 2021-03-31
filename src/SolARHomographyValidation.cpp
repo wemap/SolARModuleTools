@@ -28,7 +28,7 @@ namespace TOOLS {
 
     SolARHomographyValidation::SolARHomographyValidation():ConfigurableBase(xpcf::toUUID<SolARHomographyValidation>())
     {
-        declareInterface<api::solver::pose::IHomographyValidation>(this);
+        declareInterface<SolAR::api::solver::pose::IHomographyValidation>(this);
         declareProperty("oppositeSideRatio",m_oppositeSideRatio);
         declareProperty("surfaceRatio",m_surfaceRatio);
         declareProperty("maxOppositeDotProduct",m_maxOppositeDotProduct);

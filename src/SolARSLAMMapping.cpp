@@ -32,20 +32,20 @@ namespace TOOLS {
 
 SolARSLAMMapping::SolARSLAMMapping() :ConfigurableBase(xpcf::toUUID<SolARSLAMMapping>())
 {
-	addInterface<api::slam::IMapping>(this);
-	declareInjectable<api::solver::map::IMapper>(m_mapper);
-	declareInjectable<api::storage::IPointCloudManager>(m_pointCloudManager);
-	declareInjectable<api::storage::IKeyframesManager>(m_keyframesManager);
-	declareInjectable<api::storage::ICovisibilityGraph>(m_covisibilityGraph);
-	declareInjectable<api::solver::map::IKeyframeSelector>(m_keyframeSelector);
-	declareInjectable<api::solver::map::IBundler>(m_bundler);
-	declareInjectable<api::reloc::IKeyframeRetriever>(m_keyframeRetriever);
-	declareInjectable<api::features::IMatchesFilter>(m_matchesFilter);
-	declareInjectable<api::solver::map::ITriangulator>(m_triangulator);
-	declareInjectable<api::solver::map::IMapFilter>(m_mapFilter);
-	declareInjectable<api::geom::IProject>(m_projector);
-	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
-	declareInjectable<api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
+    addInterface<SolAR::api::slam::IMapping>(this);
+    declareInjectable<SolAR::api::solver::map::IMapper>(m_mapper);
+    declareInjectable<SolAR::api::storage::IPointCloudManager>(m_pointCloudManager);
+    declareInjectable<SolAR::api::storage::IKeyframesManager>(m_keyframesManager);
+    declareInjectable<SolAR::api::storage::ICovisibilityGraph>(m_covisibilityGraph);
+    declareInjectable<SolAR::api::solver::map::IKeyframeSelector>(m_keyframeSelector);
+    declareInjectable<SolAR::api::solver::map::IBundler>(m_bundler);
+    declareInjectable<SolAR::api::reloc::IKeyframeRetriever>(m_keyframeRetriever);
+    declareInjectable<SolAR::api::features::IMatchesFilter>(m_matchesFilter);
+    declareInjectable<SolAR::api::solver::map::ITriangulator>(m_triangulator);
+    declareInjectable<SolAR::api::solver::map::IMapFilter>(m_mapFilter);
+    declareInjectable<SolAR::api::geom::IProject>(m_projector);
+    declareInjectable<SolAR::api::features::IDescriptorMatcher>(m_matcher);
+    declareInjectable<SolAR::api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
 	declareProperty("maxNbNeighborKfs", m_maxNbNeighborKfs);
 	declareProperty("minTrackedPoints", m_minTrackedPoints);

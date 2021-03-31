@@ -28,7 +28,7 @@ namespace TOOLS {
 
 SolAR3DTransformEstimationSACFrom3D3D::SolAR3DTransformEstimationSACFrom3D3D() :ConfigurableBase(xpcf::toUUID<SolAR3DTransformEstimationSACFrom3D3D>())
 {
-	declareInterface<api::solver::pose::I3DTransformSACFinderFrom3D3D>(this);
+    declareInterface<SolAR::api::solver::pose::I3DTransformSACFinderFrom3D3D>(this);
 	declareInjectable<I3DTransform>(m_transform3D);
 	declareInjectable<IProject>(m_projector);
 	declareProperty("iterationsCount", m_iterationsCount);

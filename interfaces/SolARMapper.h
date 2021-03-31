@@ -70,7 +70,7 @@ namespace TOOLS {
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARMapper : public org::bcom::xpcf::ConfigurableBase,
-    public api::solver::map::IMapper {
+    public SolAR::api::solver::map::IMapper {
 public:
     SolARMapper();
 
@@ -87,88 +87,88 @@ public:
 	/// @brief Set identification component.
    /// @param[in] an identification instance
    /// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode setIdentification(SRef<datastructure::Identification> identification) override;
+    FrameworkReturnCode setIdentification(SRef<SolAR::datastructure::Identification> identification) override;
 
 	/// @brief Get identification component.
 	/// @param[out] an identification instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode getIdentification(SRef<datastructure::Identification> & identification) const override;
+    FrameworkReturnCode getIdentification(SRef<SolAR::datastructure::Identification> & identification) const override;
 
 	/// @brief Set coordinate system component.
 	/// @param[in] a coordinate system instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode setCoordinateSystem(SRef<datastructure::CoordinateSystem> coordinateSystem) override;
+    FrameworkReturnCode setCoordinateSystem(SRef<SolAR::datastructure::CoordinateSystem> coordinateSystem) override;
 
 	/// @brief Get coordinate system component.
 	/// @param[out] a coordinate system instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode getCoordinateSystem(SRef<datastructure::CoordinateSystem> & coordinateSystem) const override;
+    FrameworkReturnCode getCoordinateSystem(SRef<SolAR::datastructure::CoordinateSystem> & coordinateSystem) const override;
 
 	/// @brief Set point cloud component.
 	/// @param[in] a point cloud instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode setPointCloudManager(const SRef <api::storage::IPointCloudManager> pointCloudManager) override;
+    FrameworkReturnCode setPointCloudManager(const SRef <SolAR::api::storage::IPointCloudManager> pointCloudManager) override;
 
 	/// @brief Get point cloud component.
 	/// @param[out] a point cloud instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode getPointCloudManager(SRef<api::storage::IPointCloudManager> & pointCloudManager) const override;
+    FrameworkReturnCode getPointCloudManager(SRef<SolAR::api::storage::IPointCloudManager> & pointCloudManager) const override;
 
 	/// @brief Set keyframes manager component.
 	/// @param[in] a keyframes manager instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode setKeyframesManager(const SRef<api::storage::IKeyframesManager> keyframesManager) override;
+    FrameworkReturnCode setKeyframesManager(const SRef<SolAR::api::storage::IKeyframesManager> keyframesManager) override;
 
 	/// @brief Get keyframes manager component.
 	/// @param[out] a keyframes manager instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode getKeyframesManager(SRef<api::storage::IKeyframesManager> &keyframesManager) const override;
+    FrameworkReturnCode getKeyframesManager(SRef<SolAR::api::storage::IKeyframesManager> &keyframesManager) const override;
 
 	/// @brief Set covisibility graph component.
 	/// @param[in] a covisibility graph instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode setCovisibilityGraph(const SRef<api::storage::ICovisibilityGraph> covisibilityGraph) override;
+    FrameworkReturnCode setCovisibilityGraph(const SRef<SolAR::api::storage::ICovisibilityGraph> covisibilityGraph) override;
 
 	/// @brief Get covisibility graph component.
 	/// @param[out] a covisibility graph instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode getCovisibilityGraph(SRef<api::storage::ICovisibilityGraph> &covisibilityGraph) const override;
+    FrameworkReturnCode getCovisibilityGraph(SRef<SolAR::api::storage::ICovisibilityGraph> &covisibilityGraph) const override;
 
 	/// @brief Set keyframe retriever component.
 	/// @param[in] a keyframe retriever instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode setKeyframeRetriever(const SRef<api::reloc::IKeyframeRetriever> keyframeRetriever) override;
+    FrameworkReturnCode setKeyframeRetriever(const SRef<SolAR::api::reloc::IKeyframeRetriever> keyframeRetriever) override;
 
 	/// @brief Get keyframe retriever component.
 	/// @param[out] a keyframe retriever instance
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode getKeyframeRetriever(SRef<api::reloc::IKeyframeRetriever> &keyframeRetriever) const override;
+    FrameworkReturnCode getKeyframeRetriever(SRef<SolAR::api::reloc::IKeyframeRetriever> &keyframeRetriever) const override;
 
 	/// @brief Get local point cloud seen from the keyframe and its neighbors
    /// @param[in] keyframe: the keyframe to get local point cloud
    /// @param[in] minWeightNeighbor: the weight to get keyframe neighbors
    /// @param[out] localPointCloud: the local point cloud
    /// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode getLocalPointCloud(const SRef<datastructure::Keyframe> keyframe, const float minWeightNeighbor, std::vector<SRef<datastructure::CloudPoint>> &localPointCloud) const override;
+    FrameworkReturnCode getLocalPointCloud(const SRef<SolAR::datastructure::Keyframe> keyframe, const float minWeightNeighbor, std::vector<SRef<SolAR::datastructure::CloudPoint>> &localPointCloud) const override;
 
 	/// @brief Add a point cloud to mapper and update visibility of keyframes and covisibility graph
 	/// @param[in] cloudPoint: the cloud point to add to the mapper
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode addCloudPoint(const SRef<datastructure::CloudPoint> cloudPoint) override;
+    FrameworkReturnCode addCloudPoint(const SRef<SolAR::datastructure::CloudPoint> cloudPoint) override;
 
 	/// @brief Remove a point cloud from mapper and update visibility of keyframes and covisibility graph
 	/// @param[in] cloudPoint: the cloud point to remove to the mapper
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode removeCloudPoint(const SRef<datastructure::CloudPoint> cloudPoint) override;
+    FrameworkReturnCode removeCloudPoint(const SRef<SolAR::datastructure::CloudPoint> cloudPoint) override;
 
 	/// @brief Remove a keyframe from mapper and update visibility of point cloud and covisibility graph
 	/// @param[in] cloudPoint: the cloud point to add to the mapper
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode removeKeyframe(const SRef<datastructure::Keyframe> keyframe) override;
+    FrameworkReturnCode removeKeyframe(const SRef<SolAR::datastructure::Keyframe> keyframe) override;
 
 	/// @brief Prune cloud points and keyframes of a map
 	/// @param[in] cloudPoints: the cloud points are checked to prune
-	void pruning(const std::vector<SRef<datastructure::CloudPoint>> &cloudPoints = {}) override;
+	void pruning(const std::vector<SRef<SolAR::datastructure::CloudPoint>> &cloudPoints = {}) override;
 
 	/// @brief Save the map to the external file
 	 /// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
@@ -181,13 +181,13 @@ public:
     void unloadComponent () override final;	
 
 private:
-	SRef<datastructure::Identification>		m_identification;
-	SRef<datastructure::CoordinateSystem>	m_coordinateSystem;
-	SRef<api::storage::IPointCloudManager>	m_pointCloudManager;
-	SRef<api::storage::IKeyframesManager>	m_keyframesManager;
-	SRef<api::storage::ICovisibilityGraph>	m_covisibilityGraph;
-	SRef<api::reloc::IKeyframeRetriever>	m_keyframeRetriever;
-    mutable std::mutex                      m_mutex;
+	SRef<SolAR::datastructure::Identification>		m_identification;
+	SRef<SolAR::datastructure::CoordinateSystem>	m_coordinateSystem;
+    SRef<SolAR::api::storage::IPointCloudManager>	m_pointCloudManager;
+    SRef<SolAR::api::storage::IKeyframesManager>	m_keyframesManager;
+    SRef<SolAR::api::storage::ICovisibilityGraph>	m_covisibilityGraph;
+    SRef<SolAR::api::reloc::IKeyframeRetriever>     m_keyframeRetriever;
+    mutable std::mutex                              m_mutex;
 
 	std::string					m_directory;
 	std::string					m_identificationFileName;

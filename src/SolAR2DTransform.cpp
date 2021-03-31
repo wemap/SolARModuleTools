@@ -28,7 +28,7 @@ namespace TOOLS {
 
 SolAR2DTransform::SolAR2DTransform():ComponentBase(xpcf::toUUID<SolAR2DTransform>())
 {
-   declareInterface<api::geom::I2DTransform>(this);
+   declareInterface<SolAR::api::geom::I2DTransform>(this);
 }
 
 

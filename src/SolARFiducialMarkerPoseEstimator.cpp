@@ -31,19 +31,19 @@ namespace TOOLS {
 
 SolARFiducialMarkerPoseEstimator::SolARFiducialMarkerPoseEstimator():ConfigurableBase(xpcf::toUUID<SolARFiducialMarkerPoseEstimator>())
 {
-    addInterface<api::solver::pose::ITrackablePose>(this);
-	declareInjectable<api::image::IImageFilter>(m_imageFilterBinary);
-	declareInjectable<api::image::IImageConvertor>(m_imageConvertor);
-	declareInjectable<api::features::IContoursExtractor>(m_contoursExtractor);
-	declareInjectable<api::features::IContoursFilter>(m_contoursFilter);
-	declareInjectable<api::image::IPerspectiveController>(m_perspectiveController);
-	declareInjectable<api::features::IDescriptorsExtractorSBPattern>(m_patternDescriptorExtractor);
-	declareInjectable<api::features::IDescriptorMatcher>(m_patternMatcher);
-	declareInjectable<api::features::ISBPatternReIndexer>(m_patternReIndexer);
-	declareInjectable<api::geom::IImage2WorldMapper>(m_img2worldMapper);
-	declareInjectable<api::solver::pose::I3DTransformFinderFrom2D3D>(m_pnp);
-	declareInjectable<api::features::ICornerRefinement>(m_cornerRefinement);
-	declareInjectable<api::geom::IProject>(m_projector);
+    addInterface<SolAR::api::solver::pose::ITrackablePose>(this);
+    declareInjectable<SolAR::api::image::IImageFilter>(m_imageFilterBinary);
+    declareInjectable<SolAR::api::image::IImageConvertor>(m_imageConvertor);
+    declareInjectable<SolAR::api::features::IContoursExtractor>(m_contoursExtractor);
+    declareInjectable<SolAR::api::features::IContoursFilter>(m_contoursFilter);
+    declareInjectable<SolAR::api::image::IPerspectiveController>(m_perspectiveController);
+    declareInjectable<SolAR::api::features::IDescriptorsExtractorSBPattern>(m_patternDescriptorExtractor);
+    declareInjectable<SolAR::api::features::IDescriptorMatcher>(m_patternMatcher);
+    declareInjectable<SolAR::api::features::ISBPatternReIndexer>(m_patternReIndexer);
+    declareInjectable<SolAR::api::geom::IImage2WorldMapper>(m_img2worldMapper);
+    declareInjectable<SolAR::api::solver::pose::I3DTransformFinderFrom2D3D>(m_pnp);
+    declareInjectable<SolAR::api::features::ICornerRefinement>(m_cornerRefinement);
+    declareInjectable<SolAR::api::geom::IProject>(m_projector);
 	declareProperty("nbThreshold", m_nbThreshold);
 	declareProperty("minThreshold", m_minThreshold);
 	declareProperty("maxThreshold", m_maxThreshold);
@@ -55,20 +55,9 @@ void SolARFiducialMarkerPoseEstimator::setCameraParameters(const CamCalibration 
 	m_camDistortion = distortionParams;
 	m_pnp->setCameraParameters(m_camMatrix, m_camDistortion);
 	m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
-	// components initialisation for marker detection
-	m_binaryMarker->loadMarker();
-	m_patternDescriptorExtractor->extract(m_binaryMarker->getPattern(), m_markerPatternDescriptor);
-	LOG_DEBUG("Marker pattern:\n {}", m_binaryMarker->getPattern().getPatternMatrix());
-	int patternSize = m_binaryMarker->getPattern().getSize();
-	m_patternDescriptorExtractor->bindTo<xpcf::IConfigurable>()->getProperty("patternSize")->setIntegerValue(patternSize);
-	m_patternReIndexer->bindTo<xpcf::IConfigurable>()->getProperty("sbPatternSize")->setIntegerValue(patternSize);
-	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalWidth")->setIntegerValue(patternSize);
-	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("digitalHeight")->setIntegerValue(patternSize);
-	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldWidth")->setFloatingValue(m_binaryMarker->getSize().width);
-	m_img2worldMapper->bindTo<xpcf::IConfigurable>()->getProperty("worldHeight")->setFloatingValue(m_binaryMarker->getSize().height);
 }
 
-FrameworkReturnCode SolARFiducialMarkerPoseEstimator::setTrackable(const SRef<datastructure::Trackable> trackable)
+FrameworkReturnCode SolARFiducialMarkerPoseEstimator::setTrackable(const SRef<SolAR::datastructure::Trackable> trackable)
 {
     // components initialisation for marker detection
     if (trackable->getType() == TrackableType::FIDUCIAL_MARKER)
@@ -129,7 +118,7 @@ FrameworkReturnCode SolARFiducialMarkerPoseEstimator::estimate(const SRef<Image>
 		if (m_patternDescriptorExtractor->extract(patches, filtered_contours, recognizedPatternsDescriptors, recognizedContours) != FrameworkReturnCode::_ERROR_)
 		{
 			// From extracted squared binary pattern, match the one corresponding to the squared binary marker
-			if (m_patternMatcher->match(m_markerPatternDescriptor, recognizedPatternsDescriptors, patternMatches) == api::features::IDescriptorMatcher::DESCRIPTORS_MATCHER_OK)
+            if (m_patternMatcher->match(m_markerPatternDescriptor, recognizedPatternsDescriptors, patternMatches) == SolAR::api::features::IDescriptorMatcher::DESCRIPTORS_MATCHER_OK)
 			{
 				// Reindex the pattern to create two vector of points, the first one corresponding to marker corner, the second one corresponding to the poitsn of the contour
 				m_patternReIndexer->reindex(recognizedContours, patternMatches, pattern2DPoints, img2DPoints);

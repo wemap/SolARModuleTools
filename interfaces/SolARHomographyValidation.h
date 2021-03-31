@@ -50,7 +50,7 @@ namespace TOOLS {
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARHomographyValidation : public org::bcom::xpcf::ConfigurableBase,
-        public api::solver::pose::IHomographyValidation {
+        public SolAR::api::solver::pose::IHomographyValidation {
 public:
     SolARHomographyValidation();
 
@@ -60,7 +60,7 @@ public:
     /// @param[in] ref2DSquaredMarkerCorners The 4 corners of a marker in pixels.
     /// @param[in] projected2DSquaredMarkerCorners The 4 corners of a marker in the current image captured by a camera in pixels.
     /// @return true if the homography is valid, otherwise false
-    bool isValid(const std::vector<datastructure::Point2Df> & ref2DSquaredMarkerCorners, const std::vector<datastructure::Point2Df> & projected2DSquaredMarkerCorners) override;
+    bool isValid(const std::vector<SolAR::datastructure::Point2Df> & ref2DSquaredMarkerCorners, const std::vector<SolAR::datastructure::Point2Df> & projected2DSquaredMarkerCorners) override;
 
     void unloadComponent () override final;
 

@@ -51,7 +51,7 @@ namespace TOOLS {
 * @SolARComponentInjectable{SolAR::api::solver::map::IMapFilter}
 * @SolARComponentInjectable{SolAR::api::solver::map::IKeyframeSelector}
 * @SolARComponentInjectable{SolAR::api::solver::pose::I3DTransformFinderFrom2D2D}
-* @SolARComponentInjectable{api::display::IMatchesOverlay}
+* @SolARComponentInjectable{SolAR::api::display::IMatchesOverlay}
 * @SolARComponentInjectablesEnd
 *
 * @SolARComponentPropertiesBegin
@@ -69,7 +69,7 @@ namespace TOOLS {
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARSLAMBootstrapper : public org::bcom::xpcf::ConfigurableBase,
-	public api::slam::IBootstrapper
+    public SolAR::api::slam::IBootstrapper
 {
 public:
 	///@brief SolAR3DTransformEstimationFrom3D3D constructor;
@@ -80,14 +80,14 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] Camera calibration matrix parameters.
 	/// @param[in] Camera distorsion parameters.
-	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;
+	void setCameraParameters(const SolAR::datastructure::CamCalibration & intrinsicParams, const SolAR::datastructure::CamDistortion & distorsionParams) override;
 
 	/// @brief This method uses images to boostrap
 	/// @param[in] image: input image to process
 	/// @param[out] view: output image to visualize
 	/// @param[in] pose: the pose of the input image
 	/// @return FrameworkReturnCode::_SUCCESS_ if initialization succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode process(const SRef<datastructure::Image> image, SRef<datastructure::Image> & view, const datastructure::Transform3Df & pose = datastructure::Transform3Df::Identity()) override;
+    FrameworkReturnCode process(const SRef<SolAR::datastructure::Image> image, SRef<SolAR::datastructure::Image> & view, const SolAR::datastructure::Transform3Df & pose = SolAR::datastructure::Transform3Df::Identity()) override;
 
 	void unloadComponent() override final;
 	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
@@ -99,26 +99,26 @@ private:
 	FrameworkReturnCode initMarkerLess();
 
 private:
-	int													m_hasPose = 1;
-	int													m_nbMinInitPointCloud = 50;
-    float												m_angleThres = 0.1f;
-    float												m_ratioDistanceIsKeyframe = 0.05f;
-	bool												m_bootstrapOk = false;
-	bool												m_initKeyframe1 = false;
-	SRef<datastructure::Keyframe>										m_keyframe1, m_keyframe2;
-	datastructure::CamCalibration										m_camMatrix;
-	datastructure::CamDistortion										m_camDistortion;
-	SRef<api::solver::map::IMapper>						m_mapper;
-	SRef<api::features::IKeypointDetector>				m_keypointsDetector;
-	SRef<api::features::IDescriptorsExtractor>			m_descriptorExtractor;
-	SRef<api::features::IDescriptorMatcher>				m_matcher;
-	SRef<api::features::IMatchesFilter>					m_matchesFilter;
-	SRef<api::solver::map::ITriangulator>				m_triangulator;
-	SRef<api::solver::map::IMapFilter>					m_mapFilter;
-	SRef<api::solver::map::IKeyframeSelector>			m_keyframeSelector;
-	SRef<api::solver::pose::I3DTransformFinderFrom2D2D>	m_poseFinderFrom2D2D;
-	SRef<api::geom::IUndistortPoints>					m_undistortPoints;
-	SRef<api::display::IMatchesOverlay>					m_matchesOverlay;
+    int                                                         m_hasPose = 1;
+    int                                                         m_nbMinInitPointCloud = 50;
+    float                                                       m_angleThres = 0.1f;
+    float                                                       m_ratioDistanceIsKeyframe = 0.05f;
+    bool                                                        m_bootstrapOk = false;
+    bool                                                        m_initKeyframe1 = false;
+    SRef<SolAR::datastructure::Keyframe>                        m_keyframe1, m_keyframe2;
+    SolAR::datastructure::CamCalibration                        m_camMatrix;
+    SolAR::datastructure::CamDistortion                         m_camDistortion;
+    SRef<SolAR::api::solver::map::IMapper>						m_mapper;
+    SRef<SolAR::api::features::IKeypointDetector>				m_keypointsDetector;
+    SRef<SolAR::api::features::IDescriptorsExtractor>			m_descriptorExtractor;
+    SRef<SolAR::api::features::IDescriptorMatcher>				m_matcher;
+    SRef<SolAR::api::features::IMatchesFilter>					m_matchesFilter;
+    SRef<SolAR::api::solver::map::ITriangulator>				m_triangulator;
+    SRef<SolAR::api::solver::map::IMapFilter>					m_mapFilter;
+    SRef<SolAR::api::solver::map::IKeyframeSelector>			m_keyframeSelector;
+    SRef<SolAR::api::solver::pose::I3DTransformFinderFrom2D2D>	m_poseFinderFrom2D2D;
+    SRef<SolAR::api::geom::IUndistortPoints>					m_undistortPoints;
+    SRef<SolAR::api::display::IMatchesOverlay>					m_matchesOverlay;
 };
 
 }

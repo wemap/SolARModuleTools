@@ -68,7 +68,7 @@ namespace TOOLS {
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARSLAMTracking : public org::bcom::xpcf::ConfigurableBase,
-	public api::slam::ITracking
+    public SolAR::api::slam::ITracking
 {
 public:
 	///@brief SolARSLAMTracking constructor;
@@ -80,17 +80,17 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] Camera calibration matrix parameters.
 	/// @param[in] Camera distorsion parameters.
-	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distorsionParams) override;
+	void setCameraParameters(const SolAR::datastructure::CamCalibration & intrinsicParams, const SolAR::datastructure::CamDistortion & distorsionParams) override;
 
 	/// @brief this method is used to update reference keyframe to track
 	/// @param[in] refKeyframe: the new reference keyframe.
-    void updateReferenceKeyframe(const SRef<datastructure::Keyframe> refKeyframe) override;
+    void updateReferenceKeyframe(const SRef<SolAR::datastructure::Keyframe> refKeyframe) override;
 
 	/// @brief this method is used to process tracking
 	/// @param[in] frame: the input frame.
 	/// @param[out] displayImage: the image to display.
 	/// @return FrameworkReturnCode::_SUCCESS if tracking succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode process(const SRef<datastructure::Frame> frame, SRef<datastructure::Image> &displayImage) override;
+    FrameworkReturnCode process(const SRef<SolAR::datastructure::Frame> frame, SRef<SolAR::datastructure::Image> &displayImage) override;
 
 	void unloadComponent() override final;
 	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
@@ -99,28 +99,28 @@ private:
 	void updateLocalMap();
 
 private:
-	SRef<datastructure::Keyframe>						m_referenceKeyframe;
-	datastructure::Transform3Df							m_lastPose = datastructure::Transform3Df::Identity();
-	std::vector<SRef<datastructure::CloudPoint>>		m_localMap;
-	bool												m_isLostTrack = false;
-	float												m_minWeightNeighbor = 10.f;
-	float												m_thresAngleViewDirection = 0.7f;
-	float												m_reprojErrorThreshold;
-	int													m_displayTrackedPoints = 1;
-	bool												m_isUpdateReferenceKeyframe = false;
-	std::mutex											m_refKeyframeMutex;
-	datastructure::CamCalibration						m_camMatrix;
-	datastructure::CamDistortion						m_camDistortion;
-	SRef<api::solver::map::IMapper>						m_mapper;
-	SRef<api::features::IDescriptorMatcher>				m_matcher;
-	SRef<api::features::IMatchesFilter>					m_matchesFilter;
-	SRef<api::display::I2DOverlay>						m_overlay2D;
-	SRef<api::solver::pose::I2D3DCorrespondencesFinder>	m_corr2D3DFinder;
-	SRef<api::solver::pose::I3DTransformSACFinderFrom2D3D>	m_pnpRansac;
-	SRef<api::solver::pose::I3DTransformFinderFrom2D3D>	m_pnp;
-	SRef<api::geom::IProject>							m_projector;
-	SRef<api::reloc::IKeyframeRetriever>				m_keyframeRetriever;
-	SRef<api::storage::IKeyframesManager>				m_keyframesManager;
+    SRef<SolAR::datastructure::Keyframe>                            m_referenceKeyframe;
+    SolAR::datastructure::Transform3Df                              m_lastPose = SolAR::datastructure::Transform3Df::Identity();
+    std::vector<SRef<SolAR::datastructure::CloudPoint>>             m_localMap;
+    bool                                                            m_isLostTrack = false;
+    float                                                           m_minWeightNeighbor = 10.f;
+    float                                                           m_thresAngleViewDirection = 0.7f;
+    float                                                           m_reprojErrorThreshold;
+    int                                                             m_displayTrackedPoints = 1;
+    bool                                                            m_isUpdateReferenceKeyframe = false;
+    std::mutex                                                      m_refKeyframeMutex;
+    SolAR::datastructure::CamCalibration                            m_camMatrix;
+    SolAR::datastructure::CamDistortion                             m_camDistortion;
+    SRef<SolAR::api::solver::map::IMapper>                          m_mapper;
+    SRef<SolAR::api::features::IDescriptorMatcher>                  m_matcher;
+    SRef<SolAR::api::features::IMatchesFilter>                      m_matchesFilter;
+    SRef<SolAR::api::display::I2DOverlay>                           m_overlay2D;
+    SRef<SolAR::api::solver::pose::I2D3DCorrespondencesFinder>      m_corr2D3DFinder;
+    SRef<SolAR::api::solver::pose::I3DTransformSACFinderFrom2D3D>	m_pnpRansac;
+    SRef<SolAR::api::solver::pose::I3DTransformFinderFrom2D3D>      m_pnp;
+    SRef<SolAR::api::geom::IProject>                                m_projector;
+    SRef<SolAR::api::reloc::IKeyframeRetriever>                     m_keyframeRetriever;
+    SRef<SolAR::api::storage::IKeyframesManager>                    m_keyframesManager;
 };
 
 }

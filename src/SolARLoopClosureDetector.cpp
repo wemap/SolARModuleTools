@@ -32,7 +32,7 @@ namespace TOOLS {
 
 SolARLoopClosureDetector::SolARLoopClosureDetector():ConfigurableBase(xpcf::toUUID<SolARLoopClosureDetector>())
 {
-    addInterface<api::loop::ILoopClosureDetector>(this);
+    addInterface<SolAR::api::loop::ILoopClosureDetector>(this);
 	declareInjectable<IKeyframesManager>(m_keyframesManager);
 	declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
 	declareInjectable<reloc::IKeyframeRetriever>(m_keyframeRetriever);

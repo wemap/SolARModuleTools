@@ -44,7 +44,7 @@ namespace TOOLS {
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARKeyframeSelector : public org::bcom::xpcf::ConfigurableBase,
-        public api::solver::map::IKeyframeSelector {
+        public SolAR::api::solver::map::IKeyframeSelector {
 public:
 
     SolARKeyframeSelector();
@@ -57,13 +57,13 @@ public:
     /// @param[in] frame: the frame tested to know if it could be a Keyframe
     /// @param[in] matches: the matches between the frame and its keyframe of reference.
     /// @return true if the frame can be considered as a new keyframe, false otherwise.
-    virtual bool select(const SRef<datastructure::Frame> frame, const std::vector<datastructure::DescriptorMatch> & matches) const override;
+    virtual bool select(const SRef<SolAR::datastructure::Frame> frame, const std::vector<SolAR::datastructure::DescriptorMatch> & matches) const override;
 
     /// @brief  Select if a frame can be considered as a keyframe
     /// @param[in] frame: the frame tested to know if it could be a Keyframe
     /// The underlying component can use data from SolAR data storage components, based on the frame properties.
     /// @return true if the frame can be considered as a new keyframe, false otherwise.
-    virtual bool select(const SRef<datastructure::Frame> frame) const override;
+    virtual bool select(const SRef<SolAR::datastructure::Frame> frame) const override;
 
     /// @brief  Select if a frame can be considered as a keyframe.
     /// It is based on a selection predicate and provides the mean to use any datastructure in the pipeline context to the decision algorithm.
@@ -71,7 +71,7 @@ public:
     /// @param[in] func: the function predicate used to test the frame.
     /// This predicate can be any lambda capturing its context (matches, point cloud, bow ...) to select the frame.
     /// @return true if the frame can be considered as a new keyframe, false otherwise.
-    virtual bool select(const SRef<datastructure::Frame> frame, const std::function<bool(const SRef<datastructure::Frame> &)> & func) const override;
+    virtual bool select(const SRef<SolAR::datastructure::Frame> frame, const std::function<bool(const SRef<SolAR::datastructure::Frame> &)> & func) const override;
 
     void unloadComponent () override final;
 

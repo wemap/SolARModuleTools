@@ -30,7 +30,7 @@ namespace TOOLS {
 
 SolARBasicSink::SolARBasicSink():ConfigurableBase(xpcf::toUUID<ISinkPoseImage>())
 {
-   declareInterface<api::sink::ISinkPoseImage>(this);
+   declareInterface<SolAR::api::sink::ISinkPoseImage>(this);
    m_image = nullptr;
    m_pose = Transform3Df::Identity();
    m_newPose = false;

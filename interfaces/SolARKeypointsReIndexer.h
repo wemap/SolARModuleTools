@@ -33,7 +33,7 @@ namespace TOOLS {
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARKeypointsReIndexer : public org::bcom::xpcf::ComponentBase,
-        public api::features::IKeypointsReIndexer {
+        public SolAR::api::features::IKeypointsReIndexer {
 public:
     SolARKeypointsReIndexer();
     ~SolARKeypointsReIndexer() override = default;
@@ -45,11 +45,11 @@ public:
     /// @param[out] matchedRefKeypoints The ordered set of keypoints where the ith keypoint matches with the ith keypoint of the matchedImgKeypoints set.
     /// @param[out] matchedImgKeypoints The ordered set of keypoints where the ith keypoint matches with the ith keypoint of the matchedRefKeypoints set.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode reindex(const std::vector<datastructure::Keypoint>& refKeypoints,
-                                const std::vector<datastructure::Keypoint> & imgKeypoints,
-                                const std::vector<datastructure::DescriptorMatch> & matches,
-                                std::vector<datastructure::Point2Df> & matchedRefKeypoints,
-                                std::vector<datastructure::Point2Df> & matchedImgKeypoints) override;
+    FrameworkReturnCode reindex(const std::vector<SolAR::datastructure::Keypoint>& refKeypoints,
+                                const std::vector<SolAR::datastructure::Keypoint> & imgKeypoints,
+                                const std::vector<SolAR::datastructure::DescriptorMatch> & matches,
+                                std::vector<SolAR::datastructure::Point2Df> & matchedRefKeypoints,
+                                std::vector<SolAR::datastructure::Point2Df> & matchedImgKeypoints) override;
 
     void unloadComponent () override final;
 

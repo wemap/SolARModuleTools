@@ -33,7 +33,7 @@ namespace TOOLS {
 
 SolAROverlapDetector::SolAROverlapDetector():ConfigurableBase(xpcf::toUUID<SolAROverlapDetector>())
 {
-    addInterface<api::loop::IOverlapDetector>(this);
+    addInterface<SolAR::api::loop::IOverlapDetector>(this);
 	declareInjectable<solver::pose::I3DTransformSACFinderFrom3D3D>(m_estimator3D);
 	declareInjectable<features::IDescriptorMatcher>(m_matcher);
 	declareInjectable<features::IMatchesFilter>(m_matchesFilter);
@@ -46,8 +46,8 @@ void SolAROverlapDetector::setCameraParameters(const CamCalibration & intrinsicP
 	m_estimator3D->setCameraParameters(intrinsicParams, distortionParams);
 }
 
-FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IMapper> globalMap,
-                                                 const SRef<api::solver::map::IMapper> floatingMap,
+FrameworkReturnCode SolAROverlapDetector::detect(const SRef<SolAR::api::solver::map::IMapper> globalMap,
+                                                 const SRef<SolAR::api::solver::map::IMapper> floatingMap,
                                                  Transform3Df & sim3Transform,
                                                  std::vector<std::pair<uint32_t, uint32_t>>& cpOverlapIndices) const
 {
@@ -152,8 +152,8 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IM
 	return FrameworkReturnCode::_ERROR_;
 }
 
-FrameworkReturnCode SolAROverlapDetector::detect(const SRef<api::solver::map::IMapper> globalMap,
-                                                const SRef<api::solver::map::IMapper> floatingMap,
+FrameworkReturnCode SolAROverlapDetector::detect(const SRef<SolAR::api::solver::map::IMapper> globalMap,
+                                                const SRef<SolAR::api::solver::map::IMapper> floatingMap,
 												std::vector<Transform3Df> &sim3Transform,
 												std::vector<std::pair<uint32_t, uint32_t>>&overlapIndices,
                                                 std::vector<double>&scores) const

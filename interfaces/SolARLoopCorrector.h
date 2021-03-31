@@ -51,7 +51,7 @@ namespace TOOLS {
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARLoopCorrector : public org::bcom::xpcf::ConfigurableBase,
-        public api::loop::ILoopCorrector {
+        public SolAR::api::loop::ILoopCorrector {
 public:
 
     SolARLoopCorrector();
@@ -60,7 +60,7 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] intrinsicParams: Camera calibration matrix parameters.
 	/// @param[in] distortionParams: Camera distortion parameters.
-	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distortionParams) override;
+	void setCameraParameters(const SolAR::datastructure::CamCalibration & intrinsicParams, const SolAR::datastructure::CamDistortion & distortionParams) override;
 
     /// @brief corrects a loop of keyframes and their associated point clouds from a loop detection result.
     /// @param[in] queryKeyframe: the query keyframe.
@@ -68,23 +68,23 @@ public:
 	/// @param[in] S_wl_wc : 3D similarity transformation (Sim(3)) from world c.s of the query keyframe to world c.s of the loop detected keyframe
     /// @param[in] duplicatedPointsIndices: indices of duplicated cloud points. The first index is the id of point cloud seen from the detected loop keyframe. The second one is id of point cloud seen from the query keyframe
     /// @return FrameworkReturnCode::_SUCCESS if loop closure is correctly corrected, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode correct(const SRef<datastructure::Keyframe> queryKeyframe, const SRef<datastructure::Keyframe> detectedLoopKeyframe, const datastructure::Transform3Df & S_wl_wc, const std::vector<std::pair<uint32_t, uint32_t>> &duplicatedPointsIndices) override;
+    FrameworkReturnCode correct(const SRef<SolAR::datastructure::Keyframe> queryKeyframe, const SRef<SolAR::datastructure::Keyframe> detectedLoopKeyframe, const SolAR::datastructure::Transform3Df & S_wl_wc, const std::vector<std::pair<uint32_t, uint32_t>> &duplicatedPointsIndices) override;
     
 	void unloadComponent () override final;
 
 private:
 	// get cloud points seen from keyframes
-	void getLocalMapPoints(const std::map<uint32_t, SRef<datastructure::Keyframe> > &connectedKfs, std::vector<SRef<datastructure::CloudPoint>>& localMapPoints);
+	void getLocalMapPoints(const std::map<uint32_t, SRef<SolAR::datastructure::Keyframe> > &connectedKfs, std::vector<SRef<SolAR::datastructure::CloudPoint>>& localMapPoints);
 
  private:
-    SRef<api::storage::IKeyframesManager>					m_keyframesManager;
-    SRef<api::storage::ICovisibilityGraph>					m_covisibilityGraph;
-    SRef<api::storage::IPointCloudManager>					m_pointCloudManager;
-    SRef<api::features::IDescriptorMatcher>					m_matcher;
-    SRef<api::geom::I3DTransform>							m_transform3D;
-	SRef<api::geom::IProject>								m_projector;
-	datastructure::CamCalibration							m_camMatrix;
-    datastructure::CamDistortion							m_camDistortion;
+    SRef<SolAR::api::storage::IKeyframesManager>			m_keyframesManager;
+    SRef<SolAR::api::storage::ICovisibilityGraph>			m_covisibilityGraph;
+    SRef<SolAR::api::storage::IPointCloudManager>			m_pointCloudManager;
+    SRef<SolAR::api::features::IDescriptorMatcher>			m_matcher;
+    SRef<SolAR::api::geom::I3DTransform>					m_transform3D;
+    SRef<SolAR::api::geom::IProject>						m_projector;
+    SolAR::datastructure::CamCalibration					m_camMatrix;
+    SolAR::datastructure::CamDistortion						m_camDistortion;
 };
 
 }
