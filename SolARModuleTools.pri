@@ -4,7 +4,7 @@ interfaces/SolAR3DTransform.h \
 interfaces/SolARHomographyValidation.h \
 interfaces/SolARSBPatternReIndexer.h \
 interfaces/SolARKeypointsReIndexer.h \
-interfaces/SolARMapper.h \
+interfaces/SolARMapManager.h \
 interfaces/SolARMapFilter.h \
 interfaces/SolARToolsAPI.h \
 interfaces/SolARModuleTools_traits.h \
@@ -14,7 +14,7 @@ interfaces/SolARBasicSink.h \
 interfaces/SolARBasicSource.h \
 interfaces/SolARPointCloudManager.h \
 interfaces/SolARKeyframesManager.h \
-interfaces/SolARCovisibilityGraph.h \
+interfaces/SolARCovisibilityGraphManager.h \
 interfaces/SolARBoostCovisibilityGraph.h \
 interfaces/SolARLoopCorrector.h \
 interfaces/SolARLoopClosureDetector.h \
@@ -34,7 +34,7 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARSBPatternReIndexer.cpp \
     src/SolARKeypointsReIndexer.cpp \
     src/SolARBasicMatchesFilter.cpp \
-    src/SolARMapper.cpp \
+    src/SolARMapManager.cpp \
     src/SolARMapFilter.cpp \
     src/SolARModuleTools.cpp \
     src/SolARKeyframeSelector.cpp \
@@ -42,7 +42,7 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARBasicSource.cpp \
     src/SolARPointCloudManager.cpp \
     src/SolARKeyframesManager.cpp \
-    src/SolARCovisibilityGraph.cpp \
+    src/SolARCovisibilityGraphManager.cpp \
     src/SolARBoostCovisibilityGraph.cpp \
     src/SolARLoopCorrector.cpp \
     src/SolARLoopClosureDetector.cpp \

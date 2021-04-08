@@ -1,0 +1,151 @@
+#ifndef SOLARMAPPER_H
+#define SOLARMAPPER_H
+
+
+#include "api/storage/IMapManager.h"
+
+#include "xpcf/component/ComponentBase.h"
+#include "xpcf/component/ConfigurableBase.h"
+#include "datastructure/Map.h"
+#include <vector>
+#include <set>
+#include "SolARToolsAPI.h"
+#include <boost/filesystem.hpp>
+#include <string>
+#include <fstream>
+#include "core/SerializationDefinitions.h"
+
+namespace SolAR {
+namespace MODULES {
+namespace TOOLS {
+
+/**
+ * @class SolARMapManager
+ * @brief <B>Allow to manage all components of a map.</B>
+ * <TT>UUID: 8e3c926a-0861-46f7-80b2-8abb5576692c</TT>
+ *
+ * @SolARComponentInjectablesBegin
+ * @SolARComponentInjectable{SolAR::api::storage::IPointCloudManager}
+ * @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
+ * @SolARComponentInjectable{SolAR::api::storage::ICovisibilityGraph}
+ * @SolARComponentInjectable{SolAR::api::reloc::IKeyframeRetriever}
+ * @SolARComponentInjectablesEnd
+ *
+ * @SolARComponentPropertiesBegin
+ * @SolARComponentProperty{ directory,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ identificationFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ coordinateFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ pointCloudManagerFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ keyframesManagerFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ covisibilityGraphFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ keyframeRetrieverFileName,
+ *                          ,
+ *                          @SolARComponentPropertyDescString{ "" }}
+ * @SolARComponentProperty{ reprojErrorThreshold,
+ *                          ,
+ *                           @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 3.f }}
+ * @SolARComponentProperty{ thresConfidence,
+ *                          ,
+ *                           @SolARComponentPropertyDescNum{ float, [0..MAX FLOAT], 3.f }}
+ * @SolARComponentPropertiesEnd
+ *
+ */
+
+/**
+* @class SolARMapManager
+* @brief Store all components of a map
+*/
+
+class SOLAR_TOOLS_EXPORT_API SolARMapManager : public org::bcom::xpcf::ConfigurableBase,
+    public api::solver::map::IMapManager {
+public:
+	SolARMapManager();
+
+    ~SolARMapManager() override = default;
+
+	/// @brief Set the map
+	/// @param[in] map the data of map
+	/// @return FrameworkReturnCode::_SUCCESS_ if all data structures successfully setted, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode setMap(const SRef<Map> map) override;
+
+	/// @brief Get the map
+	/// @param[out] map the data of map
+	/// @return FrameworkReturnCode::_SUCCESS_ if successfully, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode getMap(SRef<Map> & map) override;
+
+	/// @brief Get local point cloud seen from the keyframe and its neighbors
+	/// @param[in] keyframe: the keyframe to get local point cloud
+	/// @param[in] minWeightNeighbor: the weight to get keyframe neighbors
+	/// @param[out] localPointCloud: the local point cloud
+	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
+    FrameworkReturnCode getLocalPointCloud(const SRef<datastructure::Keyframe> keyframe, const float minWeightNeighbor, std::vector<SRef<datastructure::CloudPoint>> &localPointCloud) const override;
+
+	/// @brief Add a point cloud to mapper and update visibility of keyframes and covisibility graph
+	/// @param[in] cloudPoint: the cloud point to add to the mapper
+	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
+    FrameworkReturnCode addCloudPoint(const SRef<datastructure::CloudPoint> cloudPoint) override;
+
+	/// @brief Remove a point cloud from mapper and update visibility of keyframes and covisibility graph
+	/// @param[in] cloudPoint: the cloud point to remove to the mapper
+	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
+    FrameworkReturnCode removeCloudPoint(const SRef<datastructure::CloudPoint> cloudPoint) override;
+
+	/// @brief Remove a keyframe from mapper and update visibility of point cloud and covisibility graph
+	/// @param[in] cloudPoint: the cloud point to add to the mapper
+	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
+    FrameworkReturnCode removeKeyframe(const SRef<datastructure::Keyframe> keyframe) override;
+
+	/// @brief Prune cloud points of a map
+    /// @param[in] cloudPoints: the cloud points are checked to prune
+	int pointCloudPruning(const std::vector<SRef<datastructure::CloudPoint>> &cloudPoints = {}) override;
+
+	/// @brief Prune keyframes of a map
+	/// @param[in] keyframes: the keyframes are checked to prune
+	int keyframePruning(const std::vector<SRef<datastructure::Keyframe>> &keyframes = {}) override;
+
+	/// @brief Save the map to the external file
+	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
+    FrameworkReturnCode saveToFile() const override;
+
+	/// @brief Load the map from the external file
+	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode loadFromFile() override;
+
+    void unloadComponent () override final;	
+
+private:
+	SRef<datastructure::Map>						m_map;
+	SRef<api::storage::IPointCloudManager>			m_pointCloudManager;
+	SRef<api::storage::IKeyframesManager>			m_keyframesManager;
+	SRef<api::storage::ICovisibilityGraphManager>	m_covisibilityGraph;
+	SRef<api::reloc::IKeyframeRetriever>			m_keyframeRetriever;
+
+	std::string					m_directory;
+	std::string					m_identificationFileName;
+	std::string					m_coordinateFileName;
+	std::string					m_pcManagerFileName;
+	std::string					m_kfManagerFileName;
+	std::string					m_covisGraphFileName;
+	std::string					m_kfRetrieverFileName;
+
+    float						m_reprojErrorThres = 3.0f;
+    float						m_thresConfidence = 0.3f;
+    float						m_ratioRedundantObs = 0.9f;
+};
+}
+}
+}
+
+#endif // SOLARMAPPER_H

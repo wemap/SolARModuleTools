@@ -37,12 +37,12 @@ class SolAR2DTransform;
 class SolAR3DTransform;
 class SolARBasicMatchesFilter;
 class SolARMapFilter;
-class SolARMapper;
+class SolARMapManager;
 class SolARBasicSink;
 class SolARBasicSource;
 class SolARKeyframesManager;
 class SolARPointCloudManager;
-class SolARCovisibilityGraph;
+class SolARCovisibilityGraphManager;
 class SolARBoostCovisibilityGraph;
 class SolAR3D3DCorrespondencesFinder;
 class SolAR3DTransformEstimationSACFrom3D3D;
@@ -108,7 +108,7 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapFilter,
                              "SolARMapFilter",
                              "Filters a cloud of 3D points by removing points with a too important reporjection error or those which are behind the camera.")
 
-XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapper,
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapManager,
                              "8e3c926a-0861-46f7-80b2-8abb5576692c",
                              "SolARMapper",
                              "Updates a point map with new triangulated 3D points.")
@@ -129,7 +129,7 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARPointCloudManager,
                              "SolARPointCloudManager",
                              "A component to manage a persistent set of 3D points")
 
-XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARCovisibilityGraph,
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARCovisibilityGraphManager,
                              "17c7087f-3394-4b4b-8e6d-3f8639bb00ea",
                              "SolARCovisibilityGraph",
                              "A component to manage the covisibility between keyframes")

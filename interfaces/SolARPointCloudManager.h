@@ -18,6 +18,7 @@
 #define SOLARPOINTCLOUDMANAGER_H
 
 #include "api/storage/IPointCloudManager.h"
+#include "datastructure/PointCloud.h"
 #include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 #include <core/SerializationDefinitions.h>
@@ -110,14 +111,24 @@ public:
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
 	FrameworkReturnCode loadFromFile(const std::string& file) override;
 
+	/// @brief This method returns the point cloud
+	/// @return the point cloud
+	const SRef<datastructure::PointCloud> & getConstPointCloud() const override;
+
+	/// @brief This method returns the point cloud
+	/// @param[out] pointCloud the point cloud
+	/// @return the point cloud
+	std::unique_lock<std::mutex> getPointCloud(SRef<datastructure::PointCloud>& pointCloud) override;
+
+	/// @brief This method is to set the point cloud
+	/// @param[in] pointCloud the point cloud
+	void setPointCloud(const SRef<datastructure::PointCloud> pointCloud) override;
+
 	void unloadComponent () override final;
 
 
  private:
-	std::map<uint32_t, SRef<datastructure::CloudPoint>>	m_pointCloud;
-	datastructure::DescriptorType						m_descriptorType;
-	uint32_t											m_id;
-    mutable std::mutex									m_mutex;
+	SRef<datastructure::PointCloud>	m_pointCloud;
 };
 
 }

@@ -99,14 +99,24 @@ public:
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
 	FrameworkReturnCode loadFromFile(const std::string& file) override;
 
+	/// @brief This method returns the keyframe collection
+	/// @return the keyframe collection
+	const SRef<datastructure::KeyframeCollection> & getConstKeyframeCollection() const override;
+
+	/// @brief This method returns the keyframe collection
+	/// @param[out] keyframeCollection the keyframe collection of map
+	/// @return the keyframe collection
+	std::unique_lock<std::mutex> getKeyframeCollection(SRef<datastructure::KeyframeCollection>& keyframeCollection) override;
+
+	/// @brief This method is to set the keyframe collection
+	/// @param[in] keyframeCollection the keyframe collection of map
+	void setKeyframeCollection(const SRef<datastructure::KeyframeCollection> keyframeCollection) override;
+
     void unloadComponent () override final;
 
 
  private:
-	 std::map<uint32_t, SRef<datastructure::Keyframe>>		m_keyframes;
-	 datastructure::DescriptorType							m_descriptorType;
-	 uint32_t								m_id;
-     mutable std::mutex						m_mutex;
+	SRef<datastructure::KeyframeCollection> m_keyframeCollection;
 };
 
 }

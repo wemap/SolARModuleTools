@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#ifndef SOLARCOVISIBILITYGRAPH_H
-#define SOLARCOVISIBILITYGRAPH_H
+#ifndef SOLARCOVISIBILITYGRAPHMANAGER_H
+#define SOLARCOVISIBILITYGRAPHMANAGER_H
 
-#include "api/storage/ICovisibilityGraph.h"
+#include "api/storage/ICovisibilityGraphManager.h"
 #include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 #include <fstream>
@@ -27,15 +27,15 @@ namespace SolAR {
 namespace MODULES {
 namespace TOOLS {
 /**
- * @class SolARCovisibilityGraph
- * @brief A storage component to store with persistence the visibility between keypoints and 3D points, and respectively, based on a bimap from boost.
+ * @class SolARCovisibilityGraphManager
+ * @brief A storage component to store a covisibility graph where each vertex is an id of a keyframe and each edge is weighted by the number of common cloud points between two keyframes.
  */
-class SOLAR_TOOLS_EXPORT_API SolARCovisibilityGraph : public org::bcom::xpcf::ComponentBase,
-        public api::storage::ICovisibilityGraph {
+class SOLAR_TOOLS_EXPORT_API SolARCovisibilityGraphManager : public org::bcom::xpcf::ComponentBase,
+        public api::storage::ICovisibilityGraphManager {
 public:
 
-    SolARCovisibilityGraph();
-    ~SolARCovisibilityGraph() = default;
+	SolARCovisibilityGraphManager();
+    ~SolARCovisibilityGraphManager() = default;
 
 	/// @brief This method allow to increase edge between 2 nodes
 	/// @param[in] id of 1st node
@@ -118,17 +118,28 @@ public:
 	/// @param[in] file the file name
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
 	FrameworkReturnCode loadFromFile(const std::string& file) override;
+
+	/// @brief This method returns the covisibility graph
+	/// @return the covisibility graph
+	const SRef<datastructure::CovisibilityGraph> & getConstCovisibilityGraph() const override;
+
+	/// @brief This method returns the covisibility graph
+	/// @param[out] covisibilityGraph the covisibility graph of map
+	/// @return the covisibility graph
+	std::unique_lock<std::mutex> getCovisibilityGraph(SRef<datastructure::CovisibilityGraph>& covisibilityGraph) override;
+
+	/// @brief This method is to set the covisibility graph
+	/// @param[in] covisibilityGraph the covisibility graph of map
+	void setCovisibilityGraph(const SRef<datastructure::CovisibilityGraph> covisibilityGraph) override;
     
 	void unloadComponent () override final;
 
  private:
-	 std::set<uint32_t>						m_nodes;
-	 std::map<uint32_t, std::set<uint32_t>> m_edges;
-	 std::map<uint64_t, float>				m_weights;
+	 SRef<datastructure::CovisibilityGraph>	m_covisibilityGraph;
 };
 
 }
 }
 }
 
-#endif // SOLARCOVISIBILITYGRAPH_H
+#endif // SOLARCOVISIBILITYGRAPHMANAGER_H

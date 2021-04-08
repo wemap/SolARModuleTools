@@ -49,7 +49,7 @@ inline static std::pair<uint32_t, uint32_t> separe(uint64_t a_b) {
 
 SolARBoostCovisibilityGraph::SolARBoostCovisibilityGraph():ComponentBase(xpcf::toUUID<SolARBoostCovisibilityGraph>())
 {
-    addInterface<api::storage::ICovisibilityGraph>(this);
+    addInterface<api::storage::ICovisibilityGraphManager>(this);
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(const uint32_t node1_id, const uint32_t node2_id, const float weight)
@@ -470,6 +470,22 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(const std::string&
     return FrameworkReturnCode::_SUCCESS;
 }
 
+const SRef<datastructure::CovisibilityGraph>& SolARBoostCovisibilityGraph::getConstCovisibilityGraph() const
+{
+	LOG_ERROR("Not implemented");
+}
+
+std::unique_lock<std::mutex> SolARBoostCovisibilityGraph::getCovisibilityGraph(SRef<datastructure::CovisibilityGraph>& covisibilityGraph)
+{
+	LOG_ERROR("Not implemented");
+	return std::unique_lock<std::mutex>();
+}
+
+void SolARBoostCovisibilityGraph::setCovisibilityGraph(const SRef<datastructure::CovisibilityGraph> covisibilityGraph)
+{
+	LOG_ERROR("Not implemented");
+}
+
 bool SolARBoostCovisibilityGraph::isEdge(const uint32_t node1_id, const uint32_t node2_id) const
 {
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
@@ -523,7 +539,6 @@ bool SolARBoostCovisibilityGraph::isNode(const uint32_t node_id) const
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
     return !(m_map.find(node_id) == m_map.end()) ;
 }
-
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::clear()
 {

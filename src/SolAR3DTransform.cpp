@@ -22,8 +22,6 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAR3DTransform);
 
 namespace SolAR {
 using namespace datastructure;
-using namespace api::storage;
-using namespace api::solver::map;
 namespace MODULES {
 namespace TOOLS {
 
@@ -59,65 +57,60 @@ FrameworkReturnCode SolAR3DTransform::transform(const std::vector<Point3Df> & in
     return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolAR3DTransform::transform(const Transform3Df & transformation, SRef<IMapper> map)
+FrameworkReturnCode SolAR3DTransform::transformInPlace(const datastructure::Transform3Df & transformation, SRef<datastructure::Map> map)
 {
-	// get cloud points and keyframes
-	SRef<IPointCloudManager> pointcloudManager;
-	map->getPointCloudManager(pointcloudManager);
-	SRef<IKeyframesManager> keyframeMananger;
-	map->getKeyframesManager(keyframeMananger);
-	std::vector<SRef<CloudPoint>> cloudPoints;
-	pointcloudManager->getAllPoints(cloudPoints);
-	std::vector<SRef<Keyframe>> keyframes;
-	keyframeMananger->getAllKeyframes(keyframes);
-	
 	// apply transformation to point cloud
-	for (auto &cp : cloudPoints) {
-		Vector4f inputVector4f(cp->getX(), cp->getY(), cp->getZ(), 1);
-		Vector4f outputVector4f = transformation * inputVector4f;
-		if (outputVector4f[3] != 0) {
-			cp->setX(outputVector4f[0] / outputVector4f[3]);
-			cp->setY(outputVector4f[1] / outputVector4f[3]);
-			cp->setZ(outputVector4f[2] / outputVector4f[3]);
-		}
-		else {
-			cp->setX(0);
-			cp->setY(0);
-			cp->setZ(0);
-		}
-	}
-
+	{
+		SRef<PointCloud> pointCloud;
+		map->getPointCloud(pointCloud);
+		this->transformInPlace(transformation, pointCloud);
+	}	
 	// apply transformation to keyframes
-	for (auto &kf : keyframes) {
-		kf->setPose(transformation * kf->getPose());
-	}
-
+	{
+		SRef<KeyframeCollection> keyframeCollection;
+		map->getKeyframeCollection(keyframeCollection);
+		this->transformInPlace(transformation, keyframeCollection);
+	}	
 	return FrameworkReturnCode::_SUCCESS;
 }
 
-FrameworkReturnCode SolAR3DTransform::transformInPlace(SRef<PointCloud> inputPointCloud, const Transform3Df transformation) const
+FrameworkReturnCode SolAR3DTransform::transformInPlace(const datastructure::Transform3Df & transformation,
+	SRef<datastructure::PointCloud> pointCloud)
 {
 	Vector4f outputVector4f;
-	auto& inputPoints = inputPointCloud->getPointCloud();
+	std::vector<SRef<CloudPoint>> inputPoints;
+	pointCloud->getAllPoints(inputPoints);
 
 	for (auto i = 0u; i < inputPoints.size(); i++)
 	{
 		auto& point3D = inputPoints.at(i);
-		Vector4f inputVector4f(point3D.getX(), point3D.getY(), point3D.getZ(), 1);
+		Vector4f inputVector4f(point3D->getX(), point3D->getY(), point3D->getZ(), 1);
 		outputVector4f = transformation * inputVector4f;
 		if (outputVector4f[3] != 0) {
-			point3D.setX(outputVector4f[0] / outputVector4f[3]);
-			point3D.setY(outputVector4f[1] / outputVector4f[3]);
-			point3D.setZ(outputVector4f[2] / outputVector4f[3]);
+			point3D->setX(outputVector4f[0] / outputVector4f[3]);
+			point3D->setY(outputVector4f[1] / outputVector4f[3]);
+			point3D->setZ(outputVector4f[2] / outputVector4f[3]);
 		}
 		else {
-			point3D.setX(0);
-			point3D.setY(0);
-			point3D.setZ(0);
+			point3D->setX(0);
+			point3D->setY(0);
+			point3D->setZ(0);
 		}
 	}
 	return FrameworkReturnCode::_SUCCESS;
 }
+
+FrameworkReturnCode SolAR3DTransform::transformInPlace(const datastructure::Transform3Df & transformation, SRef<datastructure::KeyframeCollection> keyframeCollection)
+{
+	std::vector<SRef<Keyframe>> keyframes;
+	keyframeCollection->getAllKeyframes(keyframes);
+	// apply transformation to keyframes
+	for (auto &kf : keyframes) {
+		kf->setPose(transformation * kf->getPose());
+	}
+	return FrameworkReturnCode::_SUCCESS;
+}
+
 }
 }
 }
