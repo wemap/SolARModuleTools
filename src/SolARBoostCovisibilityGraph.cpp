@@ -473,6 +473,7 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(const std::string&
 const SRef<datastructure::CovisibilityGraph>& SolARBoostCovisibilityGraph::getConstCovisibilityGraph() const
 {
 	LOG_ERROR("Not implemented");
+	return nullptr;
 }
 
 std::unique_lock<std::mutex> SolARBoostCovisibilityGraph::getCovisibilityGraph(SRef<datastructure::CovisibilityGraph>& covisibilityGraph)

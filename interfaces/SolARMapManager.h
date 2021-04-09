@@ -1,9 +1,7 @@
-#ifndef SOLARMAPPER_H
-#define SOLARMAPPER_H
-
+#ifndef SOLARMAPMANAGER_H
+#define SOLARMAPMANAGER_H
 
 #include "api/storage/IMapManager.h"
-
 #include "xpcf/component/ComponentBase.h"
 #include "xpcf/component/ConfigurableBase.h"
 #include "datastructure/Map.h"
@@ -69,7 +67,7 @@ namespace TOOLS {
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARMapManager : public org::bcom::xpcf::ConfigurableBase,
-    public api::solver::map::IMapManager {
+    public api::storage::IMapManager {
 public:
 	SolARMapManager();
 
@@ -78,32 +76,37 @@ public:
 	/// @brief Set the map
 	/// @param[in] map the data of map
 	/// @return FrameworkReturnCode::_SUCCESS_ if all data structures successfully setted, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode setMap(const SRef<Map> map) override;
+	FrameworkReturnCode setMap(const SRef<datastructure::Map> map) override;
 
 	/// @brief Get the map
 	/// @param[out] map the data of map
 	/// @return FrameworkReturnCode::_SUCCESS_ if successfully, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getMap(SRef<Map> & map) override;
+	FrameworkReturnCode getMap(SRef<datastructure::Map> & map) override;
 
 	/// @brief Get local point cloud seen from the keyframe and its neighbors
-	/// @param[in] keyframe: the keyframe to get local point cloud
-	/// @param[in] minWeightNeighbor: the weight to get keyframe neighbors
-	/// @param[out] localPointCloud: the local point cloud
+	/// @param[in] keyframe the keyframe to get local point cloud
+	/// @param[in] minWeightNeighbor the weight to get keyframe neighbors
+	/// @param[out] localPointCloud the local point cloud
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
     FrameworkReturnCode getLocalPointCloud(const SRef<datastructure::Keyframe> keyframe, const float minWeightNeighbor, std::vector<SRef<datastructure::CloudPoint>> &localPointCloud) const override;
 
-	/// @brief Add a point cloud to mapper and update visibility of keyframes and covisibility graph
-	/// @param[in] cloudPoint: the cloud point to add to the mapper
+	/// @brief Add a point cloud to map manager and update visibility of keyframes and covisibility graph
+	/// @param[in] cloudPoint the cloud point to add to the map manager
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
     FrameworkReturnCode addCloudPoint(const SRef<datastructure::CloudPoint> cloudPoint) override;
 
-	/// @brief Remove a point cloud from mapper and update visibility of keyframes and covisibility graph
-	/// @param[in] cloudPoint: the cloud point to remove to the mapper
+	/// @brief Remove a point cloud from map manager and update visibility of keyframes and covisibility graph
+	/// @param[in] cloudPoint the cloud point to remove to the map manager
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
     FrameworkReturnCode removeCloudPoint(const SRef<datastructure::CloudPoint> cloudPoint) override;
 
-	/// @brief Remove a keyframe from mapper and update visibility of point cloud and covisibility graph
-	/// @param[in] cloudPoint: the cloud point to add to the mapper
+	/// @brief Add a keyframe to map manager
+	/// @param[in] keyframe the keyframe to add to the map manager
+	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
+	FrameworkReturnCode addKeyframe(const SRef<datastructure::Keyframe> keyframe) override;
+
+	/// @brief Remove a keyframe from map manager and update visibility of point cloud and covisibility graph
+	/// @param[in] keyframe the keyframe to remove from the map manager
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
     FrameworkReturnCode removeKeyframe(const SRef<datastructure::Keyframe> keyframe) override;
 
@@ -148,4 +151,4 @@ private:
 }
 }
 
-#endif // SOLARMAPPER_H
+#endif // SOLARMAPMANAGER_H

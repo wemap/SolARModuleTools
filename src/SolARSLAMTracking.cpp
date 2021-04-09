@@ -34,7 +34,7 @@ namespace TOOLS {
 SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMTracking>())
 {
 	addInterface<api::slam::ITracking>(this);
-	declareInjectable<api::solver::map::IMapper>(m_mapper);
+	declareInjectable<api::storage::IMapManager>(m_mapManager);
 	declareInjectable<api::storage::IKeyframesManager>(m_keyframesManager);
 	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
 	declareInjectable<api::features::IMatchesFilter>(m_matchesFilter);
@@ -54,8 +54,8 @@ SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMT
 xpcf::XPCFErrorCode SolARSLAMTracking::onConfigured()
 {
 	LOG_DEBUG("SolARSLAMTracking onConfigured");
-	m_reprojErrorThreshold = m_mapper->bindTo<xpcf::IConfigurable>()->getProperty("reprojErrorThreshold")->getFloatingValue();
-	m_thresConfidence = m_mapper->bindTo<xpcf::IConfigurable>()->getProperty("thresConfidence")->getFloatingValue();
+	m_reprojErrorThreshold = m_mapManager->bindTo<xpcf::IConfigurable>()->getProperty("reprojErrorThreshold")->getFloatingValue();
+	m_thresConfidence = m_mapManager->bindTo<xpcf::IConfigurable>()->getProperty("thresConfidence")->getFloatingValue();
 	return xpcf::XPCFErrorCode::_SUCCESS;
 }
 
@@ -283,7 +283,7 @@ void SolARSLAMTracking::updateLocalMap()
 	std::unique_lock<std::mutex> lock(m_refKeyframeMutex);
 	m_localMap.clear();
 	// get local point cloud
-	m_mapper->getLocalPointCloud(m_referenceKeyframe, m_minWeightNeighbor, m_localMap);
+	m_mapManager->getLocalPointCloud(m_referenceKeyframe, m_minWeightNeighbor, m_localMap);
 	m_lastPose = m_referenceKeyframe->getPose();
 	m_isUpdateReferenceKeyframe = false;
 }

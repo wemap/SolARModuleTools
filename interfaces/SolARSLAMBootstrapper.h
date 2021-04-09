@@ -18,7 +18,7 @@
 #define SOLARSLAMBOOTSTRAPPER_H
 #include "api/slam/IBootstrapper.h"
 #include "datastructure/Image.h"
-#include "api/solver/map/IMapper.h"
+#include "api/storage/IMapManager.h"
 #include "api/features/IKeypointDetector.h"
 #include "api/features/IDescriptorsExtractor.h"
 #include "api/features/IDescriptorMatcher.h"
@@ -42,7 +42,7 @@ namespace TOOLS {
 * <TT>UUID: 8f43eed0-1a2e-4c47-83f0-8dd5b259cdb0</TT>
 *
 * @SolARComponentInjectablesBegin
-* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::storage::IMapManager}
 * @SolARComponentInjectable{SolAR::api::features::IKeypointDetector}
 * @SolARComponentInjectable{SolAR::api::features::IDescriptorsExtractor}
 * @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
@@ -93,22 +93,16 @@ public:
 	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
 
 private:
-	/// bootstrap uses marker
-	FrameworkReturnCode initFiducialMarker();
-	/// bootstrap doesn't use marker
-	FrameworkReturnCode initMarkerLess();
-
-private:
 	int													m_hasPose = 1;
 	int													m_nbMinInitPointCloud = 50;
     float												m_angleThres = 0.1f;
     float												m_ratioDistanceIsKeyframe = 0.05f;
 	bool												m_bootstrapOk = false;
 	bool												m_initKeyframe1 = false;
-	SRef<datastructure::Keyframe>										m_keyframe1, m_keyframe2;
-	datastructure::CamCalibration										m_camMatrix;
-	datastructure::CamDistortion										m_camDistortion;
-	SRef<api::solver::map::IMapper>						m_mapper;
+	SRef<datastructure::Keyframe>						m_keyframe1, m_keyframe2;
+	datastructure::CamCalibration						m_camMatrix;
+	datastructure::CamDistortion						m_camDistortion;
+	SRef<api::storage::IMapManager>						m_mapManager;
 	SRef<api::features::IKeypointDetector>				m_keypointsDetector;
 	SRef<api::features::IDescriptorsExtractor>			m_descriptorExtractor;
 	SRef<api::features::IDescriptorMatcher>				m_matcher;

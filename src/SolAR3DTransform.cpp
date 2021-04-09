@@ -38,20 +38,14 @@ SolAR3DTransform::~SolAR3DTransform(){
 FrameworkReturnCode SolAR3DTransform::transform(const std::vector<Point3Df> & inputPoints, const Transform3Df & transformation, std::vector<Point3Df> & outputPoints)
 {
     Point3Df outputPoint3D;
-    Vector4f outputVector4f;
+    Vector3f outputVector3f;
 
     for (auto inputPoint3D : inputPoints){
-        Vector4f inputVector4f(inputPoint3D.getX(),inputPoint3D.getY(), inputPoint3D.getZ(), 1);
-        outputVector4f=transformation*inputVector4f;
-        if (outputVector4f[3]!=0) {
-            outputPoint3D.setX(outputVector4f[0]/outputVector4f[3]);
-            outputPoint3D.setY(outputVector4f[1]/outputVector4f[3]);
-            outputPoint3D.setZ(outputVector4f[2]/outputVector4f[3]);
-        } else {
-            outputPoint3D.setX(0);
-            outputPoint3D.setY(0);
-            outputPoint3D.setZ(0);
-        }
+        Vector3f inputVector3f(inputPoint3D.getX(),inputPoint3D.getY(), inputPoint3D.getZ());
+        outputVector3f = transformation * inputVector3f;
+        outputPoint3D.setX(outputVector3f[0]);
+        outputPoint3D.setY(outputVector3f[1]);
+        outputPoint3D.setZ(outputVector3f[2]);
         outputPoints.push_back(outputPoint3D);
     }
     return FrameworkReturnCode::_SUCCESS;
@@ -77,25 +71,18 @@ FrameworkReturnCode SolAR3DTransform::transformInPlace(const datastructure::Tran
 FrameworkReturnCode SolAR3DTransform::transformInPlace(const datastructure::Transform3Df & transformation,
 	SRef<datastructure::PointCloud> pointCloud)
 {
-	Vector4f outputVector4f;
+	Vector3f outputVector3f;
 	std::vector<SRef<CloudPoint>> inputPoints;
 	pointCloud->getAllPoints(inputPoints);
 
 	for (auto i = 0u; i < inputPoints.size(); i++)
 	{
 		auto& point3D = inputPoints.at(i);
-		Vector4f inputVector4f(point3D->getX(), point3D->getY(), point3D->getZ(), 1);
-		outputVector4f = transformation * inputVector4f;
-		if (outputVector4f[3] != 0) {
-			point3D->setX(outputVector4f[0] / outputVector4f[3]);
-			point3D->setY(outputVector4f[1] / outputVector4f[3]);
-			point3D->setZ(outputVector4f[2] / outputVector4f[3]);
-		}
-		else {
-			point3D->setX(0);
-			point3D->setY(0);
-			point3D->setZ(0);
-		}
+		Vector3f inputVector3f(point3D->getX(), point3D->getY(), point3D->getZ());
+		outputVector3f = transformation * inputVector3f;
+		point3D->setX(outputVector3f[0]);
+		point3D->setY(outputVector3f[1]);
+		point3D->setZ(outputVector3f[2]);
 	}
 	return FrameworkReturnCode::_SUCCESS;
 }

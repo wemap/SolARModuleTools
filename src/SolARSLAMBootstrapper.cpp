@@ -32,7 +32,7 @@ namespace TOOLS {
 SolARSLAMBootstrapper::SolARSLAMBootstrapper() :ConfigurableBase(xpcf::toUUID<SolARSLAMBootstrapper>())
 {
 	addInterface<api::slam::IBootstrapper>(this);
-	declareInjectable<api::solver::map::IMapper>(m_mapper);
+	declareInjectable<api::storage::IMapManager>(m_mapManager);
 	declareInjectable<api::features::IKeypointDetector>(m_keypointsDetector);
 	declareInjectable<api::features::IDescriptorsExtractor>(m_descriptorExtractor);
 	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
@@ -122,20 +122,13 @@ FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef
 			// Filter cloud points
 			m_mapFilter->filter(m_keyframe1->getPose(), frame2->getPose(), cloud, filteredCloud);
 			if (filteredCloud.size() > m_nbMinInitPointCloud) {
-				SRef<api::storage::IKeyframesManager>keyframesManager;
-				SRef<api::reloc::IKeyframeRetriever> keyframeRetriever;
-				m_mapper->getKeyframeRetriever(keyframeRetriever);
-				m_mapper->getKeyframesManager(keyframesManager);
-				// add keyframes to keyframes manager
-				keyframesManager->addKeyframe(m_keyframe1);
+				// add keyframes to map manager
+				m_mapManager->addKeyframe(m_keyframe1);
 				m_keyframe2 = xpcf::utils::make_shared<Keyframe>(frame2);
-				keyframesManager->addKeyframe(m_keyframe2);
+				m_mapManager->addKeyframe(m_keyframe2);
 				// add intial point cloud to point cloud manager and update visibility map and update covisibility graph
 				for (auto const &it : filteredCloud)
-					m_mapper->addCloudPoint(it);
-				// add keyframes to retriever
-				keyframeRetriever->addKeyframe(m_keyframe1);
-				keyframeRetriever->addKeyframe(m_keyframe2);
+					m_mapManager->addCloudPoint(it);
 				return FrameworkReturnCode::_SUCCESS;
 			}
 			else {

@@ -19,7 +19,7 @@
 #include "api/slam/ITracking.h"
 #include "datastructure/Image.h"
 #include "api/storage/IKeyframesManager.h"
-#include "api/solver/map/IMapper.h"
+#include "api/storage/IMapManager.h"
 #include "api/features/IDescriptorMatcher.h"
 #include "api/features/IMatchesFilter.h"
 #include "api/display/I2DOverlay.h"
@@ -41,7 +41,7 @@ namespace TOOLS {
 * <TT>UUID: c45da19d-9637-48b6-ab52-33d3f0af6f72</TT>
 *
 * @SolARComponentInjectablesBegin
-* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::storage::IMapManager}
 * @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
 * @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
 * @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
@@ -114,7 +114,7 @@ private:
 	std::mutex											m_refKeyframeMutex;
 	datastructure::CamCalibration						m_camMatrix;
 	datastructure::CamDistortion						m_camDistortion;
-	SRef<api::solver::map::IMapper>						m_mapper;
+	SRef<api::storage::IMapManager>						m_mapManager;
 	SRef<api::features::IDescriptorMatcher>				m_matcher;
 	SRef<api::features::IMatchesFilter>					m_matchesFilter;
 	SRef<api::display::I2DOverlay>						m_overlay2DGreen, m_overlay2DRed;

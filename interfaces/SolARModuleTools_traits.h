@@ -110,7 +110,7 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapFilter,
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapManager,
                              "8e3c926a-0861-46f7-80b2-8abb5576692c",
-                             "SolARMapper",
+                             "SolARMapManager",
                              "Updates a point map with new triangulated 3D points.")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer,

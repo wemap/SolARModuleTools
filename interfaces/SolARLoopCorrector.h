@@ -19,7 +19,7 @@
 
 #include "api/loop/ILoopCorrector.h"
 #include "api/storage/IPointCloudManager.h"
-#include "api/storage/ICovisibilityGraph.h"
+#include "api/storage/ICovisibilityGraphManager.h"
 #include "api/storage/IKeyframesManager.h"
 #include "api/geom/I3DTransform.h"
 #include "api/features/IDescriptorMatcher.h"
@@ -78,7 +78,7 @@ private:
 
  private:
     SRef<api::storage::IKeyframesManager>					m_keyframesManager;
-    SRef<api::storage::ICovisibilityGraph>					m_covisibilityGraph;
+    SRef<api::storage::ICovisibilityGraphManager>			m_covisibilityGraph;
     SRef<api::storage::IPointCloudManager>					m_pointCloudManager;
     SRef<api::features::IDescriptorMatcher>					m_matcher;
     SRef<api::geom::I3DTransform>							m_transform3D;

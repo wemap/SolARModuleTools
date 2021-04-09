@@ -35,7 +35,7 @@ SolARLoopCorrector::SolARLoopCorrector():ConfigurableBase(xpcf::toUUID<SolARLoop
     addInterface<api::loop::ILoopCorrector>(this);
     declareInjectable<storage::IKeyframesManager>(m_keyframesManager);
     declareInjectable<storage::IPointCloudManager>(m_pointCloudManager);
-    declareInjectable<storage::ICovisibilityGraph>(m_covisibilityGraph);
+    declareInjectable<storage::ICovisibilityGraphManager>(m_covisibilityGraph);
     declareInjectable<features::IDescriptorMatcher>(m_matcher);
     declareInjectable<geom::I3DTransform>(m_transform3D);
     declareInjectable<geom::IProject>(m_projector);

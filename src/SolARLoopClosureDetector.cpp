@@ -34,7 +34,7 @@ SolARLoopClosureDetector::SolARLoopClosureDetector():ConfigurableBase(xpcf::toUU
 {
     addInterface<api::loop::ILoopClosureDetector>(this);
 	declareInjectable<IKeyframesManager>(m_keyframesManager);
-	declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
+	declareInjectable<ICovisibilityGraphManager>(m_covisibilityGraph);
 	declareInjectable<reloc::IKeyframeRetriever>(m_keyframeRetriever);
 	declareInjectable<solver::pose::I3DTransformSACFinderFrom3D3D>(m_estimator3D);
 	declareInjectable<features::IDescriptorMatcher>(m_matcher);

@@ -129,9 +129,9 @@ private:
 	/// @brief Bundler
 	SRef<api::solver::map::IBundler> m_bundler;
 	/// @brief intrinsic parameters
-	CamCalibration m_intrinsicParams;
+	datastructure::CamCalibration m_intrinsicParams;
 	/// @brief distortion parameters
-	CamDistortion m_distortionParams;
+	datastructure::CamDistortion m_distortionParams;
 };
 
 }

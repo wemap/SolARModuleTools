@@ -145,6 +145,15 @@ FrameworkReturnCode SolARMapManager::removeCloudPoint(const SRef<CloudPoint> clo
 	return FrameworkReturnCode::_SUCCESS;
 }
 
+FrameworkReturnCode SolARMapManager::addKeyframe(const SRef<datastructure::Keyframe> keyframe)
+{
+	// add to keyframe manager
+	m_keyframesManager->addKeyframe(keyframe);
+	// add to keyframe retriever
+	m_keyframeRetriever->addKeyframe(keyframe);
+	return FrameworkReturnCode();
+}
+
 FrameworkReturnCode SolARMapManager::removeKeyframe(const SRef<Keyframe> keyframe)
 {
 	const std::map<uint32_t, uint32_t>& keyframeVisibility = keyframe->getVisibility();
