@@ -35,11 +35,8 @@ PROJECTCONFIG = QTVS
 include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/templateappconfig.pri)))
 
 HEADERS += \
-    KeyFrameRetrieverMock.h
-
 
 SOURCES += \
-    KeyFrameRetrieverMock.cpp \
     testMain.cpp
 
 

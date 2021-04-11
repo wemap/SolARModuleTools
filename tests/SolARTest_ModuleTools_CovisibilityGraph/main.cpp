@@ -19,7 +19,7 @@
 #include <iostream>
 #include <xpcf/api/IComponentManager.h>
 #include <xpcf/core/helpers.h>
-#include <api/storage/ICovisibilityGraph.h>
+#include <api/storage/ICovisibilityGraphManager.h>
 #include "core/Log.h"
 
 namespace xpcf = org::bcom::xpcf;
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
         std::cerr << "Failed to load the configuration file SolARTest_ModuleTools_CovisibilityGraph_conf.xml" << std::endl;
 		return -1;
 	}
-    auto covisibilityGraph = xpcfComponentManager->resolve<SolAR::api::storage::ICovisibilityGraph>();
+    auto covisibilityGraph = xpcfComponentManager->resolve<SolAR::api::storage::ICovisibilityGraphManager>();
 
 	// create a covisibility graph
 	std::string fileName = "covisibility_graph.bin";

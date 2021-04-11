@@ -31,6 +31,7 @@ SolARPointCloudManager::SolARPointCloudManager():ComponentBase(xpcf::toUUID<SolA
 {
 	addInterface<api::storage::IPointCloudManager>(this);
 	m_pointCloud = xpcf::utils::make_shared<PointCloud>();
+	LOG_DEBUG("SolARPointCloudManager constructor");
 }
 
 FrameworkReturnCode SolARPointCloudManager::addPoint(const SRef<CloudPoint> point)

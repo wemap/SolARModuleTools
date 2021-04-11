@@ -31,6 +31,7 @@ SolARCovisibilityGraphManager::SolARCovisibilityGraphManager():ComponentBase(xpc
 {
    addInterface<api::storage::ICovisibilityGraphManager>(this);
    m_covisibilityGraph = xpcf::utils::make_shared<CovisibilityGraph>();
+   LOG_DEBUG("SolARCovisibilityGraphManager constructor");
 }
 
 FrameworkReturnCode SolARCovisibilityGraphManager::increaseEdge(const uint32_t node1_id, const uint32_t node2_id, const float weight)

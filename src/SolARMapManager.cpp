@@ -35,12 +35,7 @@ SolARMapManager::SolARMapManager():ConfigurableBase(xpcf::toUUID<SolARMapManager
     declareInjectable<IPointCloudManager>(m_pointCloudManager);
     declareInjectable<IKeyframesManager>(m_keyframesManager);
     declareInjectable<ICovisibilityGraphManager>(m_covisibilityGraph);
-    declareInjectable<IKeyframeRetriever>(m_keyframeRetriever);
-	m_map = xpcf::utils::make_shared<datastructure::Map>();
-	m_map->setPointCloud(m_pointCloudManager->getConstPointCloud());
-	m_map->setKeyframeCollection(m_keyframesManager->getConstKeyframeCollection());
-	m_map->setCovisibilityGraph(m_covisibilityGraph->getConstCovisibilityGraph());
-	m_map->setKeyframeRetrieval(m_keyframeRetriever->getConstKeyframeRetrieval());
+    declareInjectable<IKeyframeRetriever>(m_keyframeRetriever);	
 	declareProperty("directory", m_directory);
 	declareProperty("identificationFileName", m_identificationFileName);
 	declareProperty("coordinateFileName", m_coordinateFileName);
@@ -51,6 +46,18 @@ SolARMapManager::SolARMapManager():ConfigurableBase(xpcf::toUUID<SolARMapManager
 	declareProperty("reprojErrorThreshold", m_reprojErrorThres);
 	declareProperty("thresConfidence", m_thresConfidence);
 	declareProperty("ratioRedundantObs", m_ratioRedundantObs);
+	LOG_DEBUG("SolARMapManager constructor");
+}
+
+xpcf::XPCFErrorCode SolARMapManager::onConfigured()
+{
+	LOG_DEBUG(" SolARMapManager onConfigured");
+	m_map = xpcf::utils::make_shared<datastructure::Map>();
+	m_map->setPointCloud(m_pointCloudManager->getConstPointCloud());
+	m_map->setKeyframeCollection(m_keyframesManager->getConstKeyframeCollection());
+	m_map->setCovisibilityGraph(m_covisibilityGraph->getConstCovisibilityGraph());
+	m_map->setKeyframeRetrieval(m_keyframeRetriever->getConstKeyframeRetrieval());
+	return xpcf::XPCFErrorCode::_SUCCESS;
 }
 
 FrameworkReturnCode SolARMapManager::setMap(const SRef<Map> map)

@@ -126,6 +126,7 @@ public:
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
 	FrameworkReturnCode loadFromFile() override;
 
+	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
     void unloadComponent () override final;	
 
 private:

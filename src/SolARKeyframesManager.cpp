@@ -31,6 +31,7 @@ SolARKeyframesManager::SolARKeyframesManager():ComponentBase(xpcf::toUUID<SolARK
 {
 	addInterface<api::storage::IKeyframesManager>(this);
 	m_keyframeCollection = xpcf::utils::make_shared<KeyframeCollection>();
+	LOG_DEBUG("SolARKeyframesManager constructor");
 }
 
 FrameworkReturnCode SolARKeyframesManager::addKeyframe(const SRef<Keyframe> keyframe)

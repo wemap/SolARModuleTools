@@ -42,6 +42,7 @@ SolARLoopClosureDetector::SolARLoopClosureDetector():ConfigurableBase(xpcf::toUU
 	declareInjectable<solver::pose::I3D3DCorrespondencesFinder>(m_corr3D3DFinder);
 	declareInjectable<geom::I3DTransform>(m_transform3D);
 	declareProperty("minNbInliers", m_NbMinInliers);
+	LOG_DEBUG("SolARLoopClosureDetector constructor");
 }
 
 void SolARLoopClosureDetector::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
