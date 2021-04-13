@@ -70,6 +70,7 @@ configfile.files = $${PWD}/SolARTest_ModuleTools_PointCloudManager_conf.xml
 INSTALLS += configfile
 
 DISTFILES += \
+    SolARTest_ModuleTools_PointCloudManager_conf.xml \
     packagedependencies.txt
 
 #NOTE : Must be placed at the end of the .pro
