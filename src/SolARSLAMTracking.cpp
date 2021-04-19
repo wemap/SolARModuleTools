@@ -23,7 +23,6 @@ namespace xpcf = org::bcom::xpcf;
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARSLAMTracking);
 #define RATIO_BORDER_IMAGE 0.08
 #define RATIO_UPDATE_WINDOWS 0.03
-#define BORDER_IMAGE 50
 
 namespace SolAR {
 using namespace datastructure;

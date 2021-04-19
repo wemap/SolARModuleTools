@@ -24,7 +24,8 @@ interfaces/SolARFiducialMarkerPoseEstimator.h \
 interfaces/SolARSLAMBootstrapper.h \
 interfaces/SolARSLAMTracking.h \
 interfaces/SolARSLAMMapping.h \
-interfaces/SolAROverlapDetector.h
+interfaces/SolAROverlapDetector.h \
+interfaces/SolARMapUpdate.h
 
 
 SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
@@ -52,4 +53,5 @@ SOURCES += src/SolARImage2WorldMapper4Marker2D.cpp \
     src/SolARSLAMBootstrapper.cpp \
     src/SolARSLAMTracking.cpp \
     src/SolARSLAMMapping.cpp \
-    src/SolAROverlapDetector.cpp
+    src/SolAROverlapDetector.cpp \
+    src/SolARMapUpdate.cpp

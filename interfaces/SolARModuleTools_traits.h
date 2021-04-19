@@ -49,6 +49,7 @@ class SolAR3DTransformEstimationSACFrom3D3D;
 class SolARLoopClosureDetector;
 class SolARLoopCorrector;
 class SolAROverlapDetector;
+class SolARMapUpdate;
 class SolARFiducialMarkerPoseEstimator;
 class SolARSLAMBootstrapper;
 class SolARSLAMTracking;
@@ -158,6 +159,11 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAROverlapDetector,
                             "58087630-1376-11eb-adc1-0242ac120002",
                             "SolAROverlapDetector",
                             "Detects overlaps between different maps.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapUpdate,
+							"3960331a-9190-48f4-aeba-e20bf6a24465",
+							"SolARMapUpdate",
+							"Update the global map after merging a local map into the global map.")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopCorrector,
 							"1007b588-c1f2-11ea-b3de-0242ac130004",
