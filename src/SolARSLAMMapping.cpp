@@ -214,8 +214,26 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		if (m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf) != FrameworkReturnCode::_SUCCESS)
 			continue;
 		const Transform3Df &tmpKf_pose = tmpKf->getPose();
+		const std::map<uint32_t, uint32_t> & tmpMapVisibility = tmpKf->getVisibility();
+		// get median depth of neighbor keyframe
+		float tmpKfMedDepth;
+		{
+			std::vector<float> depths;
+			Transform3Df tmpKfPoseInv = tmpKf_pose.inverse();
+			for (const auto& it : tmpMapVisibility) {
+				SRef<CloudPoint> cp;
+				if (m_pointCloudManager->getPoint(it.second, cp) != FrameworkReturnCode::_SUCCESS)
+					continue;
+				float depth = tmpKfPoseInv(2, 0) * cp->getX() + tmpKfPoseInv(2, 1) * cp->getY() + tmpKfPoseInv(2, 2) * cp->getZ() + tmpKfPoseInv(2, 3);
+				depths.push_back(depth);
+			}
+			if (depths.size() == 0)
+				continue;
+			std::sort(depths.begin(), depths.end());
+			tmpKfMedDepth = depths[depths.size() / 2];
+		}
 		// check base line
-        if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() < 0.05)
+        if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() / tmpKfMedDepth < 0.05)
 			continue;
 		// get keypoints don't have associated cloud points
 		std::vector<int> newKf_indexKeypoints;
@@ -228,8 +246,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		m_keyframeRetriever->match(newKf_indexKeypoints, newKf_des, tmpKf, tmpMatches);
 		// matches filter based homography matrix
 		m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints());
-		// find info to triangulate				
-		const std::map<unsigned int, unsigned int> & tmpMapVisibility = tmpKf->getVisibility();
+		// find info to triangulate						
 		for (int j = 0; j < tmpMatches.size(); ++j) {
 			unsigned int idx_newKf = tmpMatches[j].getIndexInDescriptorA();
 			unsigned int idx_tmpKf = tmpMatches[j].getIndexInDescriptorB();
