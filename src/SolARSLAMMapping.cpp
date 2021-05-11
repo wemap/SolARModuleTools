@@ -233,7 +233,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 			tmpKfMedDepth = depths[depths.size() / 2];
 		}
 		// check base line
-        if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() / tmpKfMedDepth < 0.05)
+        if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() / tmpKfMedDepth < 0.02)
 			continue;
 		// get keypoints don't have associated cloud points
 		std::vector<int> newKf_indexKeypoints;
