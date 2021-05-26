@@ -63,6 +63,7 @@ FrameworkReturnCode SolARFiducialMarkerPoseEstimator::setTrackable(const SRef<So
     if (trackable->getType() == TrackableType::FIDUCIAL_MARKER)
     {
         m_fiducialMarker = xpcf::utils::dynamic_pointer_cast<FiducialMarker>(trackable);
+
         SquaredBinaryPattern pattern = m_fiducialMarker->getPattern();
         m_patternDescriptorExtractor->extract(pattern, m_markerPatternDescriptor);
         LOG_DEBUG("Marker pattern:\n {}", pattern.getPatternMatrix());
