@@ -16,6 +16,7 @@
 
 #include "SolAR2DTransform.h"
 #include "xpcf/component/ComponentFactory.h"
+#include "core/Log.h"
 
 namespace xpcf  = org::bcom::xpcf;
 
@@ -28,7 +29,8 @@ namespace TOOLS {
 
 SolAR2DTransform::SolAR2DTransform():ComponentBase(xpcf::toUUID<SolAR2DTransform>())
 {
-   declareInterface<api::geom::I2DTransform>(this);
+	declareInterface<SolAR::api::geom::I2DTransform>(this);
+	LOG_DEBUG("SolAR2DTransform constructor");
 }
 
 

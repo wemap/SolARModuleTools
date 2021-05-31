@@ -50,6 +50,7 @@ inline static std::pair<uint32_t, uint32_t> separe(uint64_t a_b) {
 SolARBoostCovisibilityGraph::SolARBoostCovisibilityGraph():ComponentBase(xpcf::toUUID<SolARBoostCovisibilityGraph>())
 {
     addInterface<api::storage::ICovisibilityGraphManager>(this);
+	LOG_DEBUG("SolARBoostCovisibilityGraph constructor");
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(const uint32_t node1_id, const uint32_t node2_id, const float weight)

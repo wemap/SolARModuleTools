@@ -32,7 +32,7 @@ namespace TOOLS {
 
 SolAROverlapDetector::SolAROverlapDetector():ConfigurableBase(xpcf::toUUID<SolAROverlapDetector>())
 {
-    addInterface<api::loop::IOverlapDetector>(this);
+    addInterface<SolAR::api::loop::IOverlapDetector>(this);
 	declareInjectable<solver::pose::I3DTransformSACFinderFrom3D3D>(m_estimator3D);
 	declareInjectable<features::IDescriptorMatcher>(m_matcher);
 	declareInjectable<features::IMatchesFilter>(m_matchesFilter);
@@ -40,6 +40,7 @@ SolAROverlapDetector::SolAROverlapDetector():ConfigurableBase(xpcf::toUUID<SolAR
 	declareInjectable<geom::I3DTransform>(m_transform3D);
 	declareInjectable<reloc::IKeyframeRetriever>(m_globalKeyframeRetriever);
 	declareProperty("minNbInliers", m_NbMinInliers);
+	LOG_DEBUG("SolAROverlapDetector constructor");
 }
 
 void SolAROverlapDetector::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {

@@ -30,12 +30,13 @@ namespace TOOLS {
 
 SolARBasicSink::SolARBasicSink():ConfigurableBase(xpcf::toUUID<ISinkPoseImage>())
 {
-   declareInterface<api::sink::ISinkPoseImage>(this);
-   m_image = nullptr;
-   m_pose = Transform3Df::Identity();
-   m_newPose = false;
-   m_newImage = false;
-   m_imageBufferPointer = 0;
+	declareInterface<SolAR::api::sink::ISinkPoseImage>(this);
+	m_image = nullptr;
+	m_pose = Transform3Df::Identity();
+	m_newPose = false;
+	m_newImage = false;
+	m_imageBufferPointer = 0;
+	LOG_DEBUG("SolARBasicSink constructor");
 }
 
 void SolARBasicSink::set( const SRef<Image> image )

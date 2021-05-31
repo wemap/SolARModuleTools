@@ -15,9 +15,8 @@
  */
 
 #include "SolARSBPatternReIndexer.h"
-
-
 #include "xpcf/component/ComponentFactory.h"
+#include "core/Log.h"
 
 namespace xpcf = org::bcom::xpcf;
 
@@ -30,9 +29,10 @@ namespace TOOLS {
 
     SolARSBPatternReIndexer::SolARSBPatternReIndexer():ConfigurableBase(xpcf::toUUID<SolARSBPatternReIndexer>())
     {
-        declareInterface<api::features::ISBPatternReIndexer>(this);
+        declareInterface<SolAR::api::features::ISBPatternReIndexer>(this);
         declareProperty("sbPatternSize", m_sbPatternSize);
         m_sbPatternSize = 1;
+		LOG_DEBUG("SolARSBPatternReIndexer constructor");
     }
 
 

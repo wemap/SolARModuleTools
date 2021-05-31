@@ -45,7 +45,8 @@ SolARSLAMBootstrapper::SolARSLAMBootstrapper() :ConfigurableBase(xpcf::toUUID<So
 	declareInjectable<api::display::IMatchesOverlay>(m_matchesOverlay);
 	declareProperty("hasPose", m_hasPose);
 	declareProperty("nbMinInitPointCloud", m_nbMinInitPointCloud);
-	declareProperty("angleThres", m_angleThres);	
+	declareProperty("angleThres", m_angleThres);
+	LOG_DEBUG("SolARSLAMBootstrapper constructor");	
 }
 
 xpcf::XPCFErrorCode SolARSLAMBootstrapper::onConfigured()

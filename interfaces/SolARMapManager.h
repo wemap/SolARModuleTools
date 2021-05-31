@@ -76,47 +76,47 @@ public:
 	/// @brief Set the map
 	/// @param[in] map the data of map
 	/// @return FrameworkReturnCode::_SUCCESS_ if all data structures successfully setted, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode setMap(const SRef<datastructure::Map> map) override;
+	FrameworkReturnCode setMap(const SRef<SolAR::datastructure::Map> map) override;
 
 	/// @brief Get the map
 	/// @param[out] map the data of map
 	/// @return FrameworkReturnCode::_SUCCESS_ if successfully, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode getMap(SRef<datastructure::Map> & map) override;
+	FrameworkReturnCode getMap(SRef<SolAR::datastructure::Map> & map) override;
 
 	/// @brief Get local point cloud seen from the keyframe and its neighbors
 	/// @param[in] keyframe the keyframe to get local point cloud
 	/// @param[in] minWeightNeighbor the weight to get keyframe neighbors
 	/// @param[out] localPointCloud the local point cloud
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode getLocalPointCloud(const SRef<datastructure::Keyframe> keyframe, const float minWeightNeighbor, std::vector<SRef<datastructure::CloudPoint>> &localPointCloud) const override;
+    FrameworkReturnCode getLocalPointCloud(const SRef<SolAR::datastructure::Keyframe> keyframe, const float minWeightNeighbor, std::vector<SRef<SolAR::datastructure::CloudPoint>> &localPointCloud) const override;
 
 	/// @brief Add a point cloud to map manager and update visibility of keyframes and covisibility graph
 	/// @param[in] cloudPoint the cloud point to add to the map manager
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode addCloudPoint(const SRef<datastructure::CloudPoint> cloudPoint) override;
+    FrameworkReturnCode addCloudPoint(const SRef<SolAR::datastructure::CloudPoint> cloudPoint) override;
 
 	/// @brief Remove a point cloud from map manager and update visibility of keyframes and covisibility graph
 	/// @param[in] cloudPoint the cloud point to remove to the map manager
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode removeCloudPoint(const SRef<datastructure::CloudPoint> cloudPoint) override;
+    FrameworkReturnCode removeCloudPoint(const SRef<SolAR::datastructure::CloudPoint> cloudPoint) override;
 
 	/// @brief Add a keyframe to map manager
 	/// @param[in] keyframe the keyframe to add to the map manager
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-	FrameworkReturnCode addKeyframe(const SRef<datastructure::Keyframe> keyframe) override;
+	FrameworkReturnCode addKeyframe(const SRef<SolAR::datastructure::Keyframe> keyframe) override;
 
 	/// @brief Remove a keyframe from map manager and update visibility of point cloud and covisibility graph
 	/// @param[in] keyframe the keyframe to remove from the map manager
 	/// @return FrameworkReturnCode::_SUCCESS if succeed, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode removeKeyframe(const SRef<datastructure::Keyframe> keyframe) override;
+    FrameworkReturnCode removeKeyframe(const SRef<SolAR::datastructure::Keyframe> keyframe) override;
 
 	/// @brief Prune cloud points of a map
     /// @param[in] cloudPoints: the cloud points are checked to prune
-	int pointCloudPruning(const std::vector<SRef<datastructure::CloudPoint>> &cloudPoints = {}) override;
+	int pointCloudPruning(const std::vector<SRef<SolAR::datastructure::CloudPoint>> &cloudPoints = {}) override;
 
 	/// @brief Prune keyframes of a map
 	/// @param[in] keyframes: the keyframes are checked to prune
-	int keyframePruning(const std::vector<SRef<datastructure::Keyframe>> &keyframes = {}) override;
+	int keyframePruning(const std::vector<SRef<SolAR::datastructure::Keyframe>> &keyframes = {}) override;
 
 	/// @brief Save the map to the external file
 	/// @return FrameworkReturnCode::_SUCCESS_ if the suppression succeed, else FrameworkReturnCode::_ERROR.
@@ -130,11 +130,11 @@ public:
     void unloadComponent () override final;	
 
 private:
-	SRef<datastructure::Map>						m_map;
-	SRef<api::storage::IPointCloudManager>			m_pointCloudManager;
-	SRef<api::storage::IKeyframesManager>			m_keyframesManager;
-	SRef<api::storage::ICovisibilityGraphManager>	m_covisibilityGraph;
-	SRef<api::reloc::IKeyframeRetriever>			m_keyframeRetriever;
+	SRef<SolAR::datastructure::Map>							m_map;
+	SRef<SolAR::api::storage::IPointCloudManager>			m_pointCloudManager;
+	SRef<SolAR::api::storage::IKeyframesManager>			m_keyframesManager;
+	SRef<SolAR::api::storage::ICovisibilityGraphManager>	m_covisibilityGraph;
+	SRef<SolAR::api::reloc::IKeyframeRetriever>				m_keyframeRetriever;
 
 	std::string					m_directory;
 	std::string					m_identificationFileName;

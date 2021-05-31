@@ -59,7 +59,7 @@ namespace TOOLS {
 */
 
 class SOLAR_TOOLS_EXPORT_API SolARLoopClosureDetector : public org::bcom::xpcf::ConfigurableBase,
-        public api::loop::ILoopClosureDetector {
+        public SolAR::api::loop::ILoopClosureDetector {
 public:
 	SolARLoopClosureDetector();
 	~SolARLoopClosureDetector() = default;
@@ -67,7 +67,7 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] intrinsicParams: Camera calibration matrix parameters.
 	/// @param[in] distortionParams: Camera distortion parameters.
-	void setCameraParameters(const datastructure::CamCalibration & intrinsicParams, const datastructure::CamDistortion & distortionParams) override;
+	void setCameraParameters(const SolAR::datastructure::CamCalibration & intrinsicParams, const SolAR::datastructure::CamDistortion & distortionParams) override;
 
 	/// @brief Detect a loop closure from a given keyframe.
 	/// @param[in] queryKeyframe: the query keyframe.
@@ -75,23 +75,23 @@ public:
 	/// @param[out] sim3Transform : 3D similarity transformation (Sim(3)) from query keyframe to the detected loop keyframe.
 	/// @param[out] duplicatedPointsIndices: indices of duplicated cloud points. The first index is the id of point cloud seen from the detected loop keyframe. The second one is id of point cloud seen from the query keyframe
 	/// @return FrameworkReturnCode::_SUCCESS if detect a loop closure, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode detect(const SRef<datastructure::Keyframe> queryKeyframe,
-                               SRef<datastructure::Keyframe> & detectedLoopKeyframe,
-                               datastructure::Transform3Df &sim3Transform,
+    FrameworkReturnCode detect(const SRef<SolAR::datastructure::Keyframe> queryKeyframe,
+                               SRef<SolAR::datastructure::Keyframe> & detectedLoopKeyframe,
+                               SolAR::datastructure::Transform3Df &sim3Transform,
                                std::vector<std::pair<uint32_t, uint32_t>> &duplicatedPointsIndices) const override;
 
 	void unloadComponent () override final;
 
  private:
-    SRef<api::storage::IKeyframesManager>					m_keyframesManager;
-    SRef<api::storage::ICovisibilityGraphManager>			m_covisibilityGraph;
-	SRef<api::reloc::IKeyframeRetriever>					m_keyframeRetriever;
-	SRef<api::solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
-	SRef<api::features::IDescriptorMatcher>					m_matcher;
-	SRef<api::features::IMatchesFilter>						m_matchesFilter;
-	SRef<api::solver::pose::I3D3DCorrespondencesFinder>		m_corr3D3DFinder;
-	SRef<api::geom::I3DTransform>							m_transform3D;
-	int														m_NbMinInliers;
+    SRef<SolAR::api::storage::IKeyframesManager>					m_keyframesManager;
+    SRef<SolAR::api::storage::ICovisibilityGraphManager>            m_covisibilityGraphManager;
+    SRef<SolAR::api::reloc::IKeyframeRetriever>                     m_keyframeRetriever;
+    SRef<SolAR::api::solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
+    SRef<SolAR::api::features::IDescriptorMatcher>					m_matcher;
+    SRef<SolAR::api::features::IMatchesFilter>						m_matchesFilter;
+    SRef<SolAR::api::solver::pose::I3D3DCorrespondencesFinder>		m_corr3D3DFinder;
+    SRef<SolAR::api::geom::I3DTransform>							m_transform3D;
+    int                                                             m_NbMinInliers;
 };
 
 }

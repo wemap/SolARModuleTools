@@ -27,7 +27,8 @@ namespace TOOLS {
 
 SolAR3DTransform::SolAR3DTransform():ComponentBase(xpcf::toUUID<SolAR3DTransform>())
 {
-    declareInterface<api::geom::I3DTransform>(this);
+    declareInterface<SolAR::api::geom::I3DTransform>(this);
+	LOG_DEBUG("SolAR3DTransform constructor");
 }
 
 
@@ -96,6 +97,30 @@ FrameworkReturnCode SolAR3DTransform::transformInPlace(const datastructure::Tran
 		kf->setPose(transformation * kf->getPose());
 	}
 	return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolAR3DTransform::transformInPlace(const Transform3Df & transformation, std::vector<SRef<CloudPoint>>& pointCloud)
+{
+    // apply transformation to point cloud
+    for (auto &cp : pointCloud) {
+        Vector3f inputVector3f(cp->getX(), cp->getY(), cp->getZ());
+        Vector3f outputVector3f = transformation * inputVector3f;
+        cp->setX(outputVector3f[0]);
+        cp->setY(outputVector3f[1]);
+        cp->setZ(outputVector3f[2]);
+    }
+
+    return FrameworkReturnCode::_SUCCESS;
+}
+
+FrameworkReturnCode SolAR3DTransform::transformInPlace(const Transform3Df & transformation, std::vector<SRef<Keyframe>>& keyframes)
+{
+    // apply transformation to keyframes
+    for (auto &kf : keyframes) {
+        kf->setPose(transformation * kf->getPose());
+    }
+
+    return FrameworkReturnCode::_SUCCESS;
 }
 
 }

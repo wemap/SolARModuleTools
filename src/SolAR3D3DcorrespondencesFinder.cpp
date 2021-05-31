@@ -23,12 +23,12 @@ XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolAR3D3DCorresponden
 
 namespace SolAR {
 using namespace datastructure;
-using namespace api::storage;
+using namespace SolAR::api::storage;
 namespace MODULES {
 namespace TOOLS {
 SolAR3D3DCorrespondencesFinder::SolAR3D3DCorrespondencesFinder() :ComponentBase(xpcf::toUUID<SolAR3D3DCorrespondencesFinder>())
 {
-	declareInterface<api::solver::pose::I3D3DCorrespondencesFinder>(this);
+    declareInterface<SolAR::api::solver::pose::I3D3DCorrespondencesFinder>(this);
 	declareInjectable<IPointCloudManager>(m_pointCloudManager);
 	LOG_DEBUG("SolAR3D3DCorrespondencesFinder constructor");
 }

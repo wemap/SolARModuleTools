@@ -48,6 +48,7 @@ SolARSLAMTracking::SolARSLAMTracking() :ConfigurableBase(xpcf::toUUID<SolARSLAMT
 	declareProperty("thresAngleViewDirection", m_thresAngleViewDirection);
 	declareProperty("displayTrackedPoints", m_displayTrackedPoints);
 	declareProperty("estimatedPose", m_estimatedPose);
+	LOG_DEBUG("SolARSLAMTracking constructor");
 }
 
 xpcf::XPCFErrorCode SolARSLAMTracking::onConfigured()

@@ -35,6 +35,7 @@ SolARMapFilter::SolARMapFilter():ConfigurableBase(xpcf::toUUID<SolARMapFilter>()
     declareProperty("cheiralityCheck", m_cheiralityCheck);
     declareProperty("minTriangulationAngle", m_minTriangulationAngle);
     declareProperty("maxTriangulationAngle", m_maxTriangulationAngle);
+	LOG_DEBUG("SolARMapFilter constructor");
 }
 
 float calculateTriangulationAngle(const Vector3f& center1,

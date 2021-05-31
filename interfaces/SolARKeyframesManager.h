@@ -30,7 +30,7 @@ namespace TOOLS {
  * @brief A storage component to store a persistent set of keyframes, based on a std::set.
  */
 class SOLAR_TOOLS_EXPORT_API SolARKeyframesManager : public org::bcom::xpcf::ComponentBase,
-        public api::storage::IKeyframesManager {
+        public SolAR::api::storage::IKeyframesManager {
 public:
 
     /// @brief SolARKeyframesManager default constructor
@@ -42,29 +42,29 @@ public:
 	/// @brief This method allow to add a frame to the keyframe manager component
 	/// @param[in] frame the frame to add to the set of persistent keyframes
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode addKeyframe(const SRef<datastructure::Keyframe> keyframe) override;
+    FrameworkReturnCode addKeyframe(const SRef<SolAR::datastructure::Keyframe> keyframe) override;
 
 	/// @brief This method allow to add a frame to the key frame manager component
 	/// @param[in] frame the frame to add to the set of persistent keyframes
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode addKeyframe(const datastructure::Keyframe & keyframe) override;
+    FrameworkReturnCode addKeyframe(const SolAR::datastructure::Keyframe & keyframe) override;
 
 	/// @brief This method allows to get a keyframe by its id
 	/// @param[in] id of the keyframe to get
 	/// @param[out] a keyframe stored in the keyframes manager
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getKeyframe(const uint32_t id, SRef<datastructure::Keyframe> & keyframe) const override;
+    FrameworkReturnCode getKeyframe(const uint32_t id, SRef<SolAR::datastructure::Keyframe> & keyframe) const override;
 
 	/// @brief This method allows to get a set of keyframes by their ids
 	/// @param[in] a vector of ids of the keyframes to get
 	/// @param[out] a vector of keyframes stored in the keyframe manager
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getKeyframes(const std::vector<uint32_t> & ids, std::vector<SRef<datastructure::Keyframe>>& keyframes) const override;
+    FrameworkReturnCode getKeyframes(const std::vector<uint32_t> & ids, std::vector<SRef<SolAR::datastructure::Keyframe>>& keyframes) const override;
 
 	/// @brief This method allows to get all keyframes
 	/// @param[out] the set of keyframes
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getAllKeyframes(std::vector<SRef<datastructure::Keyframe>>& keyframes) const override;
+    FrameworkReturnCode getAllKeyframes(std::vector<SRef<SolAR::datastructure::Keyframe>>& keyframes) const override;
 
 	/// @brief This method allow to suppress a keyframe by its id
 	/// @param[in] id of the keyframe to suppress
@@ -73,12 +73,12 @@ public:
 
 	/// @brief This method allows to get the descriptor type used to extract descriptor for each keyframe
 	/// @return Descriptor type
-    datastructure::DescriptorType getDescriptorType() const override;
+    SolAR::datastructure::DescriptorType getDescriptorType() const override;
 
 	/// @brief This method allows to set the descriptor type used to extract descriptor for each keyframe
     /// @param[in] type the descriptor type
     /// @return @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode setDescriptorType(const datastructure::DescriptorType & type) override;
+    FrameworkReturnCode setDescriptorType(const SolAR::datastructure::DescriptorType & type) override;
 
 	/// @brief This method allows to know if a keyframe is already stored in the component
 	/// @param[in] Id of this keyframe
@@ -116,7 +116,7 @@ public:
 
 
  private:
-	SRef<datastructure::KeyframeCollection> m_keyframeCollection;
+	SRef<SolAR::datastructure::KeyframeCollection> m_keyframeCollection;
 };
 
 }

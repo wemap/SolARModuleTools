@@ -31,7 +31,7 @@ namespace TOOLS {
  * @brief A storage component to store a persistent cloud of 3D points, based on a std::set.
  */
 class SOLAR_TOOLS_EXPORT_API SolARPointCloudManager : public org::bcom::xpcf::ComponentBase,
-        public api::storage::IPointCloudManager {
+        public SolAR::api::storage::IPointCloudManager {
 public:
 
 	SolARPointCloudManager();
@@ -40,39 +40,39 @@ public:
 	/// @brief This method allow to add a 3D point to the point cloud
 	/// @param[in] point the 3D point to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode addPoint(const SRef<datastructure::CloudPoint> point) override;
+    FrameworkReturnCode addPoint(const SRef<SolAR::datastructure::CloudPoint> point) override;
 
 	/// @brief This method allow to add a vector of 3D points to the point cloud
 	/// @param[in] a vector of the 3D points to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoints(const std::vector<SRef<datastructure::CloudPoint>>& points) override;
+	FrameworkReturnCode addPoints(const std::vector<SRef<SolAR::datastructure::CloudPoint>>& points) override;
 
 	/// @brief This method allow to add a 3D point to the point cloud
 	/// @param[in] point the 3D point to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoint(const datastructure::CloudPoint &point) override;
+	FrameworkReturnCode addPoint(const SolAR::datastructure::CloudPoint &point) override;
 
 	/// @brief This method allow to add a vector of 3D points to the point cloud
 	/// @param[in] a vector of the 3D points to add to the persistent point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if the addition succeed, else FrameworkReturnCode::_ERROR.
-	FrameworkReturnCode addPoints(const std::vector<datastructure::CloudPoint> &points) override;
+	FrameworkReturnCode addPoints(const std::vector<SolAR::datastructure::CloudPoint> &points) override;
 
 	/// @brief This method allows to get a 3D point stored in the point cloud by its id
 	/// @param[in] id of the point to get
 	/// @param[out] a 3D point stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getPoint(const uint32_t id, SRef<datastructure::CloudPoint>& point) const override;
+    FrameworkReturnCode getPoint(const uint32_t id, SRef<SolAR::datastructure::CloudPoint>& point) const override;
 
 	/// @brief This method allows to get a set of 3D points stored in the point cloud by their ids
 	/// @param[in] a vector of ids of the points to get
 	/// @param[out] a vector of 3D points stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getPoints(const std::vector<uint32_t> &ids, std::vector<SRef<datastructure::CloudPoint>>& points) const override;
+    FrameworkReturnCode getPoints(const std::vector<uint32_t> &ids, std::vector<SRef<SolAR::datastructure::CloudPoint>>& points) const override;
 
 	/// @brief This method allows to get all 3D points stored in the point cloud
 	/// @param[out] the set of 3D point stored in the point cloud
 	/// @return FrameworkReturnCode::_SUCCESS_ if succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode getAllPoints(std::vector<SRef<datastructure::CloudPoint>>& points) const override;
+    FrameworkReturnCode getAllPoints(std::vector<SRef<SolAR::datastructure::CloudPoint>>& points) const override;
 
 	/// @brief This method allow to suppress a point stored in the point cloud by its id
 	/// @param[in] id of the point to suppress
@@ -86,11 +86,11 @@ public:
 
 	/// @brief This method allows to get the descriptor type used to extract descriptor for each cloud point
 	/// @return Descriptor type
-    datastructure::DescriptorType getDescriptorType() const override;
+    SolAR::datastructure::DescriptorType getDescriptorType() const override;
 
 	/// @brief This method allows to set the descriptor type used to extract descriptor for each cloud point
 	/// @return Descriptor type
-    FrameworkReturnCode setDescriptorType(const datastructure::DescriptorType & type) override;
+    FrameworkReturnCode setDescriptorType(const SolAR::datastructure::DescriptorType & type) override;
 
 	/// @brief This method allows to know if a point is already stored in the component
 	/// @param[in] Id of this point
@@ -128,7 +128,7 @@ public:
 
 
  private:
-	SRef<datastructure::PointCloud>	m_pointCloud;
+	SRef<SolAR::datastructure::PointCloud>	m_pointCloud;
 };
 
 }

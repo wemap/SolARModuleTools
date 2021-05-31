@@ -50,7 +50,7 @@ namespace TOOLS {
  */
 
 class SOLAR_TOOLS_EXPORT_API SolARImage2WorldMapper4Marker2D : public org::bcom::xpcf::ConfigurableBase,
-        public api::geom::IImage2WorldMapper {
+        public SolAR::api::geom::IImage2WorldMapper {
 public:
 
     SolARImage2WorldMapper4Marker2D();
@@ -59,7 +59,7 @@ public:
     /// @param[in] digitalPoints The 2D points defined in pixels in the 2D coordinate system of the marker .
     /// @param[in] worldPoints The 3D correspondences of the 2D points defined in the  world coordinate system.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode map(const std::vector<datastructure::Point2Df> & digitalPoints, std::vector<datastructure::Point3Df> & worldPoints) override;
+    FrameworkReturnCode map(const std::vector<SolAR::datastructure::Point2Df> & digitalPoints, std::vector<SolAR::datastructure::Point3Df> & worldPoints) override;
 
     void unloadComponent () override final;
 

@@ -52,6 +52,7 @@ SolARSLAMMapping::SolARSLAMMapping() :ConfigurableBase(xpcf::toUUID<SolARSLAMMap
 	declareProperty("nbVisibilityAtLeast", m_nbVisibilityAtLeast);
 	declareProperty("nbPassedFrameAtLeast", m_nbPassedFrameAtLeast);
 	declareProperty("ratioCPRefKeyframe", m_ratioCPRefKeyframe);
+	LOG_DEBUG("SolARSLAMMapping constructor");
 }
 
 void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {

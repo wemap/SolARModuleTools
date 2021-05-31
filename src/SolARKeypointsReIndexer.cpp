@@ -16,6 +16,7 @@
 
 #include "SolARKeypointsReIndexer.h"
 #include "xpcf/component/ComponentFactory.h"
+#include "core/Log.h"
 
 namespace xpcf = org::bcom::xpcf;
 
@@ -28,7 +29,8 @@ namespace TOOLS {
 
     SolARKeypointsReIndexer::SolARKeypointsReIndexer():ComponentBase(xpcf::toUUID<SolARKeypointsReIndexer>())
     {
-        declareInterface<api::features::IKeypointsReIndexer>(this);
+        declareInterface<SolAR::api::features::IKeypointsReIndexer>(this);
+		LOG_DEBUG("SolARKeypointsReIndexer constructor");
     }
 
   FrameworkReturnCode SolARKeypointsReIndexer::reindex(const std::vector<Keypoint> & refKeypoints,

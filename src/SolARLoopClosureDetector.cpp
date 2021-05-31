@@ -32,9 +32,9 @@ namespace TOOLS {
 
 SolARLoopClosureDetector::SolARLoopClosureDetector():ConfigurableBase(xpcf::toUUID<SolARLoopClosureDetector>())
 {
-    addInterface<api::loop::ILoopClosureDetector>(this);
+    addInterface<SolAR::api::loop::ILoopClosureDetector>(this);
 	declareInjectable<IKeyframesManager>(m_keyframesManager);
-	declareInjectable<ICovisibilityGraphManager>(m_covisibilityGraph);
+    declareInjectable<ICovisibilityGraphManager>(m_covisibilityGraphManager);
 	declareInjectable<reloc::IKeyframeRetriever>(m_keyframeRetriever);
 	declareInjectable<solver::pose::I3DTransformSACFinderFrom3D3D>(m_estimator3D);
 	declareInjectable<features::IDescriptorMatcher>(m_matcher);
@@ -61,7 +61,7 @@ FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe> queryK
 	m_keyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), retKeyframesIndex);
 	for (auto &it : retKeyframesIndex) {
 		std::vector<uint32_t> paths;
-		m_covisibilityGraph->getShortestPath(queryKeyframeId, it, paths);
+        m_covisibilityGraphManager->getShortestPath(queryKeyframeId, it, paths);
 		if (paths.size() > 3) {
 			candidatesId.push_back(it);
 			if (candidatesId.size() >= 3)

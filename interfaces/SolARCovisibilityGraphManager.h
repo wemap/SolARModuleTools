@@ -31,7 +31,7 @@ namespace TOOLS {
  * @brief A storage component to store a covisibility graph where each vertex is an id of a keyframe and each edge is weighted by the number of common cloud points between two keyframes.
  */
 class SOLAR_TOOLS_EXPORT_API SolARCovisibilityGraphManager : public org::bcom::xpcf::ComponentBase,
-        public api::storage::ICovisibilityGraphManager {
+        public SolAR::api::storage::ICovisibilityGraphManager {
 public:
 
 	SolARCovisibilityGraphManager();
@@ -121,21 +121,21 @@ public:
 
 	/// @brief This method returns the covisibility graph
 	/// @return the covisibility graph
-	const SRef<datastructure::CovisibilityGraph> & getConstCovisibilityGraph() const override;
+	const SRef<SolAR::datastructure::CovisibilityGraph> & getConstCovisibilityGraph() const override;
 
 	/// @brief This method returns the covisibility graph
 	/// @param[out] covisibilityGraph the covisibility graph of map
 	/// @return the covisibility graph
-	std::unique_lock<std::mutex> getCovisibilityGraph(SRef<datastructure::CovisibilityGraph>& covisibilityGraph) override;
+	std::unique_lock<std::mutex> getCovisibilityGraph(SRef<SolAR::datastructure::CovisibilityGraph>& covisibilityGraph) override;
 
 	/// @brief This method is to set the covisibility graph
 	/// @param[in] covisibilityGraph the covisibility graph of map
-	void setCovisibilityGraph(const SRef<datastructure::CovisibilityGraph> covisibilityGraph) override;
+	void setCovisibilityGraph(const SRef<SolAR::datastructure::CovisibilityGraph> covisibilityGraph) override;
     
 	void unloadComponent () override final;
 
  private:
-	 SRef<datastructure::CovisibilityGraph>	m_covisibilityGraph;
+	 SRef<SolAR::datastructure::CovisibilityGraph>	m_covisibilityGraph;
 };
 
 }
