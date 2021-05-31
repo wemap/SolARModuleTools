@@ -34,7 +34,7 @@ SolARLoopClosureDetector::SolARLoopClosureDetector():ConfigurableBase(xpcf::toUU
 {
     addInterface<SolAR::api::loop::ILoopClosureDetector>(this);
 	declareInjectable<IKeyframesManager>(m_keyframesManager);
-	declareInjectable<ICovisibilityGraph>(m_covisibilityGraph);
+    declareInjectable<ICovisibilityGraphManager>(m_covisibilityGraphManager);
 	declareInjectable<reloc::IKeyframeRetriever>(m_keyframeRetriever);
 	declareInjectable<solver::pose::I3DTransformSACFinderFrom3D3D>(m_estimator3D);
 	declareInjectable<features::IDescriptorMatcher>(m_matcher);
@@ -42,6 +42,7 @@ SolARLoopClosureDetector::SolARLoopClosureDetector():ConfigurableBase(xpcf::toUU
 	declareInjectable<solver::pose::I3D3DCorrespondencesFinder>(m_corr3D3DFinder);
 	declareInjectable<geom::I3DTransform>(m_transform3D);
 	declareProperty("minNbInliers", m_NbMinInliers);
+	LOG_DEBUG("SolARLoopClosureDetector constructor");
 }
 
 void SolARLoopClosureDetector::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
@@ -60,7 +61,7 @@ FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe> queryK
 	m_keyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), retKeyframesIndex);
 	for (auto &it : retKeyframesIndex) {
 		std::vector<uint32_t> paths;
-		m_covisibilityGraph->getShortestPath(queryKeyframeId, it, paths);
+        m_covisibilityGraphManager->getShortestPath(queryKeyframeId, it, paths);
 		if (paths.size() > 3) {
 			candidatesId.push_back(it);
 			if (candidatesId.size() >= 3)
@@ -71,7 +72,8 @@ FrameworkReturnCode SolARLoopClosureDetector::detect(const SRef<Keyframe> queryK
 	std::vector<Transform3Df> candidateKeyframePoses;
 	for (auto &it : candidatesId) {
 		SRef<Keyframe> keyframe;
-		m_keyframesManager->getKeyframe(it, keyframe);
+		if (m_keyframesManager->getKeyframe(it, keyframe) != FrameworkReturnCode::_SUCCESS)
+			continue;
 		candidateKeyframes.push_back(keyframe);
 		candidateKeyframePoses.push_back(keyframe->getPose());
 	}

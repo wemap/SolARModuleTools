@@ -18,7 +18,7 @@
 #define SOLARSLAMBOOTSTRAPPER_H
 #include "api/slam/IBootstrapper.h"
 #include "datastructure/Image.h"
-#include "api/solver/map/IMapper.h"
+#include "api/storage/IMapManager.h"
 #include "api/features/IKeypointDetector.h"
 #include "api/features/IDescriptorsExtractor.h"
 #include "api/features/IDescriptorMatcher.h"
@@ -42,7 +42,7 @@ namespace TOOLS {
 * <TT>UUID: 8f43eed0-1a2e-4c47-83f0-8dd5b259cdb0</TT>
 *
 * @SolARComponentInjectablesBegin
-* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::storage::IMapManager}
 * @SolARComponentInjectable{SolAR::api::features::IKeypointDetector}
 * @SolARComponentInjectable{SolAR::api::features::IDescriptorsExtractor}
 * @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
@@ -108,7 +108,7 @@ private:
     SRef<SolAR::datastructure::Keyframe>                        m_keyframe1, m_keyframe2;
     SolAR::datastructure::CamCalibration                        m_camMatrix;
     SolAR::datastructure::CamDistortion                         m_camDistortion;
-    SRef<SolAR::api::solver::map::IMapper>						m_mapper;
+    SRef<SolAR::api::storage::IMapManager>						m_mapManager;
     SRef<SolAR::api::features::IKeypointDetector>				m_keypointsDetector;
     SRef<SolAR::api::features::IDescriptorsExtractor>			m_descriptorExtractor;
     SRef<SolAR::api::features::IDescriptorMatcher>				m_matcher;

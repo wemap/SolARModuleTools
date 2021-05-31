@@ -48,6 +48,7 @@ SolARFiducialMarkerPoseEstimator::SolARFiducialMarkerPoseEstimator():Configurabl
 	declareProperty("minThreshold", m_minThreshold);
 	declareProperty("maxThreshold", m_maxThreshold);
 	declareProperty("maxReprojError", m_maxReprojError);
+	LOG_DEBUG("SolARFiducialMarkerPoseEstimator constructor");
 }
 
 void SolARFiducialMarkerPoseEstimator::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {

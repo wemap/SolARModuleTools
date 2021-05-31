@@ -1,5 +1,5 @@
 TARGET = SolARTest_ModuleTools_DualMapperSingleton
-VERSION=0.9.3
+VERSION=0.9.4
 
 CONFIG += c++1z
 CONFIG += console
@@ -35,11 +35,8 @@ PROJECTCONFIG = QTVS
 include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/templateappconfig.pri)))
 
 HEADERS += \
-    KeyFrameRetrieverMock.h
-
 
 SOURCES += \
-    KeyFrameRetrieverMock.cpp \
     testMain.cpp
 
 

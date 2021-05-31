@@ -49,7 +49,8 @@ inline static std::pair<uint32_t, uint32_t> separe(uint64_t a_b) {
 
 SolARBoostCovisibilityGraph::SolARBoostCovisibilityGraph():ComponentBase(xpcf::toUUID<SolARBoostCovisibilityGraph>())
 {
-    addInterface<SolAR::api::storage::ICovisibilityGraph>(this);
+    addInterface<api::storage::ICovisibilityGraphManager>(this);
+	LOG_DEBUG("SolARBoostCovisibilityGraph constructor");
 }
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::increaseEdge(const uint32_t node1_id, const uint32_t node2_id, const float weight)
@@ -398,45 +399,22 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::display() const
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(const std::string& file) const
 {
-    // std::unique_lock<std::mutex> lock(m_mutex);
+    // create a covisibility graph datastructure
+	SRef<CovisibilityGraph> covisibilityGraph = xpcf::utils::make_shared<CovisibilityGraph>();
+	std::set<uint32_t> nodeIds;
+	this->getAllNodes(nodeIds);
 
-    // generic boost serialization
-    std::set<uint32_t>                      nodes;
-    std::map<uint32_t, std::set<uint32_t>>  edges;
-    std::map<uint64_t, float>				weights;
-
-    //
-    std::pair<vertex_iterator_t, vertex_iterator_t> it_vertex = boost::vertices(m_graph);
-    for( ; it_vertex.first != it_vertex.second; ++it_vertex.first){
-       uint32_t frame_id = get(boost::vertex_bundle, m_graph)[*it_vertex.first].frame_id;
-       nodes.insert(frame_id);
-
-       //
-       std::set<uint32_t> neighbors;
-       vertex_t vertex_id = m_map.at(frame_id);
-       std::pair<in_edge_iterator_t, in_edge_iterator_t> it_edge = in_edges(vertex_id, m_graph);
-       for( ; it_edge.first != it_edge.second; ++it_edge.first)
-       {
-          edge_t edge_id = *it_edge.first;
-          EdgeProperties edge_properties = get(boost::edge_bundle, m_graph)[edge_id];
-          vertex_t v1    = source(edge_id, m_graph);
-          vertex_t v2    = target(edge_id, m_graph);
-          if(frame_id==m_graph[v1].frame_id){
-            neighbors.insert(m_graph[v2].frame_id);
-          }else{
-            neighbors.insert(m_graph[v1].frame_id);
-          }
-          uint64_t edge_uid = join(m_graph[v1].frame_id, m_graph[v2].frame_id);
-          weights[edge_uid] = edge_properties.weight;
-       }
-       edges[frame_id] = neighbors;
-    }
-
+	// copy data
+	for (auto it1 = nodeIds.begin(); it1 != nodeIds.end(); it1++)
+		for (auto it2 = std::next(it1); it2 != nodeIds.end(); it2++) {
+			float weight;
+			if (this->getEdge(*it1, *it2, weight) == FrameworkReturnCode::_SUCCESS)
+				covisibilityGraph->increaseEdge(*it1, *it2, weight);
+		}
+    
 	std::ofstream ofs(file, std::ios::binary);
 	OutputArchive oa(ofs);
-    oa << nodes;
-    oa << edges;
-    oa << weights;
+    oa << covisibilityGraph;
     ofs.close();
 
     return FrameworkReturnCode::_SUCCESS;
@@ -444,30 +422,46 @@ FrameworkReturnCode SolARBoostCovisibilityGraph::saveToFile(const std::string& f
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::loadFromFile(const std::string& file)
 {
-    // std::unique_lock<std::mutex> lock(m_mutex);
-    clear();
-    std::set<uint32_t>                      nodes;
-    std::map<uint32_t, std::set<uint32_t>>  edges;
-    std::map<uint64_t, float>				weights;
+	// create a covisibility graph datastructure
+	SRef<CovisibilityGraph> covisibilityGraph = xpcf::utils::make_shared<CovisibilityGraph>();
 
+	// load data
 	std::ifstream ifs(file, std::ios::binary);
 	if (!ifs.is_open())
 		return FrameworkReturnCode::_ERROR_;
 	InputArchive ia(ifs);
-    ia >> nodes;
-    ia >> edges;
-    ia >> weights;
+    ia >> covisibilityGraph;
     ifs.close();
 
-    for (std::map<uint64_t, float>::iterator it = weights.begin(); it!=weights.end(); ++it)
-    {
-        std::pair<uint32_t, uint32_t> vertex_pair = separe(it->first);
-        float weight                              = it->second;
-        addEdge(vertex_pair.first, vertex_pair.second, weight);
-    }
+	// copy data
+	std::set<uint32_t> nodeIds;
+	covisibilityGraph->getAllNodes(nodeIds);
 
-
+	// copy data
+	for (auto it1 = nodeIds.begin(); it1 != nodeIds.end(); it1++)
+		for (auto it2 = std::next(it1); it2 != nodeIds.end(); it2++) {
+			float weight;
+			if (covisibilityGraph->getEdge(*it1, *it2, weight) == FrameworkReturnCode::_SUCCESS)
+				this->addEdge(*it1, *it2, weight);
+		}
     return FrameworkReturnCode::_SUCCESS;
+}
+
+const SRef<datastructure::CovisibilityGraph>& SolARBoostCovisibilityGraph::getConstCovisibilityGraph() const
+{
+	LOG_ERROR("Not implemented");
+	return nullptr;
+}
+
+std::unique_lock<std::mutex> SolARBoostCovisibilityGraph::getCovisibilityGraph(SRef<datastructure::CovisibilityGraph>& covisibilityGraph)
+{
+	LOG_ERROR("Not implemented");
+	return std::unique_lock<std::mutex>();
+}
+
+void SolARBoostCovisibilityGraph::setCovisibilityGraph(const SRef<datastructure::CovisibilityGraph> covisibilityGraph)
+{
+	LOG_ERROR("Not implemented");
 }
 
 bool SolARBoostCovisibilityGraph::isEdge(const uint32_t node1_id, const uint32_t node2_id) const
@@ -523,7 +517,6 @@ bool SolARBoostCovisibilityGraph::isNode(const uint32_t node_id) const
     // std::unique_lock<std::mutex> lock(m_boost_cg_mutex);
     return !(m_map.find(node_id) == m_map.end()) ;
 }
-
 
 FrameworkReturnCode SolARBoostCovisibilityGraph::clear()
 {

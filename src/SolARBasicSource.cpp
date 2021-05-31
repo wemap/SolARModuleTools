@@ -30,9 +30,10 @@ namespace TOOLS {
 
 SolARBasicSource::SolARBasicSource():ConfigurableBase(xpcf::toUUID<ISourceImage>())
 {
-   declareInterface<SolAR::api::source::ISourceImage>(this);
-   m_image = nullptr;
-   m_newImage = false;
+	declareInterface<SolAR::api::source::ISourceImage>(this);
+	m_image = nullptr;
+	m_newImage = false;
+	LOG_DEBUG("SolARBasicSource constructor");
 }
 
 SourceReturnCode SolARBasicSource::setInputTexture(const void* sourceTexturehandle,const int width,const int height)

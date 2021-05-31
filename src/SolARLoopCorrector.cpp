@@ -35,10 +35,11 @@ SolARLoopCorrector::SolARLoopCorrector():ConfigurableBase(xpcf::toUUID<SolARLoop
     addInterface<SolAR::api::loop::ILoopCorrector>(this);
     declareInjectable<storage::IKeyframesManager>(m_keyframesManager);
     declareInjectable<storage::IPointCloudManager>(m_pointCloudManager);
-    declareInjectable<storage::ICovisibilityGraph>(m_covisibilityGraph);
+    declareInjectable<storage::ICovisibilityGraphManager>(m_covisibilityGraphManager);
     declareInjectable<features::IDescriptorMatcher>(m_matcher);
     declareInjectable<geom::I3DTransform>(m_transform3D);
     declareInjectable<geom::IProject>(m_projector);
+	LOG_DEBUG("SolARLoopCorrector constructor");
 }
 
 void SolARLoopCorrector::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
@@ -69,8 +70,8 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> queryKeyfra
     // Get current and loop neighbors
     std::vector<uint32_t> kfLoopNeighborsIds;
     std::vector<uint32_t> kfCurrentNeighborsIds;
-    m_covisibilityGraph->getNeighbors(queryKeyframe->getId(), 20.0, kfCurrentNeighborsIds);
-    m_covisibilityGraph->getNeighbors(detectedLoopKeyframe->getId(), 20.0, kfLoopNeighborsIds);
+    m_covisibilityGraphManager->getNeighbors(queryKeyframe->getId(), 20.0, kfCurrentNeighborsIds);
+    m_covisibilityGraphManager->getNeighbors(detectedLoopKeyframe->getId(), 20.0, kfLoopNeighborsIds);
 
     // Compute current keyframe's neighboors similarity poses in loop keyframe and current keyframe worlds c.s.
     std::map<uint32_t, Transform3Df > KfSim_wl_i;
@@ -191,14 +192,15 @@ FrameworkReturnCode SolARLoopCorrector::correct(const SRef<Keyframe> queryKeyfra
 			uint32_t id_kp1 = vi1.second;
 			SRef<Keyframe> kf1;
 			// update visibility of keyframes seen cp1
-			m_keyframesManager->getKeyframe(id_kf1, kf1);
+			if (m_keyframesManager->getKeyframe(id_kf1, kf1) != FrameworkReturnCode::_SUCCESS)
+				continue;
 			kf1->addVisibility(id_kp1, cp2->getId());
 			// move visibility of cp1 to cp2
 			cp2->addVisibility(id_kf1, id_kp1);
 			// update covisibility graph
 			for (const auto &vi2 : visibilities2) {
 				uint32_t id_kf2 = vi2.first;
-				m_covisibilityGraph->increaseEdge(id_kf1, id_kf2, 1.0);
+                m_covisibilityGraphManager->increaseEdge(id_kf1, id_kf2, 1.0);
 			}			
 		}
 		// suppress cp1

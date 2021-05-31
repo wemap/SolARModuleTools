@@ -31,21 +31,22 @@ namespace TOOLS {
 
 SolARSLAMBootstrapper::SolARSLAMBootstrapper() :ConfigurableBase(xpcf::toUUID<SolARSLAMBootstrapper>())
 {
-    addInterface<SolAR::api::slam::IBootstrapper>(this);
-    declareInjectable<SolAR::api::solver::map::IMapper>(m_mapper);
-    declareInjectable<SolAR::api::features::IKeypointDetector>(m_keypointsDetector);
-    declareInjectable<SolAR::api::features::IDescriptorsExtractor>(m_descriptorExtractor);
-    declareInjectable<SolAR::api::features::IDescriptorMatcher>(m_matcher);
-    declareInjectable<SolAR::api::features::IMatchesFilter>(m_matchesFilter);
-    declareInjectable<SolAR::api::solver::map::ITriangulator>(m_triangulator);
-    declareInjectable<SolAR::api::solver::map::IMapFilter>(m_mapFilter);
-    declareInjectable<SolAR::api::solver::map::IKeyframeSelector>(m_keyframeSelector);
-    declareInjectable<SolAR::api::solver::pose::I3DTransformFinderFrom2D2D>(m_poseFinderFrom2D2D);
-    declareInjectable<SolAR::api::geom::IUndistortPoints>(m_undistortPoints);
-    declareInjectable<SolAR::api::display::IMatchesOverlay>(m_matchesOverlay);
+	addInterface<api::slam::IBootstrapper>(this);
+	declareInjectable<api::storage::IMapManager>(m_mapManager);
+	declareInjectable<api::features::IKeypointDetector>(m_keypointsDetector);
+	declareInjectable<api::features::IDescriptorsExtractor>(m_descriptorExtractor);
+	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
+	declareInjectable<api::features::IMatchesFilter>(m_matchesFilter);
+	declareInjectable<api::solver::map::ITriangulator>(m_triangulator);
+	declareInjectable<api::solver::map::IMapFilter>(m_mapFilter);
+	declareInjectable<api::solver::map::IKeyframeSelector>(m_keyframeSelector);
+	declareInjectable<api::solver::pose::I3DTransformFinderFrom2D2D>(m_poseFinderFrom2D2D);
+	declareInjectable<api::geom::IUndistortPoints>(m_undistortPoints);
+	declareInjectable<api::display::IMatchesOverlay>(m_matchesOverlay);
 	declareProperty("hasPose", m_hasPose);
 	declareProperty("nbMinInitPointCloud", m_nbMinInitPointCloud);
-	declareProperty("angleThres", m_angleThres);	
+	declareProperty("angleThres", m_angleThres);
+	LOG_DEBUG("SolARSLAMBootstrapper constructor");	
 }
 
 xpcf::XPCFErrorCode SolARSLAMBootstrapper::onConfigured()
@@ -122,20 +123,13 @@ FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef
 			// Filter cloud points
 			m_mapFilter->filter(m_keyframe1->getPose(), frame2->getPose(), cloud, filteredCloud);
 			if (filteredCloud.size() > m_nbMinInitPointCloud) {
-                SRef<SolAR::api::storage::IKeyframesManager>keyframesManager;
-                SRef<SolAR::api::reloc::IKeyframeRetriever> keyframeRetriever;
-				m_mapper->getKeyframeRetriever(keyframeRetriever);
-				m_mapper->getKeyframesManager(keyframesManager);
-				// add keyframes to keyframes manager
-				keyframesManager->addKeyframe(m_keyframe1);
+				// add keyframes to map manager
+				m_mapManager->addKeyframe(m_keyframe1);
 				m_keyframe2 = xpcf::utils::make_shared<Keyframe>(frame2);
-				keyframesManager->addKeyframe(m_keyframe2);
+				m_mapManager->addKeyframe(m_keyframe2);
 				// add intial point cloud to point cloud manager and update visibility map and update covisibility graph
 				for (auto const &it : filteredCloud)
-					m_mapper->addCloudPoint(it);
-				// add keyframes to retriever
-				keyframeRetriever->addKeyframe(m_keyframe1);
-				keyframeRetriever->addKeyframe(m_keyframe2);
+					m_mapManager->addCloudPoint(it);
 				return FrameworkReturnCode::_SUCCESS;
 			}
 			else {

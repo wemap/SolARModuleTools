@@ -20,7 +20,6 @@
 #include "api/geom/I3DTransform.h"
 #include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
-
 #include <vector>
 
 namespace SolAR {
@@ -47,26 +46,46 @@ public:
     /// @param[in] transformation The 3D transform to apply to the set of 3D points.
     /// @param[out] outputPoints The resulting 3D points after application of the 3D transform.
     /// @return FrameworkReturnCode::_SUCCESS if sucessful, eiher FrameworkRetunrnCode::_ERROR_.
-    FrameworkReturnCode transform(const std::vector<SolAR::datastructure::Point3Df> & inputPoints, const SolAR::datastructure::Transform3Df & transformation, std::vector<SolAR::datastructure::Point3Df> & outputPoints) override;
+    FrameworkReturnCode transform(const std::vector<SolAR::datastructure::Point3Df> & inputPoints, 
+								const SolAR::datastructure::Transform3Df & transformation, 
+								std::vector<SolAR::datastructure::Point3Df> & outputPoints) override;
 
+	/// @brief This method applies a transformation (4x4 float matrix) to a map including point cloud and keyframes	
+	/// @param[in] transformation: transformation the 3D transformation to apply (a 4x4 float matrix)
+	/// @param[in,out] map: the map to apply the transformation
+	/// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode transformInPlace(const SolAR::datastructure::Transform3Df & transformation,
+										SRef<SolAR::datastructure::Map> map) override;
+
+	/// @brief This method applies a transformation (4x4 float matrix) to a point cloud
+	/// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
+	/// @param[in,out] pointCloud the point cloud to apply the transformation
+	/// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode transformInPlace(const SolAR::datastructure::Transform3Df & transformation,
+										SRef<SolAR::datastructure::PointCloud> pointCloud) override;
+
+	/// @brief This method applies a transformation (4x4 float matrix) to a keyframe collection
+	/// @param[in] transformation the 3D transformation to apply (a 4x4 float matrix)
+	/// @param[in,out] keyframeCollection the keyframe collection to apply the transformation
+	/// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
+	FrameworkReturnCode transformInPlace(const SolAR::datastructure::Transform3Df & transformation,
+										SRef<SolAR::datastructure::KeyframeCollection> keyframeCollection) override;
+    
     /// @brief This method applies a transformation (4x4 float matrix) to a point cloud
     /// @param[in] transformation: transformation the 3D transformation to apply (a 4x4 float matrix)
     /// @param[in,out] pointCloud: the point cloud to apply the transformation
     /// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode transformInPlace(const SolAR::datastructure::Transform3Df & transformation, std::vector<SRef<SolAR::datastructure::CloudPoint>>& pointCloud) override;
+    FrameworkReturnCode transformInPlace(const SolAR::datastructure::Transform3Df & transformation, 
+										std::vector<SRef<SolAR::datastructure::CloudPoint>>& pointCloud) override;
 
     /// @brief This method applies a transformation (4x4 float matrix) to a set of keyframes
     /// @param[in] transformation: transformation the 3D transformation to apply (a 4x4 float matrix)
     /// @param[in,out] keyframes: the set of keyframes to apply the transformation
     /// @return FrameworkReturnCode::_SUCCESS_ if 3D transformation succeed, else FrameworkReturnCode::_ERROR.
-    FrameworkReturnCode transformInPlace(const SolAR::datastructure::Transform3Df & transformation, std::vector<SRef<SolAR::datastructure::Keyframe>>& keyframes) override;
+    FrameworkReturnCode transformInPlace(const SolAR::datastructure::Transform3Df & transformation, 
+										std::vector<SRef<SolAR::datastructure::Keyframe>>& keyframes) override;
 
     void unloadComponent () override final;
-
-
- private:
-
-
 };
 
 }

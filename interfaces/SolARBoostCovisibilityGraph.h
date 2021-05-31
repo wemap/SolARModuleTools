@@ -17,7 +17,7 @@
 #ifndef SOLARBOOSTCOVISIBILITYGRAPH_H
 #define SOLARBOOSTCOVISIBILITYGRAPH_H
 
-#include "api/storage/ICovisibilityGraph.h"
+#include "api/storage/ICovisibilityGraphManager.h"
 #include "xpcf/component/ComponentBase.h"
 #include "SolARToolsAPI.h"
 #include <fstream>
@@ -40,7 +40,7 @@ namespace TOOLS {
  * @brief A storage component to store with persistence the visibility between keypoints and 3D points, and respectively, based on a bimap from boost.
  */
 class SOLAR_TOOLS_EXPORT_API SolARBoostCovisibilityGraph : public org::bcom::xpcf::ComponentBase,
-        public SolAR::api::storage::ICovisibilityGraph {
+        public SolAR::api::storage::ICovisibilityGraphManager {
 public:
 
     SolARBoostCovisibilityGraph();
@@ -127,8 +127,20 @@ public:
     /// @param[in] the file name
     /// @return FrameworkReturnCode::_SUCCESS_ if the execution succeed, else FrameworkReturnCode::_ERROR.
     FrameworkReturnCode loadFromFile(const std::string& file) override;
+
+	/// @brief This method returns the covisibility graph
+	/// @return the covisibility graph
+	const SRef<datastructure::CovisibilityGraph> & getConstCovisibilityGraph() const override;
+
+	/// @brief This method returns the covisibility graph
+	/// @param[out] covisibilityGraph the covisibility graph of map
+	/// @return the covisibility graph
+	std::unique_lock<std::mutex> getCovisibilityGraph(SRef<datastructure::CovisibilityGraph>& covisibilityGraph) override;
+
+	/// @brief This method is to set the covisibility graph
+	/// @param[in] covisibilityGraph the covisibility graph of map
+	void setCovisibilityGraph(const SRef<datastructure::CovisibilityGraph> covisibilityGraph) override;
     
-    // new
     /// @brief This method clears the covisibility graph (deletes all nodes and edges).
     FrameworkReturnCode clear() ;
 

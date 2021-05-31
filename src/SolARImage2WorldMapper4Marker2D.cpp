@@ -34,6 +34,7 @@ SolARImage2WorldMapper4Marker2D::SolARImage2WorldMapper4Marker2D():ConfigurableB
     declareProperty("digitalHeight",m_digitalHeight);
     declareProperty("worldWidth",m_worldWidth);
     declareProperty("worldHeight",m_worldHeight);
+	LOG_DEBUG("SolARImage2WorldMapper4Marker2D constructor");
 }
 
 

@@ -19,7 +19,7 @@
 
 #include "api/loop/ILoopClosureDetector.h"
 #include "api/reloc/IKeyframeRetriever.h"
-#include "api/storage/ICovisibilityGraph.h"
+#include "api/storage/ICovisibilityGraphManager.h"
 #include "api/storage/IKeyframesManager.h"
 #include "api/solver/pose/I3DTransformSACFinderFrom3D3D.h"
 #include "api/geom/I3DTransform.h"
@@ -84,7 +84,7 @@ public:
 
  private:
     SRef<SolAR::api::storage::IKeyframesManager>					m_keyframesManager;
-    SRef<SolAR::api::storage::ICovisibilityGraph>					m_covisibilityGraph;
+    SRef<SolAR::api::storage::ICovisibilityGraphManager>            m_covisibilityGraphManager;
     SRef<SolAR::api::reloc::IKeyframeRetriever>                     m_keyframeRetriever;
     SRef<SolAR::api::solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
     SRef<SolAR::api::features::IDescriptorMatcher>					m_matcher;

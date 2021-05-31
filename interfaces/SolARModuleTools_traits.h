@@ -37,18 +37,19 @@ class SolAR2DTransform;
 class SolAR3DTransform;
 class SolARBasicMatchesFilter;
 class SolARMapFilter;
-class SolARMapper;
+class SolARMapManager;
 class SolARBasicSink;
 class SolARBasicSource;
 class SolARKeyframesManager;
 class SolARPointCloudManager;
-class SolARCovisibilityGraph;
+class SolARCovisibilityGraphManager;
 class SolARBoostCovisibilityGraph;
 class SolAR3D3DCorrespondencesFinder;
 class SolAR3DTransformEstimationSACFrom3D3D;
 class SolARLoopClosureDetector;
 class SolARLoopCorrector;
 class SolAROverlapDetector;
+class SolARMapUpdate;
 class SolARFiducialMarkerPoseEstimator;
 class SolARSLAMBootstrapper;
 class SolARSLAMTracking;
@@ -108,9 +109,9 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapFilter,
                              "SolARMapFilter",
                              "Filters a cloud of 3D points by removing points with a too important reporjection error or those which are behind the camera.")
 
-XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapper,
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapManager,
                              "8e3c926a-0861-46f7-80b2-8abb5576692c",
-                             "SolARMapper",
+                             "SolARMapManager",
                              "Updates a point map with new triangulated 3D points.")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer,
@@ -129,7 +130,7 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARPointCloudManager,
                              "SolARPointCloudManager",
                              "A component to manage a persistent set of 3D points")
 
-XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARCovisibilityGraph,
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARCovisibilityGraphManager,
                              "17c7087f-3394-4b4b-8e6d-3f8639bb00ea",
                              "SolARCovisibilityGraph",
                              "A component to manage the covisibility between keyframes")
@@ -158,6 +159,11 @@ XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolAROverlapDetector,
                             "58087630-1376-11eb-adc1-0242ac120002",
                             "SolAROverlapDetector",
                             "Detects overlaps between different maps.")
+
+XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARMapUpdate,
+							"3960331a-9190-48f4-aeba-e20bf6a24465",
+							"SolARMapUpdate",
+							"Update the global map after merging a local map into the global map.")
 
 XPCF_DEFINE_COMPONENT_TRAITS(SolAR::MODULES::TOOLS::SolARLoopCorrector,
 							"1007b588-c1f2-11ea-b3de-0242ac130004",

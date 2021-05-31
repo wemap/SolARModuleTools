@@ -24,8 +24,7 @@
 
 #include <xpcf/api/IComponentManager.h>
 #include <xpcf/core/helpers.h>
-#include <api/solver/map/IMapper.h>
-#include "KeyFrameRetrieverMock.h"
+#include <api/storage/IMapManager.h>
 
 namespace xpcf = org::bcom::xpcf;
 
@@ -40,35 +39,17 @@ int main(int argc, char* argv[])
 {
     SRef<xpcf::IComponentManager> cmpMgr = xpcf::getComponentManagerInstance();
     cmpMgr->load("SolARTest_ModuleTools_DualMapperSingleton_conf.xml");
-    cmpMgr->bindLocal<SolAR::api::reloc::IKeyframeRetriever,SolAR::MODULES::TOOLS::KeyFrameRetrieverMock,xpcf::Singleton>();
-    auto mapper = cmpMgr->resolve<SolAR::api::solver::map::IMapper>();
-    auto otherMapper = cmpMgr->resolve<SolAR::api::solver::map::IMapper>();
-    SRef<SolAR::api::storage::IKeyframesManager> keyFramesMgr, otherKeyFramesMgr;
-    mapper->getKeyframesManager(keyFramesMgr);
+    auto keyFramesMgr = cmpMgr->resolve<SolAR::api::storage::IKeyframesManager>();
+    auto otherKeyFramesMgr = cmpMgr->resolve<SolAR::api::storage::IKeyframesManager>();
+	
     if (keyFramesMgr) {
-        std::cout<<"IKeyframesManager instance loaded in mapper"<<std::endl;
+        std::cout<<"IKeyframesManager instance"<<std::endl;
     }
 
-    SRef<SolAR::api::storage::IPointCloudManager> pointCloudMgr, otherPointCloudMgr;
-    mapper->getPointCloudManager(pointCloudMgr);
+	auto pointCloudMgr = cmpMgr->resolve<SolAR::api::storage::IPointCloudManager>();
+	auto otherPointCloudMgr = cmpMgr->resolve<SolAR::api::storage::IPointCloudManager>();
     if (pointCloudMgr) {
-        std::cout<<"IPointCloudManager instance loaded in mapper"<<std::endl;
-    }
-
-    SRef<SolAR::api::reloc::IKeyframeRetriever> keyFrameRetriever, otherKeyFrameRetriever;
-    mapper->getKeyframeRetriever(keyFrameRetriever);
-    if (keyFrameRetriever) {
-        std::cout<<"IKeyframeRetriever instance loaded in mapper"<<std::endl;
-    }
-
-    otherMapper->getKeyframesManager(otherKeyFramesMgr);
-    otherMapper->getPointCloudManager(otherPointCloudMgr);
-    otherMapper->getKeyframeRetriever(otherKeyFrameRetriever);
-    if  (otherKeyFrameRetriever == keyFrameRetriever) {
-        std::cout<<"IKeyframeRetriever instance is a singleton"<<std::endl;
-    }
-    else {
-        std::cout<<"IKeyframeRetriever is a dedicated instance for each new component"<<std::endl;
+        std::cout<<"IPointCloudManager instance"<<std::endl;
     }
     if (otherPointCloudMgr == pointCloudMgr) {
         std::cout<<"IPointCloudManager instance is a singleton"<<std::endl;
@@ -82,9 +63,7 @@ int main(int argc, char* argv[])
     else {
         std::cout<<"IKeyframesManager is a dedicated instance for each new component"<<std::endl;
     }
-    std::cout<<"memory mapping :";
-    std::cout<<"--> IKeyframeRetriever first instance address = "<<&*keyFrameRetriever<<std::endl;
-    std::cout<<"--> IKeyframeRetriever second instance address = "<<&*otherKeyFrameRetriever<<std::endl;
+    std::cout<<"memory mapping :" << std::endl;
     std::cout<<"--> IPointCloudManager first instance address = "<<&*pointCloudMgr<<std::endl;
     std::cout<<"--> IPointCloudManager second instance address = "<<&*otherPointCloudMgr<<std::endl;
     std::cout<<"--> IKeyframesManager first instance address = "<<&*keyFramesMgr<<std::endl;

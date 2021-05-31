@@ -32,26 +32,27 @@ namespace TOOLS {
 
 SolARSLAMMapping::SolARSLAMMapping() :ConfigurableBase(xpcf::toUUID<SolARSLAMMapping>())
 {
-    addInterface<SolAR::api::slam::IMapping>(this);
-    declareInjectable<SolAR::api::solver::map::IMapper>(m_mapper);
-    declareInjectable<SolAR::api::storage::IPointCloudManager>(m_pointCloudManager);
-    declareInjectable<SolAR::api::storage::IKeyframesManager>(m_keyframesManager);
-    declareInjectable<SolAR::api::storage::ICovisibilityGraph>(m_covisibilityGraph);
-    declareInjectable<SolAR::api::solver::map::IKeyframeSelector>(m_keyframeSelector);
-    declareInjectable<SolAR::api::solver::map::IBundler>(m_bundler);
-    declareInjectable<SolAR::api::reloc::IKeyframeRetriever>(m_keyframeRetriever);
-    declareInjectable<SolAR::api::features::IMatchesFilter>(m_matchesFilter);
-    declareInjectable<SolAR::api::solver::map::ITriangulator>(m_triangulator);
-    declareInjectable<SolAR::api::solver::map::IMapFilter>(m_mapFilter);
-    declareInjectable<SolAR::api::geom::IProject>(m_projector);
-    declareInjectable<SolAR::api::features::IDescriptorMatcher>(m_matcher);
-    declareInjectable<SolAR::api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
+	addInterface<api::slam::IMapping>(this);
+	declareInjectable<api::storage::IMapManager>(m_mapManager);
+	declareInjectable<api::storage::IPointCloudManager>(m_pointCloudManager);
+	declareInjectable<api::storage::IKeyframesManager>(m_keyframesManager);
+	declareInjectable<api::storage::ICovisibilityGraphManager>(m_covisibilityGraphManager);
+	declareInjectable<api::solver::map::IKeyframeSelector>(m_keyframeSelector);
+	declareInjectable<api::solver::map::IBundler>(m_bundler);
+	declareInjectable<api::reloc::IKeyframeRetriever>(m_keyframeRetriever);
+	declareInjectable<api::features::IMatchesFilter>(m_matchesFilter);
+	declareInjectable<api::solver::map::ITriangulator>(m_triangulator);
+	declareInjectable<api::solver::map::IMapFilter>(m_mapFilter);
+	declareInjectable<api::geom::IProject>(m_projector);
+	declareInjectable<api::features::IDescriptorMatcher>(m_matcher);
+	declareInjectable<api::solver::pose::I2D3DCorrespondencesFinder>(m_corr2D3DFinder);
 	declareProperty("minWeightNeighbor", m_minWeightNeighbor);
 	declareProperty("maxNbNeighborKfs", m_maxNbNeighborKfs);
 	declareProperty("minTrackedPoints", m_minTrackedPoints);
 	declareProperty("nbVisibilityAtLeast", m_nbVisibilityAtLeast);
 	declareProperty("nbPassedFrameAtLeast", m_nbPassedFrameAtLeast);
 	declareProperty("ratioCPRefKeyframe", m_ratioCPRefKeyframe);
+	LOG_DEBUG("SolARSLAMMapping constructor");
 }
 
 void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
@@ -100,7 +101,6 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyf
 SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 {
 	// create a new keyframe from the current frame
-	frame->setView(nullptr);
 	SRef<Keyframe> newKeyframe = xpcf::utils::make_shared<Keyframe>(frame);
 	// Add to keyframe manager
 	m_keyframesManager->addKeyframe(newKeyframe);
@@ -112,7 +112,7 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
 	cloudPointsCulling(newKeyframe);
 	// get best neighbor keyframes
 	std::vector<uint32_t> idxNeighborKfs, idxBestNeighborKfs;
-	m_covisibilityGraph->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor, idxNeighborKfs);
+	m_covisibilityGraphManager->getNeighbors(newKeyframe->getId(), m_minWeightNeighbor, idxNeighborKfs);
 	if (idxNeighborKfs.size() < m_maxNbNeighborKfs)
 		idxBestNeighborKfs.swap(idxNeighborKfs);
 	else
@@ -124,7 +124,7 @@ SRef<Keyframe> SolARSLAMMapping::processNewKeyframe(const SRef<Frame>& frame)
     LOG_DEBUG("Nb of new triangulated 3D cloud points: {}", newCloudPoint.size());
 	// add new points to point cloud manager, update visibility map and covisibility graph
 	for (auto const &point : newCloudPoint) {
-		m_mapper->addCloudPoint(point);
+		m_mapManager->addCloudPoint(point);
 		m_recentAddedCloudPoints[point->getId()] = std::make_pair(point, newKeyframe->getId());
 	}
 	return newKeyframe;
@@ -134,7 +134,7 @@ bool SolARSLAMMapping::checkNeedNewKeyframeInLocalMap(const SRef<Frame>& frame)
 {
 	std::vector < uint32_t> ret_keyframesId, neighborsKfs;
 	const SRef<Keyframe> &referenceKeyframe = frame->getReferenceKeyframe();
-	m_covisibilityGraph->getNeighbors(referenceKeyframe->getId(), m_minWeightNeighbor, neighborsKfs);
+	m_covisibilityGraphManager->getNeighbors(referenceKeyframe->getId(), m_minWeightNeighbor, neighborsKfs);
 	neighborsKfs.push_back(referenceKeyframe->getId());
 	std::set<uint32_t> candidates;
 	for (const auto &it : neighborsKfs)
@@ -142,7 +142,8 @@ bool SolARSLAMMapping::checkNeedNewKeyframeInLocalMap(const SRef<Frame>& frame)
 	if (m_keyframeRetriever->retrieve(frame, candidates, ret_keyframesId) == FrameworkReturnCode::_SUCCESS) {
 		if (ret_keyframesId[0] != referenceKeyframe->getId()) {
 			SRef<Keyframe> bestRetKeyframe;
-			m_keyframesManager->getKeyframe(ret_keyframesId[0], bestRetKeyframe);
+			if (m_keyframesManager->getKeyframe(ret_keyframesId[0], bestRetKeyframe) != FrameworkReturnCode::_SUCCESS)
+				return true;
 			// Check find enough matches to best ret keyframe
 			std::vector<DescriptorMatch> matches;
 			m_matcher->match(bestRetKeyframe->getDescriptors(), frame->getDescriptors(), matches);
@@ -192,7 +193,7 @@ void SolARSLAMMapping::updateAssociateCloudPoint(const SRef<Keyframe>& keyframe)
 	// Add to covisibility graph
 	for (auto const &it : kfCounter)
 		if (it.first != keyframe->getId())
-			m_covisibilityGraph->increaseEdge(keyframe->getId(), it.first, it.second);
+			m_covisibilityGraphManager->increaseEdge(keyframe->getId(), it.first, it.second);
 }
 
 void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyframe, const std::vector<uint32_t>& idxBestNeighborKfs, std::vector<SRef<CloudPoint>>& cloudPoint)
@@ -211,10 +212,29 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 	for (int i = 0; i < idxBestNeighborKfs.size(); ++i) {				
 		// get neighbor keyframe i
 		SRef<Keyframe> tmpKf;
-		m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf);
+		if (m_keyframesManager->getKeyframe(idxBestNeighborKfs[i], tmpKf) != FrameworkReturnCode::_SUCCESS)
+			continue;
 		const Transform3Df &tmpKf_pose = tmpKf->getPose();
+		const std::map<uint32_t, uint32_t> & tmpMapVisibility = tmpKf->getVisibility();
+		// get median depth of neighbor keyframe
+		float tmpKfMedDepth;
+		{
+			std::vector<float> depths;
+			Transform3Df tmpKfPoseInv = tmpKf_pose.inverse();
+			for (const auto& it : tmpMapVisibility) {
+				SRef<CloudPoint> cp;
+				if (m_pointCloudManager->getPoint(it.second, cp) != FrameworkReturnCode::_SUCCESS)
+					continue;
+				float depth = tmpKfPoseInv(2, 0) * cp->getX() + tmpKfPoseInv(2, 1) * cp->getY() + tmpKfPoseInv(2, 2) * cp->getZ() + tmpKfPoseInv(2, 3);
+				depths.push_back(depth);
+			}
+			if (depths.size() == 0)
+				continue;
+			std::sort(depths.begin(), depths.end());
+			tmpKfMedDepth = depths[depths.size() / 2];
+		}
 		// check base line
-        if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() < 0.05)
+        if ((tmpKf_pose.translation() - newKf_pose.translation()).norm() / tmpKfMedDepth < 0.02)
 			continue;
 		// get keypoints don't have associated cloud points
 		std::vector<int> newKf_indexKeypoints;
@@ -227,8 +247,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 		m_keyframeRetriever->match(newKf_indexKeypoints, newKf_des, tmpKf, tmpMatches);
 		// matches filter based homography matrix
 		m_matchesFilter->filter(tmpMatches, tmpMatches, newKf_kp, tmpKf->getKeypoints());
-		// find info to triangulate				
-		const std::map<unsigned int, unsigned int> & tmpMapVisibility = tmpKf->getVisibility();
+		// find info to triangulate						
 		for (int j = 0; j < tmpMatches.size(); ++j) {
 			unsigned int idx_newKf = tmpMatches[j].getIndexInDescriptorA();
 			unsigned int idx_tmpKf = tmpMatches[j].getIndexInDescriptorB();
@@ -268,7 +287,7 @@ void SolARSLAMMapping::cloudPointsCulling(const SRef<Keyframe>& keyframe)
 		}
 		if (((currentKfId - cpIdKf) >= 2) && (cp->getVisibility().size() < 3)) {
 			//std::cout << "Erase point: " << it.first << " " << cp->getId() << std::endl;
-			m_mapper->removeCloudPoint(cp);
+			m_mapManager->removeCloudPoint(cp);
 			toRemove.push_back(it.first);
 			nbRemove++;
 		}

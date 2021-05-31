@@ -16,9 +16,9 @@
 
 #include "xpcf/xpcf.h"
 #include "api/input/devices/ICamera.h"
-#include "api/solver/map/IMapper.h"
+#include "api/storage/IMapManager.h"
 #include "api/reloc/IKeyframeRetriever.h"
-#include "api/storage/ICovisibilityGraph.h"
+#include "api/storage/ICovisibilityGraphManager.h"
 #include "api/storage/IKeyframesManager.h"
 #include "api/storage/IPointCloudManager.h"
 #include "api/loop/ILoopClosureDetector.h"
@@ -56,9 +56,9 @@ int main(int argc,char** argv)
 	// storage components
     auto pointCloudManager = xpcfComponentManager->resolve<storage::IPointCloudManager>();
     auto keyframesManager = xpcfComponentManager->resolve<storage::IKeyframesManager>();
-    auto covisibilityGraph = xpcfComponentManager->resolve<storage::ICovisibilityGraph>();
+    auto covisibilityGraph = xpcfComponentManager->resolve<storage::ICovisibilityGraphManager>();
     auto keyframeRetriever = xpcfComponentManager->resolve<reloc::IKeyframeRetriever>();
-	auto mapper = xpcfComponentManager->resolve<solver::map::IMapper>();
+	auto mapManager = xpcfComponentManager->resolve<storage::IMapManager>();
 	auto loopDetector = xpcfComponentManager->resolve<loop::ILoopClosureDetector>();
 	auto camera = xpcfComponentManager->resolve<input::devices::ICamera>();
 	auto transform3D = xpcfComponentManager->resolve<geom::I3DTransform>();
@@ -67,7 +67,7 @@ int main(int argc,char** argv)
 	loopDetector->setCameraParameters(camera->getIntrinsicsParameters(), camera->getDistortionParameters());
 
 	// Load map from file
-	if (mapper->loadFromFile() != FrameworkReturnCode::_SUCCESS) {
+	if (mapManager->loadFromFile() != FrameworkReturnCode::_SUCCESS) {
 		LOG_INFO("Cannot load map");
 		return 0;
 	}
@@ -99,7 +99,7 @@ int main(int argc,char** argv)
             // try to transform local point cloud of current keyframe to the detected loop keyframe
             std::vector<SRef<CloudPoint>> localPointCloud;
             std::vector<Point3Df> localPoint3D, localPoint3DTrans;
-            mapper->getLocalPointCloud(currentKeyframe, 10, localPointCloud);
+            mapManager->getLocalPointCloud(currentKeyframe, 10, localPointCloud);
             for (auto it : localPointCloud)
                 localPoint3D.push_back(Point3Df(it->getX(), it->getY(), it->getZ()));
             transform3D->transform(localPoint3D, sim3Transform, localPoint3DTrans);

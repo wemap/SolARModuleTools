@@ -15,8 +15,8 @@
  */
 
 #include "SolARKeyframeSelector.h"
-
 #include "xpcf/core/helpers.h"
+#include "core/Log.h"
 
 namespace xpcf  = org::bcom::xpcf;
 
@@ -29,9 +29,10 @@ namespace TOOLS {
 
 SolARKeyframeSelector::SolARKeyframeSelector():ConfigurableBase(xpcf::toUUID<SolARKeyframeSelector>())
 {
-   declareInterface<SolAR::api::solver::map::IKeyframeSelector>(this);
-   declareProperty("minNbMatchesIsKeyframe", m_minNbMatchesIsKeyframe);
-   declareProperty("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);   
+	declareInterface<SolAR::api::solver::map::IKeyframeSelector>(this);
+	declareProperty("minNbMatchesIsKeyframe", m_minNbMatchesIsKeyframe);
+	declareProperty("minMeanDistanceIsKeyframe", m_minMeanDistanceIsKeyframe);
+	LOG_DEBUG("SolARKeyframesManager constructor");   
 }
 
 

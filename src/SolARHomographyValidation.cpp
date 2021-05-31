@@ -16,6 +16,7 @@
 
 #include "SolARHomographyValidation.h"
 #include "xpcf/component/ComponentFactory.h"
+#include "core/Log.h"
 
 namespace xpcf = org::bcom::xpcf;
 
@@ -32,6 +33,7 @@ namespace TOOLS {
         declareProperty("oppositeSideRatio",m_oppositeSideRatio);
         declareProperty("surfaceRatio",m_surfaceRatio);
         declareProperty("maxOppositeDotProduct",m_maxOppositeDotProduct);
+		LOG_DEBUG("SolARHomographyValidation constructor");
     }
 
     float computeSurface(std::vector<Point2Df> points){

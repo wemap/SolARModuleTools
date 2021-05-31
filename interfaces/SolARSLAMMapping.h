@@ -17,9 +17,9 @@
 #ifndef SOLARSLAMMAPPING_H
 #define SOLARSLAMMAPPING_H
 #include "api/slam/IMapping.h"
-#include "api/solver/map/IMapper.h"
+#include "api/storage/IMapManager.h"
 #include "api/solver/map/IKeyframeSelector.h"
-#include "api/storage/ICovisibilityGraph.h"
+#include "api/storage/ICovisibilityGraphManager.h"
 #include "api/storage/IKeyframesManager.h"
 #include "api/storage/IPointCloudManager.h"
 #include "api/solver/map/IBundler.h"
@@ -43,10 +43,10 @@ namespace TOOLS {
 * <TT>UUID: c276bcb1-2ac8-42f2-806d-d4fe0ce7d4be</TT>
 *
 * @SolARComponentInjectablesBegin
-* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::storage::IMapManager}
 * @SolARComponentInjectable{SolAR::api::storage::IPointCloudManager}
 * @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
-* @SolARComponentInjectable{SolAR::api::storage::ICovisibilityGraph}
+* @SolARComponentInjectable{SolAR::api::storage::ICovisibilityGraphManager}
 * @SolARComponentInjectable{SolAR::api::solver::map::IKeyframeSelector}
 * @SolARComponentInjectable{SolAR::api::solver::map::IBundler}
 * @SolARComponentInjectable{SolAR::api::reloc::IKeyframeRetriever}
@@ -115,11 +115,11 @@ private:
     SolAR::datastructure::CamCalibration										m_camMatrix;
     SolAR::datastructure::CamDistortion											m_camDistortion;
     SRef<SolAR::api::solver::map::IKeyframeSelector>							m_keyframeSelector;
-    SRef<SolAR::api::storage::ICovisibilityGraph>								m_covisibilityGraph;
+    SRef<SolAR::api::storage::ICovisibilityGraphManager>                        m_covisibilityGraphManager;
     SRef<SolAR::api::storage::IKeyframesManager>								m_keyframesManager;
     SRef<SolAR::api::solver::map::IBundler>										m_bundler;
     SRef<SolAR::api::reloc::IKeyframeRetriever>									m_keyframeRetriever;
-    SRef<SolAR::api::solver::map::IMapper>										m_mapper;
+    SRef<SolAR::api::storage::IMapManager>                                      m_mapManager;
     SRef<SolAR::api::storage::IPointCloudManager>								m_pointCloudManager;
     SRef<SolAR::api::features::IMatchesFilter>									m_matchesFilter;
     SRef<SolAR::api::solver::map::ITriangulator>								m_triangulator;

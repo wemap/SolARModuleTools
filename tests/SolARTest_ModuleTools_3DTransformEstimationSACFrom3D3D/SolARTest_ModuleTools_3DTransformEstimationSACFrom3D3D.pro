@@ -4,7 +4,7 @@ CONFIG -= qt
 
 ## global defintions : target lib name, version
 TARGET = SolARTest_ModuleTools_3DTransformEstimationSACFrom3D3D
-VERSION=0.9.3
+VERSION=0.9.4
 
 DEFINES += MYVERSION=$${VERSION}
 CONFIG += c++1z
@@ -24,7 +24,7 @@ CONFIG(release,debug|release) {
     DEFINES += NDEBUG=1
 }
 
-DEPENDENCIESCONFIG = sharedlib recursive install_recurse
+DEPENDENCIESCONFIG = shared install_recurse
 
 win32:CONFIG -= static
 win32:CONFIG += shared
@@ -35,17 +35,15 @@ PROJECTCONFIG = QTVS
 #NOTE : CONFIG as staticlib or sharedlib, DEPENDENCIESCONFIG as staticlib or sharedlib, QMAKE_TARGET.arch and PROJECTDEPLOYDIR MUST BE DEFINED BEFORE templatelibconfig.pri inclusion
 include ($$shell_quote($$shell_path($${QMAKE_REMAKEN_RULES_ROOT}/templateappconfig.pri)))  # Shell_quote & shell_path required for visual on windows
 
-#DEFINES += BOOST_ALL_NO_LIB
-DEFINES += BOOST_ALL_DYN_LINK
-DEFINES += BOOST_AUTO_LINK_NOMANGLE
-DEFINES += BOOST_LOG_DYN_LINK
+HEADERS += \
 
 SOURCES += \
     main.cpp
 
+
 unix {
     LIBS += -ldl
-    QMAKE_CXXFLAGS += -DBOOST_ALL_DYN_LINK
+    QMAKE_CXXFLAGS += -DBOOST_LOG_DYN_LINK
 }
 
 macx {

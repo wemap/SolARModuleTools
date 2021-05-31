@@ -17,10 +17,8 @@
 #ifndef SOLAROVERLAPDETECTOR_H
 #define SOLAROVERLAPDETECTOR_H
 
-#include "api/loop/ILoopClosureDetector.h"
 #include "api/reloc/IKeyframeRetriever.h"
-#include "api/storage/ICovisibilityGraph.h"
-#include "api/storage/IKeyframesManager.h"
+#include "api/loop/ILoopClosureDetector.h"
 #include "api/solver/pose/I3DTransformSACFinderFrom3D3D.h"
 #include "api/geom/I3DTransform.h"
 #include "api/features/IDescriptorMatcher.h"
@@ -65,47 +63,43 @@ public:
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] intrinsicParams: Camera calibration matrix parameters.
 	/// @param[in] distortionParams: Camera distortion parameters.
-
 	void setCameraParameters(const SolAR::datastructure::CamCalibration & intrinsicParams, const SolAR::datastructure::CamDistortion & distortionParams) override;
 
 	/// @brief Detect overlap between two floating maps with different refences.
-	/// @param[in] global mapper as reference.
-	/// @param[in] floating mapper as the map to merge.
-	/// @param[out] sim3Transform : 3D similarity transformation (Sim(3)) from the floating map to the global map.
-	/// @param[out] cpOverlapIndices : pairs of detected overlap cloud points indices of floating map and global map.
+	/// @param[in] globalMap global map as reference.
+	/// @param[in] floatingMap floating map as the map to merge.
+	/// @param[out] sim3Transform 3D similarity transformation (Sim(3)) from the floating map to the global map.
+	/// @param[out] cpOverlapIndices pairs of detected overlap cloud points indices of floating map and global map.
 	/// @return FrameworkReturnCode::_SUCCESS if detect a loop closure, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode detect(const SRef<SolAR::api::solver::map::IMapper> globalMap,
-                               const SRef<SolAR::api::solver::map::IMapper> floatingMap,
-                               SolAR::datastructure::Transform3Df &sim3Transform,
-                               std::vector<std::pair<uint32_t, uint32_t>>&cpOverlapIndices) const override;
+	FrameworkReturnCode detect(const SRef<SolAR::datastructure::Map> globalMap,
+							const SRef<SolAR::datastructure::Map> floatingMap,
+							SolAR::datastructure::Transform3Df & sim3Transform,
+							std::vector<std::pair<uint32_t, uint32_t>> & cpOverlapIndices) const override;
 
 	/// @brief Detect overlap between two floating maps with different refences.
-	/// @param[in] global mapper as reference.
-	/// @param[in] floating mapper as the map to merge.
-	/// @param[out] sim3Transform : 3D similarity transformation (Sim(3)) from query keyframe from the floating map to the detected overlaped keyframe in global map.
-	/// @param[out] overlapIndices : pairs of detected overlap keyframe indices of floating map and global map.
+	/// @param[in] globalMap global map as reference.
+	/// @param[in] floatingMap floating map as the map to merge.
+	/// @param[out] sim3Transform 3D similarity transformation (Sim(3)) from query keyframe from the floating map to the detected overlaped keyframe in global map.
+	/// @param[out] overlapIndices pairs of detected overlap keyframe indices of floating map and global map.
 	/// @param[out] scores : represent scores of overlap candidates.
 	/// @return FrameworkReturnCode::_SUCCESS if detect a loop closure, else FrameworkReturnCode::_ERROR_
-    FrameworkReturnCode detect(const SRef<SolAR::api::solver::map::IMapper> globalMap,
-                               const SRef<SolAR::api::solver::map::IMapper> floatingMap,
-                               std::vector<SolAR::datastructure::Transform3Df> &sim3Transform,
-                               std::vector<std::pair<uint32_t, uint32_t>>&overlapIndices,
-                               std::vector<double>&scores) const override;
+	FrameworkReturnCode detect(const SRef<SolAR::datastructure::Map> globalMap,
+							const SRef<SolAR::datastructure::Map> floatingMap,
+							std::vector<SolAR::datastructure::Transform3Df> & sim3Transform,
+							std::vector<std::pair<uint32_t, uint32_t>> & overlapIndices,
+							std::vector<double>&scores) const override;
 
 
 	void unloadComponent () override final;
 
  private:
-    //SRef<IKeyframesManager>                                       m_keyframesManager;
-    //SRef<ICovisibilityGraph>                                      m_covisibilityGraph;
-    //SRef<reloc::IKeyframeRetriever>                               m_keyframeRetriever;
-    //SRef<IPointCloudManager>                                      m_pointCloudManager;
-    SRef<SolAR::api::solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
-    SRef<SolAR::api::features::IDescriptorMatcher>					m_matcher;
-    SRef<SolAR::api::features::IMatchesFilter>						m_matchesFilter;
-    SRef<SolAR::api::solver::pose::I3D3DCorrespondencesFinder>		m_corr3D3DFinder;
-    SRef<SolAR::api::geom::I3DTransform>							m_transform3D;
-    int                                                             m_NbMinInliers;
+	SRef<SolAR::api::reloc::IKeyframeRetriever>						m_globalKeyframeRetriever;
+	SRef<SolAR::api::solver::pose::I3DTransformSACFinderFrom3D3D>	m_estimator3D;
+	SRef<SolAR::api::features::IDescriptorMatcher>					m_matcher;
+	SRef<SolAR::api::features::IMatchesFilter>						m_matchesFilter;
+	SRef<SolAR::api::solver::pose::I3D3DCorrespondencesFinder>		m_corr3D3DFinder;
+	SRef<SolAR::api::geom::I3DTransform>							m_transform3D;
+	int																m_NbMinInliers;
 };
 
 }

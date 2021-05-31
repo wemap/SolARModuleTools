@@ -19,7 +19,7 @@
 #include "api/slam/ITracking.h"
 #include "datastructure/Image.h"
 #include "api/storage/IKeyframesManager.h"
-#include "api/solver/map/IMapper.h"
+#include "api/storage/IMapManager.h"
 #include "api/features/IDescriptorMatcher.h"
 #include "api/features/IMatchesFilter.h"
 #include "api/display/I2DOverlay.h"
@@ -41,7 +41,7 @@ namespace TOOLS {
 * <TT>UUID: c45da19d-9637-48b6-ab52-33d3f0af6f72</TT>
 *
 * @SolARComponentInjectablesBegin
-* @SolARComponentInjectable{SolAR::api::solver::map::IMapper}
+* @SolARComponentInjectable{SolAR::api::storage::IMapManager}
 * @SolARComponentInjectable{SolAR::api::storage::IKeyframesManager}
 * @SolARComponentInjectable{SolAR::api::features::IDescriptorMatcher}
 * @SolARComponentInjectable{SolAR::api::features::IMatchesFilter}
@@ -77,6 +77,8 @@ public:
 	///@brief SolARSLAMTracking destructor;
 	~SolARSLAMTracking() = default;
 
+	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
+
 	/// @brief this method is used to set intrinsic parameters and distorsion of the camera
 	/// @param[in] Camera calibration matrix parameters.
 	/// @param[in] Camera distorsion parameters.
@@ -93,7 +95,6 @@ public:
     FrameworkReturnCode process(const SRef<SolAR::datastructure::Frame> frame, SRef<SolAR::datastructure::Image> &displayImage) override;
 
 	void unloadComponent() override final;
-	org::bcom::xpcf::XPCFErrorCode onConfigured() override final;
 
 private:
 	void updateLocalMap();
@@ -106,15 +107,17 @@ private:
     float                                                           m_minWeightNeighbor = 10.f;
     float                                                           m_thresAngleViewDirection = 0.7f;
     float                                                           m_reprojErrorThreshold;
+    float                                                           m_thresConfidence;
     int                                                             m_displayTrackedPoints = 1;
+    int                                                             m_estimatedPose = 0;
     bool                                                            m_isUpdateReferenceKeyframe = false;
     std::mutex                                                      m_refKeyframeMutex;
     SolAR::datastructure::CamCalibration                            m_camMatrix;
     SolAR::datastructure::CamDistortion                             m_camDistortion;
-    SRef<SolAR::api::solver::map::IMapper>                          m_mapper;
+    SRef<SolAR::api::storage::IMapManager>                          m_mapManager;
     SRef<SolAR::api::features::IDescriptorMatcher>                  m_matcher;
     SRef<SolAR::api::features::IMatchesFilter>                      m_matchesFilter;
-    SRef<SolAR::api::display::I2DOverlay>                           m_overlay2D;
+    SRef<api::display::I2DOverlay>                                  m_overlay2DGreen, m_overlay2DRed;
     SRef<SolAR::api::solver::pose::I2D3DCorrespondencesFinder>      m_corr2D3DFinder;
     SRef<SolAR::api::solver::pose::I3DTransformSACFinderFrom2D3D>	m_pnpRansac;
     SRef<SolAR::api::solver::pose::I3DTransformFinderFrom2D3D>      m_pnp;

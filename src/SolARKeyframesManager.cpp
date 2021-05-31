@@ -29,114 +29,76 @@ namespace TOOLS {
 
 SolARKeyframesManager::SolARKeyframesManager():ComponentBase(xpcf::toUUID<SolARKeyframesManager>())
 {
-    addInterface<SolAR::api::storage::IKeyframesManager>(this);
-	m_id = 0;
+	addInterface<api::storage::IKeyframesManager>(this);
+	m_keyframeCollection = xpcf::utils::make_shared<KeyframeCollection>();
+	LOG_DEBUG("SolARKeyframesManager constructor");
 }
 
 FrameworkReturnCode SolARKeyframesManager::addKeyframe(const SRef<Keyframe> keyframe)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	keyframe->setId(m_id);
-	m_keyframes[m_id] = keyframe;
-	m_id++;
-	return FrameworkReturnCode::_SUCCESS;
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->addKeyframe(keyframe);
 }
 
 FrameworkReturnCode SolARKeyframesManager::addKeyframe(const Keyframe & keyframe)
 {
-    std::unique_lock<std::mutex> lock(m_mutex);
-    SRef<Keyframe> keyframe_ptr = xpcf::utils::make_shared<Keyframe>(keyframe);
-	keyframe_ptr->setId(m_id);
-	m_keyframes[m_id] = keyframe_ptr;
-	m_id++;
-	return FrameworkReturnCode::_SUCCESS;
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->addKeyframe(keyframe);
 }
 
 FrameworkReturnCode SolARKeyframesManager::getKeyframe(const uint32_t id, SRef<Keyframe> & keyframe) const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-    std::map< uint32_t, SRef<Keyframe>>::const_iterator keyframeIt = m_keyframes.find(id);
-	if (keyframeIt != m_keyframes.end()) {
-		keyframe = keyframeIt->second;
-		return FrameworkReturnCode::_SUCCESS;
-	}
-	else {
-		LOG_ERROR("Cannot find keyframe with id {} to get", id);
-		return FrameworkReturnCode::_ERROR_;
-	}
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->getKeyframe(id, keyframe);
 }
 
 FrameworkReturnCode SolARKeyframesManager::getKeyframes(const std::vector<uint32_t>& ids, std::vector<SRef<Keyframe>>& keyframes) const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	for (auto &it : ids) {
-        std::map< uint32_t, SRef<Keyframe>>::const_iterator keyframeIt = m_keyframes.find(it);
-		if (keyframeIt == m_keyframes.end()) {
-			LOG_ERROR("Cannot find keyframe with id {} to get", it);
-			return FrameworkReturnCode::_ERROR_;
-		}
-		keyframes.push_back(keyframeIt->second);
-	}
-	return FrameworkReturnCode::_SUCCESS;
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->getKeyframes(ids, keyframes);
 }
 
 FrameworkReturnCode SolARKeyframesManager::getAllKeyframes(std::vector<SRef<Keyframe>>& keyframes) const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	for (auto keyframeIt = m_keyframes.begin(); keyframeIt != m_keyframes.end(); keyframeIt++)
-		keyframes.push_back(keyframeIt->second);
-	return FrameworkReturnCode::_SUCCESS;
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->getAllKeyframes(keyframes);
 }
 
 FrameworkReturnCode SolARKeyframesManager::suppressKeyframe(const uint32_t id)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	std::map< uint32_t, SRef<Keyframe>>::iterator keyframeIt = m_keyframes.find(id);
-	if (keyframeIt != m_keyframes.end()) {
-		m_keyframes.erase(keyframeIt);
-		return FrameworkReturnCode::_SUCCESS;
-	}
-	else {
-		LOG_ERROR("Cannot find keyframe with id {} to suppress", id);
-		return FrameworkReturnCode::_ERROR_;
-	}
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->suppressKeyframe(id);
 }
 
 DescriptorType SolARKeyframesManager::getDescriptorType() const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	return m_descriptorType;
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->getDescriptorType();
 }
 
 FrameworkReturnCode SolARKeyframesManager::setDescriptorType(const DescriptorType & type)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	m_descriptorType = type;
-	return FrameworkReturnCode::_SUCCESS;
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->setDescriptorType(type);
 }
 
 bool SolARKeyframesManager::isExistKeyframe(const uint32_t id) const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	if (m_keyframes.find(id) != m_keyframes.end())
-		return true;
-	else
-		return false;
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->isExistKeyframe(id);
 }
 
 int SolARKeyframesManager::getNbKeyframes() const
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-    return static_cast<int>(m_keyframes.size());
+	m_keyframeCollection->acquireLock();
+	return m_keyframeCollection->getNbKeyframes();
 }
 
 FrameworkReturnCode SolARKeyframesManager::saveToFile(const std::string& file) const
 {
 	std::ofstream ofs(file, std::ios::binary);
 	OutputArchive oa(ofs);
-	oa << m_id;
-	oa << m_descriptorType;
-	oa << m_keyframes;
+	oa << m_keyframeCollection;
 	ofs.close();
 	return FrameworkReturnCode::_SUCCESS;
 }
@@ -147,13 +109,26 @@ FrameworkReturnCode SolARKeyframesManager::loadFromFile(const std::string& file)
 	if (!ifs.is_open())
 		return FrameworkReturnCode::_ERROR_;
     InputArchive ia(ifs);
-	ia >> m_id;
-	ia >> m_descriptorType;
-	ia >> m_keyframes;
+	ia >> m_keyframeCollection;
 	ifs.close();
 	return FrameworkReturnCode::_SUCCESS;
 }
 
+const SRef<datastructure::KeyframeCollection>& SolARKeyframesManager::getConstKeyframeCollection() const
+{
+	return m_keyframeCollection;
+}
+
+std::unique_lock<std::mutex> SolARKeyframesManager::getKeyframeCollection(SRef<datastructure::KeyframeCollection>& keyframeCollection)
+{
+	keyframeCollection = m_keyframeCollection;
+	return m_keyframeCollection->acquireLock();
+}
+
+void SolARKeyframesManager::setKeyframeCollection(const SRef<datastructure::KeyframeCollection> keyframeCollection)
+{
+	m_keyframeCollection = keyframeCollection;
+}
 
 
 }

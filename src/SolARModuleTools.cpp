@@ -22,12 +22,12 @@
 #include "SolAR3DTransform.h"
 #include "SolARBasicMatchesFilter.h"
 #include "SolARMapFilter.h"
-#include "SolARMapper.h"
+#include "SolARMapManager.h"
 #include "SolARBasicSink.h"
 #include "SolARBasicSource.h"
 #include "SolARKeyframesManager.h"
 #include "SolARPointCloudManager.h"
-#include "SolARCovisibilityGraph.h"
+#include "SolARCovisibilityGraphManager.h"
 #include "SolARBoostCovisibilityGraph.h"
 #include "SolAR3D3DcorrespondencesFinder.h"
 #include "SolAR3DTransformEstimationSACFrom3D3D.h"
@@ -38,6 +38,7 @@
 #include "SolARSLAMTracking.h"
 #include "SolAROverlapDetector.h"
 #include "SolARSLAMMapping.h"
+#include "SolARMapUpdate.h"
 #include <iostream>
 
 namespace xpcf=org::bcom::xpcf;
@@ -78,7 +79,7 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARMapper>(componentUUID,interfaceRef);
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARMapManager>(componentUUID,interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
@@ -102,7 +103,7 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
-        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARCovisibilityGraph>(componentUUID,interfaceRef);
+        errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARCovisibilityGraphManager>(componentUUID,interfaceRef);
     }
     if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
     {
@@ -144,6 +145,10 @@ extern "C" XPCF_MODULEHOOKS_API xpcf::XPCFErrorCode XPCF_getComponent(const boos
 	{
 		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolAROverlapDetector>(componentUUID, interfaceRef);
 	}
+	if (errCode != xpcf::XPCFErrorCode::_SUCCESS)
+	{
+		errCode = xpcf::tryCreateComponent<SolAR::MODULES::TOOLS::SolARMapUpdate>(componentUUID, interfaceRef);
+	}
     return errCode;
 }
 
@@ -157,13 +162,13 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframeSelector)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSBPatternReIndexer)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR2DTransform)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransform)
-XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapper)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapManager)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapFilter)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSink)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBasicSource)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARKeyframesManager)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARPointCloudManager)
-XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARCovisibilityGraph)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARCovisibilityGraphManager)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARBoostCovisibilityGraph)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3D3DCorrespondencesFinder)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAR3DTransformEstimationSACFrom3D3D)
@@ -174,6 +179,7 @@ XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSLAMBootstrapper)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSLAMTracking)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARSLAMMapping)
 XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolAROverlapDetector)
+XPCF_ADD_COMPONENT(SolAR::MODULES::TOOLS::SolARMapUpdate)
 
 XPCF_END_COMPONENTS_DECLARATION
 

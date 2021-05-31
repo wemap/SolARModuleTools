@@ -64,8 +64,7 @@ public:
 	void unloadComponent() override final;
 
 private:
-    SRef<SolAR::api::storage::IPointCloudManager> m_pointCloudManagerG;
-    SRef<SolAR::api::storage::IPointCloudManager> m_pointCloudManager;
+	SRef<api::storage::IPointCloudManager> m_pointCloudManager;
 };
 }
 }

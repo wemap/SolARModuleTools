@@ -27,7 +27,6 @@ namespace SolAR {
 using namespace datastructure;
 using namespace api;
 using namespace api::storage;
-using namespace api::reloc;
 namespace MODULES {
 namespace TOOLS {
 
@@ -39,35 +38,36 @@ SolAROverlapDetector::SolAROverlapDetector():ConfigurableBase(xpcf::toUUID<SolAR
 	declareInjectable<features::IMatchesFilter>(m_matchesFilter);
 	declareInjectable<solver::pose::I3D3DCorrespondencesFinder>(m_corr3D3DFinder);
 	declareInjectable<geom::I3DTransform>(m_transform3D);
+	declareInjectable<reloc::IKeyframeRetriever>(m_globalKeyframeRetriever);
 	declareProperty("minNbInliers", m_NbMinInliers);
+	LOG_DEBUG("SolAROverlapDetector constructor");
 }
 
 void SolAROverlapDetector::setCameraParameters(const CamCalibration & intrinsicParams, const CamDistortion & distortionParams) {
 	m_estimator3D->setCameraParameters(intrinsicParams, distortionParams);
 }
 
-FrameworkReturnCode SolAROverlapDetector::detect(const SRef<SolAR::api::solver::map::IMapper> globalMap,
-                                                 const SRef<SolAR::api::solver::map::IMapper> floatingMap,
+FrameworkReturnCode SolAROverlapDetector::detect(const SRef<datastructure::Map> globalMap,
+                                                 const SRef<datastructure::Map> floatingMap,
                                                  Transform3Df & sim3Transform,
                                                  std::vector<std::pair<uint32_t, uint32_t>>& cpOverlapIndices) const
-{
-	SRef<IPointCloudManager> floatingPointCloudManager, globalPointCloudManager;
-	SRef<IKeyframesManager> floatingKeyframesManager, globalKeyframesManager;
-	SRef<IKeyframeRetriever> globalKeyframeRetriever;
+{		
+	// get floating map information
 	std::vector<SRef<Keyframe>> allFloatingKeyframes;
-	std::vector<SRef<CloudPoint>> floatingPointCloud, globalPointCloud;
+	std::vector<SRef<CloudPoint>> floatingPointCloud;
+	const SRef<PointCloud>& floatingPointCloudData = floatingMap->getConstPointCloud();
+	floatingPointCloudData->getAllPoints(floatingPointCloud);
+	const SRef<KeyframeCollection>& floatingKeyframeCollection = floatingMap->getConstKeyframeCollection();
+	floatingKeyframeCollection->getAllKeyframes(allFloatingKeyframes);
 
-	// get floating mapper information
-	floatingMap->getKeyframesManager(floatingKeyframesManager);
-	floatingMap->getPointCloudManager(floatingPointCloudManager);
-	floatingPointCloudManager->getAllPoints(floatingPointCloud);
-	floatingKeyframesManager->getAllKeyframes(allFloatingKeyframes);
+	// get global map information
+	std::vector<SRef<CloudPoint>> globalPointCloud;
+	const SRef<PointCloud>& globalPointCloudData = globalMap->getConstPointCloud();
+	globalPointCloudData->getAllPoints(globalPointCloud);
+	const SRef<KeyframeCollection>& globalKeyframeCollection = globalMap->getConstKeyframeCollection();
 
-	// get global mapper information
-	globalMap->getPointCloudManager(globalPointCloudManager);
-	globalMap->getKeyframeRetriever(globalKeyframeRetriever);
-	globalMap->getKeyframesManager(globalKeyframesManager);
-	globalPointCloudManager->getAllPoints(globalPointCloud);
+	// set global keyframe retriever
+	m_globalKeyframeRetriever->setKeyframeRetrieval(globalMap->getConstKeyframeRetrieval());
 
 	// find 3D-3D correspondences
 	std::set<uint32_t> foundIdFloatCPs, foundIdGlobalCPs;
@@ -76,13 +76,13 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<SolAR::api::solver::
 	for (const auto & queryKeyframe : allFloatingKeyframes) {
 		std::vector<uint32_t> candidatesId;
 		// get candidate keyframes using BoW and covisibility graph
-        globalKeyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), candidatesId);
+        m_globalKeyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), candidatesId);
 		if (candidatesId.size() == 0)
 			continue;
 		std::vector<SRef<Keyframe>> candidateKeyframes;
 		for (auto &it : candidatesId) {
 			SRef<Keyframe> keyframe;
-			if (globalKeyframesManager->getKeyframe(it, keyframe) == FrameworkReturnCode::_SUCCESS)
+			if (globalKeyframeCollection->getKeyframe(it, keyframe) == FrameworkReturnCode::_SUCCESS)
 				candidateKeyframes.push_back(keyframe);
 			if (candidateKeyframes.size() > 2)
 				break;
@@ -100,8 +100,8 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<SolAR::api::solver::
 			m_matchesFilter->filter(matches, matches, queryKeyframe->getKeypoints(), it->getKeypoints());
 			m_corr3D3DFinder->find(queryKeyframe, it, matches, floatingCloudPointsIndices, globalCloudPointsIndices, foundMatches);
 
-			floatingPointCloudManager->getPoints(floatingCloudPointsIndices, floatingCloudPoints);
-			globalPointCloudManager->getPoints(globalCloudPointsIndices, globalCloudPoints);
+			floatingPointCloudData->getPoints(floatingCloudPointsIndices, floatingCloudPoints);
+			globalPointCloudData->getPoints(globalCloudPointsIndices, globalCloudPoints);
 			if (floatingCloudPoints.size() != globalCloudPoints.size())
 				continue;
 			std::vector<Point3Df> pts1, pts2;
@@ -152,40 +152,39 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<SolAR::api::solver::
 	return FrameworkReturnCode::_ERROR_;
 }
 
-FrameworkReturnCode SolAROverlapDetector::detect(const SRef<SolAR::api::solver::map::IMapper> globalMap,
-                                                const SRef<SolAR::api::solver::map::IMapper> floatingMap,
+FrameworkReturnCode SolAROverlapDetector::detect(const SRef<datastructure::Map> globalMap,
+                                                const SRef<datastructure::Map> floatingMap,
 												std::vector<Transform3Df> &sim3Transform,
 												std::vector<std::pair<uint32_t, uint32_t>>&overlapIndices,
                                                 std::vector<double>&scores) const
 {	
-	SRef<IPointCloudManager> floatingPointCloudManager, globalPointCloudManager;
-	SRef<IKeyframesManager> floatingKeyframesManager, globalKeyframesManager;
-	SRef<IKeyframeRetriever> globalKeyframeRetriever;
+	// get floating map information
 	std::vector<SRef<Keyframe>> allFloatingKeyframes;
-	std::vector<SRef<CloudPoint>> floatingPointCloud, globalPointCloud;
+	std::vector<SRef<CloudPoint>> floatingPointCloud;
+	const SRef<PointCloud>& floatingPointCloudData = floatingMap->getConstPointCloud();
+	floatingPointCloudData->getAllPoints(floatingPointCloud);
+	const SRef<KeyframeCollection>& floatingKeyframeCollection = floatingMap->getConstKeyframeCollection();
+	floatingKeyframeCollection->getAllKeyframes(allFloatingKeyframes);
 
-	// get floating mapper information
-	floatingMap->getKeyframesManager(floatingKeyframesManager);
-	floatingMap->getPointCloudManager(floatingPointCloudManager);
-	floatingPointCloudManager->getAllPoints(floatingPointCloud);
-	floatingKeyframesManager->getAllKeyframes(allFloatingKeyframes);	
+	// get global map information
+	std::vector<SRef<CloudPoint>> globalPointCloud;
+	const SRef<PointCloud>& globalPointCloudData = globalMap->getConstPointCloud();
+	globalPointCloudData->getAllPoints(globalPointCloud);
+	const SRef<KeyframeCollection>& globalKeyframeCollection = globalMap->getConstKeyframeCollection();
 
-	// get global mapper information
-	globalMap->getPointCloudManager(globalPointCloudManager);
-	globalMap->getKeyframeRetriever(globalKeyframeRetriever);
-	globalMap->getKeyframesManager(globalKeyframesManager);
-	globalPointCloudManager->getAllPoints(globalPointCloud);
+	// set global keyframe retriever
+	m_globalKeyframeRetriever->setKeyframeRetrieval(globalMap->getConstKeyframeRetrieval());
 
 	for (const auto & queryKeyframe : allFloatingKeyframes) {
 		std::vector<uint32_t> candidatesId;
 		// get candidate keyframes using BoW and covisibility graph
-		globalKeyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), candidatesId);
+		m_globalKeyframeRetriever->retrieve(SRef<Frame>(queryKeyframe), candidatesId);
 		if (candidatesId.size() == 0)
 			continue;
 		std::vector<SRef<Keyframe>> candidateKeyframes;
 		for (auto &it : candidatesId) {
 			SRef<Keyframe> keyframe;
-			if (globalKeyframesManager->getKeyframe(it, keyframe) == FrameworkReturnCode::_SUCCESS)
+			if (globalKeyframeCollection->getKeyframe(it, keyframe) == FrameworkReturnCode::_SUCCESS)
 				candidateKeyframes.push_back(keyframe);
 			if (candidateKeyframes.size() > 2)
 				break;
@@ -203,8 +202,8 @@ FrameworkReturnCode SolAROverlapDetector::detect(const SRef<SolAR::api::solver::
 			m_matchesFilter->filter(matches, matches, queryKeyframe->getKeypoints(), it->getKeypoints());
 			m_corr3D3DFinder->find(queryKeyframe, it, matches, floatingCloudPointsIndices, globalCloudPointsIndices, foundMatches);
 
-			floatingPointCloudManager->getPoints(floatingCloudPointsIndices, floatingCloudPoints);
-			globalPointCloudManager->getPoints(globalCloudPointsIndices, globalCloudPoints);
+			floatingPointCloudData->getPoints(floatingCloudPointsIndices, floatingCloudPoints);
+			globalPointCloudData->getPoints(globalCloudPointsIndices, globalCloudPoints);
 
 			std::vector<Point3Df> pts1, pts2;
 			pts1.resize(floatingCloudPoints.size());
