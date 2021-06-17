@@ -36,6 +36,8 @@ SolARKeyframeSelector::SolARKeyframeSelector():ConfigurableBase(xpcf::toUUID<Sol
 }
 
 
+// TODO: can a more robust selection be performed? (cf. ORB-SLAM (§ IV), homographies, etc.)
+// Current version may cause some problems when calibrating
 bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::vector<DescriptorMatch>& matches) const
 {
     if (matches.size() < m_minNbMatchesIsKeyframe)
@@ -43,6 +45,7 @@ bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::vector<De
 
     std::vector<Keypoint> keypointsCurrent, keypointsRef;
 
+    // Make sure there is a keyframe to compare the frame with
     if (frame->getReferenceKeyframe() == nullptr)
         return false;
 
@@ -51,6 +54,7 @@ bool SolARKeyframeSelector::select(const SRef<Frame> frame, const std::vector<De
 
     unsigned int imageWidth = frame->getView()->getWidth();
 
+    // The only criterium taken into account is the distance between matched keypoints
     double totalMatchesDist = 0.0;
     for (int i = 0; i < matches.size(); i++)
     {

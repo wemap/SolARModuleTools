@@ -76,8 +76,12 @@ FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef
 	std::vector<DescriptorMatch>		matches;
 	SRef<Frame>							frame2;	
 	std::vector<SRef<CloudPoint>>		cloud, filteredCloud;	
+
+	// TODO: benchmark this
+	// TODO: should not be part of the pipeline...
 	view = image->copy();
 	if (m_hasPose) {
+		// TODO: not efficient, change this! (neither robust)
 		if (pose.isApprox(Transform3Df::Identity()))
 			return FrameworkReturnCode::_ERROR_;
 		else
@@ -92,6 +96,7 @@ FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef
 	m_undistortPoints->undistort(keypoints, undistortedKeypoints);
 	// feature extraction
 	m_descriptorExtractor->extract(image, keypoints, descriptors);
+	// If the first key frame was not created, create it
 	if (!m_initKeyframe1) {
 		// init first keyframe
 		m_initKeyframe1 = true;		
@@ -99,22 +104,31 @@ FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef
 	}
 	else {
 		frame2 = xpcf::utils::make_shared<Frame>(keypoints, undistortedKeypoints, descriptors, image, m_keyframe1, poseFrame);		
-		// matching
+		// Match the descriptors of the current frame with the current keyframe
 		m_matcher->match(m_keyframe1->getDescriptors(), descriptors, matches);
+		// Filter the matched descriptors
+		// TODO: benchmark and check this (sample version does a geometric match  by computing the fundamental matrix between the two frames)
 		//m_matcher->matchInRegion(m_keyframe1, frame2, matches, image->getWidth() * (m_ratioDistanceIsKeyframe + 0.01));
 		m_matchesFilter->filter(matches, matches, m_keyframe1->getKeypoints(), frame2->getKeypoints());
+		// If there are matches subsisting, display them
 		if (matches.size() > 0) {
 			m_matchesOverlay->draw(image, view, m_keyframe1->getKeypoints(), frame2->getKeypoints(), matches);
 		}
+		// If the number of matches is not sufficient with respect to m_nbMinInitPointCloud, set the keyframe to the current frame and begin again
 		if (matches.size() < m_nbMinInitPointCloud) {
 			m_keyframe1 = xpcf::utils::make_shared<Keyframe>(frame2);
 		}
+		// Otherwise, check if the frame is a candidate for keyframe based on implementation of IKeyframeSelector
 		else if (m_keyframeSelector->select(frame2, matches)) {
 			// Find pose of the second keyframe if not has pose
 			if (!m_hasPose) {
+				// TODO: check implementation
+				// TODO: recomputing fundamental matrix?
 				m_poseFinderFrom2D2D->estimate(m_keyframe1->getKeypoints(), frame2->getKeypoints(), m_keyframe1->getPose(), poseFrame, matches);				
 				frame2->setPose(poseFrame);
 			}
+			// Check if the angle between the two poses is small enough => Bootstrapping should be performed by translation only
+			// TODO: shouldn't this be part of the IKeyframeSelector somehow?
 			if (angleCamDistance(m_keyframe1->getPose(), frame2->getPose()) > m_angleThres)
 				return FrameworkReturnCode::_ERROR_;
 			// Triangulate
@@ -122,6 +136,7 @@ FrameworkReturnCode SolARSLAMBootstrapper::process(const SRef<Image> image, SRef
 				std::make_pair(0, 1), m_keyframe1->getPose(), frame2->getPose(), cloud);
 			// Filter cloud points
 			m_mapFilter->filter(m_keyframe1->getPose(), frame2->getPose(), cloud, filteredCloud);
+			// If the number of filtered cloud points is not sufficient with respect to m_nbMinInitPointCloud, set the keyframe to the current frame and begin again
 			if (filteredCloud.size() > m_nbMinInitPointCloud) {
 				// add keyframes to map manager
 				m_mapManager->addKeyframe(m_keyframe1);

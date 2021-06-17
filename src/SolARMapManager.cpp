@@ -93,6 +93,7 @@ FrameworkReturnCode SolARMapManager::getLocalPointCloud(const SRef<Keyframe> key
 			tmpIdxLocalMap[v.second][it] = v.first;
 	}
 	// get local point cloud
+	// TODO: hazardous? (and probably not efficient!)
 	for (auto const &it : tmpIdxLocalMap) {
 		SRef<CloudPoint> point;
 		if (m_pointCloudManager->getPoint(it.first, point) == FrameworkReturnCode::_SUCCESS)

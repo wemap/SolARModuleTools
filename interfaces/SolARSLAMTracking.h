@@ -97,11 +97,13 @@ public:
 	void unloadComponent() override final;
 
 private:
+    /// @brief this method is used to update the local map by getting all visible cloud points that can be seen from neighbours in the covisibility graph 
 	void updateLocalMap();
 
 private:
     SRef<SolAR::datastructure::Keyframe>                            m_referenceKeyframe;
     SolAR::datastructure::Transform3Df                              m_lastPose = SolAR::datastructure::Transform3Df::Identity();
+    // TODO: refactor name?
     std::vector<SRef<SolAR::datastructure::CloudPoint>>             m_localMap;
     bool                                                            m_isLostTrack = false;
     float                                                           m_minWeightNeighbor = 10.f;

@@ -65,6 +65,7 @@ void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & po
 	this->filter(pose1, pose2, input, output, index);
 }
 
+// TODO: check this
 void  SolARMapFilter::filter(const Transform3Df & pose1, const Transform3Df & pose2, const std::vector<SRef<CloudPoint>>& input, std::vector<SRef<CloudPoint>>& output, std::vector<int> &index)
 {
 	if (input.size() == 0)

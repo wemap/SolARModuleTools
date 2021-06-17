@@ -21,6 +21,7 @@
 namespace xpcf = org::bcom::xpcf;
 
 XPCF_DEFINE_FACTORY_CREATE_INSTANCE(SolAR::MODULES::TOOLS::SolARSLAMTracking);
+// TODO: should not be hardcoded!
 #define RATIO_BORDER_IMAGE 0.08
 #define RATIO_UPDATE_WINDOWS 0.03
 
@@ -91,9 +92,11 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 		return FrameworkReturnCode::_ERROR_;
 	std::vector<DescriptorMatch> matches;
 	Transform3Df framePose = frame->getPose();
+	// if tracking was lost, try to relocate
+	// TODO: differences with keyframe retriever?
 	if (m_isLostTrack) {
 		LOG_DEBUG("Pose estimation has failed");		
-		// reloc
+		// relocalization based on previously acquired keyframes
 		std::vector < uint32_t> retKeyframesId;
 		if (m_keyframeRetriever->retrieve(frame, retKeyframesId) == FrameworkReturnCode::_SUCCESS) {
 			LOG_DEBUG("Successful relocalization. Update reference keyframe id: {}", retKeyframesId[0]);
@@ -116,14 +119,16 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 	// matching feature	
 	m_isLostTrack = true;	
 	m_matcher->match(m_referenceKeyframe->getDescriptors(), frame->getDescriptors(), matches);
+	// TODO: turn that into a parameter
 	if (matches.size() < 10)
 		return FrameworkReturnCode::_ERROR_;
 	m_matchesFilter->filter(matches, matches, m_referenceKeyframe->getKeypoints(), frame->getKeypoints());
+	// Prevent nan
 	float maxMatchDistance = -FLT_MAX;
 	for (const auto &it : matches)
 		maxMatchDistance = std::max(maxMatchDistance, it.getMatchingScore());
 
-	// find 2D-3D point correspondences
+	// find 2D-3D point correspondences based on those computed for the reference keyframe
 	std::vector<Point2Df> pt2d;
 	std::vector<Point3Df> pt3d;
 	std::vector<CloudPoint> foundPoints;
@@ -135,7 +140,8 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 	if (pt2d.size() == 0)
 		return FrameworkReturnCode::_ERROR_;
 
-	// find initial pose
+	// find initial pose thanks to PnP-RANSAC
+	// TODO: change this, should not use approx
 	bool bFindPose = framePose.isApprox(Transform3Df::Identity());
 	if (bFindPose) {
 		std::vector<uint32_t> inliers;
@@ -168,11 +174,14 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 		}
 	}
 
+	// Update visibility map with unseen points
+	// TODO: efficiency? (do we need to create those structures?)
 	std::vector<SRef<CloudPoint>> localMapUnseenCandidates;
 	std::vector< Point2Df > projected2DPtsCandidates;
 	std::vector<bool> checkLocalMapInOut;
 	uint32_t imgWidth = frame->getView()->getWidth();
 	uint32_t imgHeight = frame->getView()->getHeight();
+	// TODO: difference? refactoring probably necessary...
 	float updateWindows = RATIO_UPDATE_WINDOWS * imgWidth;
 	float borderImage = RATIO_BORDER_IMAGE * imgWidth;
 	{
@@ -196,11 +205,13 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 		if (localMapUnseenCandidates.size() > 0) {
 			checkLocalMapInOut.resize(localMapUnseenCandidates.size(), false);
 			// find more inlier matches
+			// TODO: efficiency?
 			std::vector<SRef<DescriptorBuffer>> desAllLocalMapUnseen;
 			for (auto &it_cp : localMapUnseenCandidates) {
 				desAllLocalMapUnseen.push_back(it_cp->getDescriptor());
 			}
 			std::vector<DescriptorMatch> allMatches;
+			// TODO: radius is set to 0 for search -> does not make any sense (log but normally, we should not find anything ...)
 			m_matcher->matchInRegion(projected2DPtsCandidates, desAllLocalMapUnseen, frame, allMatches, 0, maxMatchDistance);
 			// find visibility of new frame
 			int nbMatchesLocalMap(0);
@@ -224,7 +235,8 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 	frame->addVisibilities(newMapVisibility);
 	LOG_DEBUG("Nb of map visibilities of current frame: {}", newMapVisibility.size());
 
-	// pnp optimization
+	// PnP optimization by taking into account the inliers computed above only
+	// TODO: benchmark this to check if it's really relevant
 	if (bFindPose) {
 		Transform3Df refinedPose;
 		m_pnp->estimate(pts2dInliers, pts3dInliers, refinedPose, frame->getPose());
@@ -234,6 +246,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 	LOG_DEBUG("Refined pose: \n {}", frame->getPose().matrix());
 	m_lastPose = frame->getPose();	
 	// define invalid cloud points
+	// TODO: benchmark the relevance of this in light of the previous remarks and possible parameters
 	std::vector<Point2Df> localPtsInvalid;
 	{		
 		for (int i = 0; i < localMapUnseenCandidates.size(); ++i) {
@@ -273,7 +286,7 @@ FrameworkReturnCode SolARSLAMTracking::process(const SRef<Frame> frame, SRef<Ima
 		m_overlay2DGreen->drawCircles(pts2dInliers, displayImage);
 	}	
 
-	// tracking is good
+	// tracking has now been completed
 	m_isLostTrack = false;
 	return FrameworkReturnCode::_SUCCESS;
 }

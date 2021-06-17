@@ -62,6 +62,7 @@ void SolARSLAMMapping::setCameraParameters(const CamCalibration & intrinsicParam
     m_projector->setCameraParameters(m_camMatrix, m_camDistortion);
 }
 
+// TODO: refactor! This is not a mapping process... Equivalent to keyframe selection, and local map reference keyframe selection
 FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyframe> & keyframe)
 {
 	// increment number of passed frames
@@ -70,6 +71,7 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyf
 	int nbCommonCP(0);
 	const std::map<uint32_t, uint32_t>& frameVisibilities = frame->getVisibility();
 	const uint32_t& refKf_id = frame->getReferenceKeyframe()->getId();
+	// TODO: benchmark this
 	for (const auto &it : frameVisibilities) {
 		SRef<CloudPoint> cp;
 		if (m_pointCloudManager->getPoint(it.second, cp) == FrameworkReturnCode::_SUCCESS) {
@@ -80,10 +82,12 @@ FrameworkReturnCode SolARSLAMMapping::process(const SRef<Frame> frame, SRef<Keyf
 		}
 	}
 	LOG_DEBUG("Nb of passed frames: {}, ratio: {}", m_nbPassedFrames, (float)nbCommonCP / frame->getReferenceKeyframe()->getVisibility().size());
-	// check need new keyframe
+	// check if a new keyframe is needed
+	// TODO: consistency with the next condition? It seems that it is not checking for new keyframe in second condition but rather updating the reference keyframe (cf. local map in ORB SLAM)
     if ((m_nbPassedFrames > m_nbPassedFrameAtLeast) && (frame->getVisibility().size() > m_nbVisibilityAtLeast) && 
 		((nbCommonCP < m_ratioCPRefKeyframe * frame->getReferenceKeyframe()->getVisibility().size()) || (frame->getVisibility().size() < m_minTrackedPoints)))
 	{
+		// TODO: efficiency issue with same functions being queried in checkNeedNewKeyframeInLocalMap and processNewKeyframe
 		if (!checkNeedNewKeyframeInLocalMap(frame)) {
 			keyframe = m_updatedReferenceKeyframe;
 			return FrameworkReturnCode::_ERROR_;
@@ -273,6 +277,7 @@ void SolARSLAMMapping::findMatchesAndTriangulation(const SRef<Keyframe>& keyfram
 	}
 }
 
+// TODO: add parameters for number of frames to retain in culling process
 void SolARSLAMMapping::cloudPointsCulling(const SRef<Keyframe>& keyframe)
 {
 	const uint32_t& currentKfId = keyframe->getId();

@@ -101,6 +101,8 @@ private:
 	void updateAssociateCloudPoint(const SRef<SolAR::datastructure::Keyframe> &keyframe);
 	void findMatchesAndTriangulation(const SRef<SolAR::datastructure::Keyframe> & keyframe, const std::vector<uint32_t> &idxBestNeighborKfs, std::vector<SRef<SolAR::datastructure::CloudPoint>> &cloudPoint);
 	void fuseCloudPoint(const SRef<SolAR::datastructure::Keyframe> &keyframe, const std::vector<uint32_t> &idxNeigborKfs, std::vector<SRef<SolAR::datastructure::CloudPoint>> &newCloudPoint);
+	
+	/// @brief this method culls new cloud points by making sure they have been observed for some time
 	void cloudPointsCulling(const SRef<SolAR::datastructure::Keyframe> &keyframe);
 
 private:
